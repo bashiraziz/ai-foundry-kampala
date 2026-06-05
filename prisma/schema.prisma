@@ -157,6 +157,23 @@ model PrepEnrollment {
   updatedAt           DateTime    @updatedAt
 }
 
-enum TrackRecommendation { DEVELOPER PROFESSIONAL PREP NOT_READY }
-enum ApplicantStatus     { PENDING ASSESSED ACCEPTED REJECTED }
-enum PrepStatus          { ACTIVE READY_FOR_EXIT GRADUATED DEFERRED }
+enum TrackRecommendation {
+  DEVELOPER
+  PROFESSIONAL
+  PREP
+  NOT_READY
+}
+
+enum ApplicantStatus {
+  PENDING
+  ASSESSED
+  ACCEPTED
+  REJECTED
+}
+
+enum PrepStatus {
+  ACTIVE
+  READY_FOR_EXIT
+  GRADUATED
+  DEFERRED
+}
