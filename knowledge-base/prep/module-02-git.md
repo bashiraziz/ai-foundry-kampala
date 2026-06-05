@@ -1,4 +1,4 @@
-## [Module 2] — Git
+## [Runway 2] — Git
 
 **Track:** Prep
 **Module:** 2 of 4
@@ -223,7 +223,7 @@ Go to github.com. Click "Sign up." Use the same email you configured in Git.
 Click the `+` icon in the top right corner → "New repository."
 
 - Repository name: `prep-work`
-- Description: "Kampala Agentic AI Club prep track work"
+- Description: "The AI Foundry Kampala Runway program work"
 - Visibility: Public (the evaluator needs to read it)
 - Do NOT tick "Add a README file" (you already have a local project)
 - Click "Create repository"
@@ -303,4 +303,4 @@ Yes. `git revert HEAD` creates a new commit that undoes the previous one (safe �
 
 You can track every change you make to your code, save named snapshots, and store your work on GitHub. Your code is now safe even if your laptop is lost or damaged. Any collaborator can see your work and you can share it with the evaluator by sending a URL.
 
-You are ready for Module 3: Python Basics.
+You are ready for Runway 3: Python Basics.

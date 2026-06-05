@@ -1,4 +1,4 @@
-## FAQ — Module 3: Python Basics
+## FAQ — Runway 3: Python Basics
 
 **Track:** Prep
 **Type:** FAQ — built from live sessions

@@ -27,7 +27,7 @@ export default async function PrepDashboardPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600">← Dashboard</Link>
-          <h1 className="text-xl font-bold text-gray-800">Prep Track Students</h1>
+          <h1 className="text-xl font-bold text-gray-800">Runway Students</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {enrollments.map((e) => {
@@ -60,7 +60,7 @@ export default async function PrepDashboardPage() {
               </Link>
             );
           })}
-          {enrollments.length === 0 && <p className="text-gray-400 text-sm col-span-2">No prep track students yet.</p>}
+          {enrollments.length === 0 && <p className="text-gray-400 text-sm col-span-2">No Runway students yet.</p>}
         </div>
       </div>
     </div>

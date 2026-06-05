@@ -1,4 +1,4 @@
-# KampalaClaw — Setup Instructions
+# Mshauri — Setup Instructions
 
 ## Prerequisites
 - Node.js 18+
@@ -83,11 +83,11 @@ npm run dev
 | `http://localhost:3000/quiz` | Weekly quiz |
 | `http://localhost:3000/assess` | Track assessment (new applicants start here) |
 | `http://localhost:3000/assess/complete?id=...` | Assessment result screen |
-| `http://localhost:3000/prep?applicantId=...` | Prep track module dashboard |
-| `http://localhost:3000/prep/1?applicantId=...` | Prep module 1: The Terminal |
-| `http://localhost:3000/prep/2?applicantId=...` | Prep module 2: Git |
-| `http://localhost:3000/prep/3?applicantId=...` | Prep module 3: Python Basics |
-| `http://localhost:3000/prep/4?applicantId=...` | Prep module 4: The Mini-Project |
+| `http://localhost:3000/prep?applicantId=...` | Runway module dashboard |
+| `http://localhost:3000/prep/1?applicantId=...` | Runway 1: The Terminal |
+| `http://localhost:3000/prep/2?applicantId=...` | Runway 2: Git |
+| `http://localhost:3000/prep/3?applicantId=...` | Runway 3: Python Basics |
+| `http://localhost:3000/prep/4?applicantId=...` | Runway 4: The Mini-Project |
 | `http://localhost:3000/prep/project?applicantId=...` | Mini-project submission |
 
 ### Facilitator URLs (login required)
@@ -98,7 +98,7 @@ npm run dev
 | `http://localhost:3000/dashboard` | Main dashboard — student cohort overview |
 | `http://localhost:3000/dashboard/applicants` | All applicants with scores and status |
 | `http://localhost:3000/dashboard/applicants/[id]` | Applicant transcript + accept/reject |
-| `http://localhost:3000/dashboard/prep` | Prep track cohort progress |
+| `http://localhost:3000/dashboard/prep` | Runway cohort progress |
 | `http://localhost:3000/dashboard/prep/[id]` | Individual prep student detail |
 
 ---
@@ -106,7 +106,7 @@ npm run dev
 ## How the assessment flow works
 
 1. New applicant visits `/assess` and enters their name
-2. KampalaClaw runs an 8-signal conversational assessment (~10 minutes)
+2. Mshauri runs an 8-signal conversational assessment (~10 minutes)
 3. On completion, `/api/assess/complete` scores the transcript using weighted rubrics:
    - **Developer score ≥ 11** → `DEVELOPER` track
    - **Professional score ≥ 5** (and Developer < 11) → `PROFESSIONAL` track
@@ -116,10 +116,10 @@ npm run dev
 5. Facilitator reviews all applicants at `/dashboard/applicants` and accepts or rejects
 6. Accepting a DEVELOPER or PROFESSIONAL applicant creates a `Student` record
 
-## How the prep track works
+## How the Runway program works
 
 1. Student works through 4 modules at their own pace
-2. Each module has lesson content + KampalaClaw chat (RAG-filtered to that module's knowledge base)
+2. Each module has lesson content + Mshauri chat (RAG-filtered to that module's knowledge base)
 3. Module N+1 is locked until module N is marked complete
 4. After completing module 4, student submits their GitHub mini-project URL
 5. `/api/prep/evaluate` autonomously fetches and scores the project (score ≥ 70 to pass)
@@ -142,7 +142,7 @@ vercel env add NEXT_PUBLIC_APP_URL
 vercel --prod
 ```
 
-Update `NEXT_PUBLIC_APP_URL` in your Vercel environment variables to the live URL (e.g. `https://kampalaclaw.vercel.app`).
+Update `NEXT_PUBLIC_APP_URL` in your Vercel environment variables to the live URL (e.g. `https://mshauri.vercel.app`).
 
 ---
 
@@ -174,7 +174,7 @@ curl -X POST https://your-app.vercel.app/api/quiz \
 7. Complete an assessment as a motivated beginner — confirm `PREP`, `PrepEnrollment` record created, `/prep` page accessible
 8. Complete an assessment as an unmotivated beginner — confirm `NOT_READY`, no enrollment created
 
-### Prep track
+### Runway
 
 9. Work through all 4 modules — confirm module 2 is locked until module 1 is complete
 10. Submit a valid GitHub URL with correct mini-project — confirm score ≥ 70 and `READY_FOR_EXIT` status
@@ -195,8 +195,8 @@ Add `app/api/whatsapp/route.ts` as a Twilio webhook handler:
 3. Route message body to the same `/api/chat` logic
 4. Reply via Twilio WhatsApp API
 
-The RAG backend, quiz engine, assessment module, and prep track are unchanged.
+The RAG backend, quiz engine, assessment module, and Runway program are unchanged.
 
 ---
 
-*KampalaClaw — Kampala Agentic AI Club — June 2026*
+*Mshauri — The AI Foundry Kampala — June 2026*

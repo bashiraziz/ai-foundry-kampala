@@ -1,4 +1,4 @@
-## FAQ — Module 4: The Mini-Project
+## FAQ — Runway 4: The Mini-Project
 
 **Track:** Prep
 **Type:** FAQ — built from live sessions
@@ -163,7 +163,7 @@ If it prints "Loaded 0 rows", the CSV is not being read correctly.
    print("First row:", rows[0] if rows else "EMPTY")
    ```
 
-3. Ask KampalaClaw. Paste the full error message and the relevant part of your code. The more specific you are, the more specific the help.
+3. Ask Mshauri. Paste the full error message and the relevant part of your code. The more specific you are, the more specific the help.
 
 4. Take a break and come back. Seriously. Code problems that seem impossible often become obvious after 10 minutes away from the screen.
 

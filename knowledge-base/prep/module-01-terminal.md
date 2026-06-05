@@ -1,4 +1,4 @@
-## [Module 1] — The Terminal
+## [Runway 1] — The Terminal
 
 **Track:** Prep
 **Module:** 1 of 4
@@ -247,7 +247,7 @@ First, open the file in any text editor and add some text. Then in the terminal:
 
 ```
 $ cat notes.txt
-Module 1: The Terminal
+Runway 1: The Terminal
 Started: June 2026
 Status: In progress
 ```
@@ -322,4 +322,4 @@ You can navigate your computer's file system entirely through text commands. You
 
 This is the foundation every developer uses dozens of times per day. When you open a terminal to run Python, use Git, or deploy an application, all of that starts from these basic navigation skills.
 
-You are ready for Module 2: Git.
+You are ready for Runway 2: Git.

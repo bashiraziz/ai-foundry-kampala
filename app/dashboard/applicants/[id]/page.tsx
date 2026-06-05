@@ -66,7 +66,7 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
         )}
         {applicant.reasoning && (
           <div className="bg-white rounded-2xl shadow-sm p-4">
-            <p className="font-semibold text-gray-700 text-sm mb-2">KampalaClaw&apos;s assessment</p>
+            <p className="font-semibold text-gray-700 text-sm mb-2">Mshauri&apos;s assessment</p>
             <p className="text-sm text-gray-600 leading-relaxed">{applicant.reasoning}</p>
           </div>
         )}
@@ -75,7 +75,7 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {messages.map((m, i) => (
               <div key={i} className={`text-xs p-2 rounded-lg ${m.role === "user" ? "bg-blue-50 text-blue-800" : "bg-gray-50 text-gray-600"}`}>
-                <span className="font-medium">{m.role === "user" ? applicant.name : "KampalaClaw"}: </span>
+                <span className="font-medium">{m.role === "user" ? applicant.name : "Mshauri"}: </span>
                 {m.content}
               </div>
             ))}

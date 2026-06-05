@@ -51,7 +51,7 @@ function PrepContent() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">🦁</span>
           <div>
-            <h1 className="text-xl font-bold text-gray-800">Prep Track</h1>
+            <h1 className="text-xl font-bold text-gray-800">Runway</h1>
             <p className="text-sm text-gray-500">Build your foundation for the Developer track</p>
           </div>
         </div>

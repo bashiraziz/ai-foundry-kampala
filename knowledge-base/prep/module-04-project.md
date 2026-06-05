@@ -1,4 +1,4 @@
-## [Module 4] — The Mini-Project
+## [Runway 4] — The Mini-Project
 
 **Track:** Prep
 **Module:** 4 of 4
@@ -248,7 +248,7 @@ Average price:   UGX 5750
 
 If you see output like this, the script works.
 
-**If you get an error:** Read the error message carefully. The last line usually tells you the file and line number where the problem occurred. Ask KampalaClaw and paste the full error message.
+**If you get an error:** Read the error message carefully. The last line usually tells you the file and line number where the problem occurred. Ask Mshauri and paste the full error message.
 
 **Common errors and fixes:**
 
@@ -291,7 +291,7 @@ $ git commit -m "Add market price summary script and prices data"
 $ git push
 ```
 
-If you have not connected to GitHub yet, go back to Module 2 Lesson 2.6.
+If you have not connected to GitHub yet, go back to Runway 2 Lesson 2.6.
 
 **Step 6: Verify on GitHub**
 
@@ -301,7 +301,7 @@ Go to `github.com/YOUR_USERNAME/prep-work` in your browser. You should see both 
 
 ### Lesson 4.6 — Submitting for evaluation
 
-Go to the Prep track dashboard and click "Submit mini-project."
+Go to the Runway dashboard and click "Submit mini-project."
 
 Paste the URL of your GitHub repository. It should look like:
 ```

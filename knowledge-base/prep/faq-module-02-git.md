@@ -1,4 +1,4 @@
-## FAQ — Module 2: Git
+## FAQ — Runway 2: Git
 
 **Track:** Prep
 **Type:** FAQ — built from live sessions

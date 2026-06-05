@@ -34,7 +34,7 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-3">
             <span className="text-3xl">🦁</span>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">AI Foundry Kampala Dashboard</h1>
+              <h1 className="text-xl font-bold text-gray-800">The AI Foundry Kampala — Facilitator Dashboard</h1>
               <p className="text-sm text-gray-500">Facilitator view</p>
             </div>
           </div>

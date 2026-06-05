@@ -25,7 +25,7 @@ export default function LandingPage() {
         <div className="text-center">
           <span className="text-5xl">🦁</span>
           <h1 className="text-2xl font-bold text-[#1a7f4b] mt-2">AI Foundry Kampala</h1>
-          <p className="text-sm text-gray-500">Your AI tutor for the Kampala Agentic AI Club</p>
+          <p className="text-sm text-gray-500">Your AI advisor at The AI Foundry Kampala</p>
         </div>
         <div className="space-y-4">
           <div>

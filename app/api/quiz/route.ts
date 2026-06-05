@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const { track, week, studentId } = await req.json();
   const topic = WEEK_TOPICS[track]?.[week] ?? "Agentic AI";
 
-  const prompt = `Generate exactly 3 multiple-choice questions about "${topic}" for the ${track} track, Week ${week} of the Kampala Agentic AI Club.
+  const prompt = `Generate exactly 3 multiple-choice questions about "${topic}" for the ${track} track, Week ${week} of The AI Foundry Kampala.
 
 Each question must include a Kampala-specific example in the explanation (dukas, boda bodas, MTN MoMo, school fees, Owino market, etc.).
 

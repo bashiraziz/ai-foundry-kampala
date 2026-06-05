@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 
-const SCORING_PROMPT = `You are a scoring engine for the Kampala Agentic AI Club intake assessment.
+const SCORING_PROMPT = `You are a scoring engine for The AI Foundry Kampala intake assessment.
 
 Score the applicant on all 8 signals using only evidence from the transcript below.
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 
-const EVAL_PROMPT = `You are evaluating a Python mini-project submission for the Kampala Agentic AI Club Prep track.
+const EVAL_PROMPT = `You are evaluating a Python mini-project submission for The AI Foundry Kampala Runway program.
 
 The student was asked to write a script called market_summary.py that:
 1. Reads a CSV file called prices.csv with columns: item, price_ugx, vendor

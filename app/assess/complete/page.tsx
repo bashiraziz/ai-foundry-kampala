@@ -45,8 +45,8 @@ function CompleteContent() {
     },
     PREP: {
       icon: "🛤️",
-      headline: "Prep track — your path in starts here.",
-      sub: "You have been enrolled in the Prep track.",
+      headline: "Runway — your path in starts here.",
+      sub: "You have been enrolled in the Runway program.",
       cls: "text-amber-400",
     },
     NOT_READY: {
@@ -69,7 +69,7 @@ function CompleteContent() {
             href={`/prep?applicantId=${id}`}
             className="block w-full bg-amber-500 text-white py-3 rounded-xl font-medium hover:bg-amber-600 mt-4"
           >
-            Begin Prep track →
+            Begin Runway →
           </Link>
         )}
         <Link href="/assess" className="block text-slate-500 text-sm mt-2 hover:text-slate-300">

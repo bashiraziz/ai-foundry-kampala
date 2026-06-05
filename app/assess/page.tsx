@@ -71,8 +71,8 @@ export default function AssessPage() {
         <div className="bg-[#1e293b] rounded-2xl p-8 w-full max-w-md space-y-6 text-white">
           <div className="text-center">
             <span className="text-5xl">🦁</span>
-            <h1 className="text-2xl font-bold mt-2">KampalaClaw</h1>
-            <p className="text-slate-400 text-sm mt-1">Kampala Agentic AI Club — Track Assessment</p>
+            <h1 className="text-2xl font-bold mt-2">The AI Foundry Kampala — Intake Assessment</h1>
+            <p className="text-slate-400 text-sm mt-1">Ask Mshauri — your AI advisor</p>
           </div>
           <p className="text-slate-300 text-sm">
             This is a short conversation to help us find the right path for you — Developer track, Professional track, or our Prep program. It takes about 10 minutes.

@@ -18,7 +18,7 @@ const MODULE_CONTENT: Record<number, { title: string; content: string; checklist
       "I can create a new file using touch",
       "I can read a file using cat",
     ],
-    content: `## Module 1 — The Terminal
+    content: `## Runway 1 — The Terminal
 
 A terminal is a window where you type commands to control your computer using text.
 
@@ -48,7 +48,7 @@ A terminal is a window where you type commands to control your computer using te
 6. Type \`touch notes.txt\` to create a file
 7. Type \`ls\` to confirm the file is there
 
-Ask KampalaClaw anything you do not understand. →`,
+Ask Mshauri anything you do not understand. →`,
   },
   2: {
     title: "Git",
@@ -61,7 +61,7 @@ Ask KampalaClaw anything you do not understand. →`,
       "I have a GitHub account",
       "I can push my local project to GitHub",
     ],
-    content: `## Module 2 — Git
+    content: `## Runway 2 — Git
 
 Git is a tool that tracks every change you make to your code files. It saves a complete history of your project.
 
@@ -93,7 +93,7 @@ Git is a tool that tracks every change you make to your code files. It saves a c
 
 **GitHub:** Go to github.com, create a free account, and create a repository called \`prep-work\`. Follow the instructions to push your local project.
 
-Ask KampalaClaw if GitHub authentication fails — it is a common first step. →`,
+Ask Mshauri if GitHub authentication fails — it is a common first step. →`,
   },
   3: {
     title: "Python Basics",
@@ -107,7 +107,7 @@ Ask KampalaClaw if GitHub authentication fails — it is a common first step. �
       "I can write a function with inputs and a return value",
       "I can read a CSV file using Python",
     ],
-    content: `## Module 3 — Python Basics
+    content: `## Runway 3 — Python Basics
 
 Python is a programming language. After this module you will be able to read Python code and write simple scripts.
 
@@ -158,7 +158,7 @@ with open("sales.txt", "r") as file:
         print(f"{row[2]} sells {row[0]} for UGX {row[1]}")
 \`\`\`
 
-Ask KampalaClaw about any error messages you see. →`,
+Ask Mshauri about any error messages you see. →`,
   },
   4: {
     title: "The Mini-Project",
@@ -170,7 +170,7 @@ Ask KampalaClaw about any error messages you see. →`,
       "I have pushed the project to a public GitHub repository",
       "I have the GitHub repository URL ready to submit",
     ],
-    content: `## Module 4 — The Mini-Project
+    content: `## Runway 4 — The Mini-Project
 
 Combine everything you have learned into one complete project.
 
@@ -244,7 +244,7 @@ git push
 
 Then go to the Submit page and paste your GitHub repository URL.
 
-Ask KampalaClaw for help with any step. →`,
+Ask Mshauri for help with any step. →`,
   },
 };
 
@@ -346,7 +346,7 @@ function ModuleContent() {
         {/* Chat */}
         <div className="bg-white rounded-2xl shadow-sm flex flex-col h-[500px] lg:h-auto">
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            <p className="text-xs text-gray-400 text-center">Ask KampalaClaw anything about this module</p>
+            <p className="text-xs text-gray-400 text-center">Ask Mshauri anything about this module</p>
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 {m.role === "assistant" && <span className="mr-1.5 text-lg">🦁</span>}

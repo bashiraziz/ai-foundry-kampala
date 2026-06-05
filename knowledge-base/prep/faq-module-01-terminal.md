@@ -1,4 +1,4 @@
-## FAQ — Module 1: The Terminal
+## FAQ — Runway 1: The Terminal
 
 **Track:** Prep
 **Type:** FAQ — built from live sessions
@@ -158,4 +158,4 @@ This is why we use Git. If your file was committed to a Git repository before yo
 
 Lesson: commit your work to Git frequently. Before deleting any file, ask yourself: "Is this committed?"
 
-For this course, be careful with `rm`. You will not need it much in Module 1 — focus on creating things, not deleting them.
+For this course, be careful with `rm`. You will not need it much in Runway 1 — focus on creating things, not deleting them.

@@ -1,4 +1,4 @@
-## [Module 3] — Python Basics
+## [Runway 3] — Python Basics
 
 **Track:** Prep
 **Module:** 3 of 4
@@ -331,7 +331,7 @@ You are trying to convert text to an integer but the text is not a number. Check
 Check your indentation. The `print` statement might not be inside the loop. Also check that your list is not empty.
 
 **Q: I am not sure what an error message means**
-Copy the error message exactly and ask KampalaClaw. Error messages contain the exact information needed to fix the problem.
+Copy the error message exactly and ask Mshauri. Error messages contain the exact information needed to fix the problem.
 
 ---
 
@@ -339,4 +339,4 @@ Copy the error message exactly and ask KampalaClaw. Error messages contain the e
 
 You can write Python scripts that store data in variables, process lists of items using loops, define reusable functions, and read data from CSV files. These are the building blocks for the mini-project.
 
-You are ready for Module 4: The Mini-Project.
+You are ready for Runway 4: The Mini-Project.

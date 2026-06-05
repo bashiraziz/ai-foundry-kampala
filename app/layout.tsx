@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AI Foundry Kampala — AI Tutor",
-  description: "Your AI tutor for the Kampala Agentic AI Club",
+  description: "Your AI advisor at The AI Foundry Kampala",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

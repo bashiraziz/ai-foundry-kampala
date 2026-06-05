@@ -7,7 +7,7 @@
 
 ### What is the Agent Factory?
 
-The Agent Factory is the operating philosophy of the Kampala Agentic AI Club. It treats agent-building as a production discipline — repeatable, quality-controlled, and improvable — rather than as artistry or guesswork.
+The Agent Factory is the operating philosophy of The AI Foundry Kampala. It treats agent-building as a production discipline — repeatable, quality-controlled, and improvable — rather than as artistry or guesswork.
 
 The name is intentional. A factory implies:
 - Standardised inputs and outputs
