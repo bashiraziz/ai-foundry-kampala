@@ -23,7 +23,7 @@ export default async function PrepDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2] p-6">
+    <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600">← Dashboard</Link>

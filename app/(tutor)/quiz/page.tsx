@@ -28,7 +28,7 @@ export default function QuizPage() {
     <div className="min-h-screen max-w-2xl mx-auto">
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🦁</span>
+          <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7" />
           <div>
             <p className="font-semibold text-gray-800 text-sm">Weekly Quiz</p>
             <p className="text-xs text-gray-400">Week {week}: {weekLabel}</p>

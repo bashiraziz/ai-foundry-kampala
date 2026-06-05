@@ -23,7 +23,7 @@ export default function AcceptRejectButtons({ applicantId, currentStatus }: { ap
 
   return (
     <div className="flex gap-3">
-      <button onClick={() => update("ACCEPTED")} disabled={loading} className="flex-1 bg-[#1a7f4b] text-white py-2 rounded-xl text-sm font-medium hover:bg-[#15643c] disabled:opacity-50">
+      <button onClick={() => update("ACCEPTED")} disabled={loading} className="flex-1 bg-foundry-green text-white py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50">
         Accept
       </button>
       <button onClick={() => update("REJECTED")} disabled={loading} className="flex-1 border border-red-300 text-red-500 py-2 rounded-xl text-sm font-medium hover:bg-red-50 disabled:opacity-50">

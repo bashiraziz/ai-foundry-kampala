@@ -31,7 +31,7 @@ export default async function ApplicantsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2] p-6">
+    <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -76,7 +76,7 @@ export default async function ApplicantsPage() {
                   <td className="px-4 py-3 text-gray-500 text-xs">{a.status}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{new Date(a.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
-                    <Link href={`/dashboard/applicants/${a.id}`} className="text-xs text-[#1a7f4b] hover:underline">
+                    <Link href={`/dashboard/applicants/${a.id}`} className="text-xs text-foundry-green hover:underline">
                       View →
                     </Link>
                   </td>

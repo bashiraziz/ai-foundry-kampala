@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="80" viewBox="0 0 480 80" role="img">
+  <title>The AI Foundry Kampala — horizontal lockup</title>
+  <desc>App icon beside The AI Foundry Kampala wordmark with amber rule</desc>
+
+  <!-- Icon square -->
+  <rect x="0" y="4" width="72" height="72" rx="14" fill="#166534"/>
+
+  <!-- F letterform -->
+  <rect x="17" y="20" width="7" height="38" rx="1.5" fill="#fff"/>
+  <rect x="17" y="20" width="28" height="7" rx="1.5" fill="#fff"/>
+  <rect x="17" y="34" width="22" height="6" rx="1.5" fill="#fff"/>
+
+  <!-- Crown spines -->
+  <line x1="19" y1="19" x2="17" y2="10" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="23" y1="19" x2="22" y2="7" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="28" y1="19" x2="28" y2="5" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="33" y1="19" x2="34" y2="7" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="37" y1="19" x2="39" y2="10" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="41" y1="19" x2="44" y2="13" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Spine tips -->
+  <circle cx="17" cy="9" r="2" fill="#f59e0b"/>
+  <circle cx="22" cy="6" r="2" fill="#f59e0b"/>
+  <circle cx="28" cy="4" r="2.5" fill="#dc2626"/>
+  <circle cx="34" cy="6" r="2" fill="#f59e0b"/>
+  <circle cx="39" cy="9" r="2" fill="#f59e0b"/>
+  <circle cx="44" cy="12" r="1.8" fill="#f59e0b"/>
+
+  <!-- Amber dot -->
+  <circle cx="55" cy="60" r="6" fill="#f59e0b" opacity="0.95"/>
+
+  <!-- Divider line -->
+  <line x1="84" y1="14" x2="84" y2="66" stroke="#e5e7eb" stroke-width="0.75"/>
+
+  <!-- Wordmark -->
+  <text x="100" y="38" font-family="Georgia, serif" font-size="22" font-weight="700" fill="#166534" letter-spacing="2">THE AI FOUNDRY</text>
+  <line x1="100" y1="44" x2="468" y2="44" stroke="#f59e0b" stroke-width="1"/>
+  <text x="100" y="60" font-family="Georgia, serif" font-size="11" fill="#6b7280" letter-spacing="5">KAMPALA</text>
+</svg>

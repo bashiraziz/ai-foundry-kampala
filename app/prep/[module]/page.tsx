@@ -301,10 +301,10 @@ function ModuleContent() {
   const allChecked = checked.every(Boolean);
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2]">
+    <div className="min-h-screen bg-bone-white">
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xl">🦁</span>
+          <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7" />
           <p className="font-semibold text-gray-800 text-sm">Module {moduleNum}: {moduleData.title}</p>
         </div>
         <Link href={`/prep?applicantId=${applicantId}`} className="text-xs text-gray-400 hover:text-gray-600">← Back</Link>
@@ -322,7 +322,7 @@ function ModuleContent() {
                 <label key={i} className="flex items-start gap-2 text-sm text-gray-600 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="mt-0.5 accent-[#1a7f4b]"
+                    className="mt-0.5 accent-foundry-green"
                     checked={checked[i]}
                     onChange={() => {
                       const next = [...checked];
@@ -338,7 +338,7 @@ function ModuleContent() {
           <button
             onClick={markComplete}
             disabled={!allChecked || marking}
-            className="w-full bg-[#1a7f4b] text-white py-2 rounded-xl text-sm font-medium hover:bg-[#15643c] disabled:opacity-40"
+            className="w-full bg-foundry-green text-white py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-40"
           >
             {marking ? "Saving…" : "Mark module complete →"}
           </button>
@@ -349,15 +349,15 @@ function ModuleContent() {
             <p className="text-xs text-gray-400 text-center">Ask Mshauri anything about this module</p>
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                {m.role === "assistant" && <span className="mr-1.5 text-lg">🦁</span>}
+                {m.role === "assistant" && <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />}
                 <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${
-                  m.role === "user" ? "bg-[#1a7f4b] text-white" : "bg-gray-50 border border-gray-200 text-gray-700"
+                  m.role === "user" ? "bg-foundry-green text-white" : "bg-gray-50 border border-gray-200 text-gray-700"
                 }`}>{m.content}</div>
               </div>
             ))}
             {loading && (
               <div className="flex justify-start">
-                <span className="mr-1.5 text-lg">🦁</span>
+                <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-gray-400 text-sm animate-pulse">Thinking…</div>
               </div>
             )}
@@ -365,14 +365,14 @@ function ModuleContent() {
           </div>
           <div className="border-t border-gray-100 p-3 flex gap-2">
             <input
-              className="flex-1 border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a7f4b]"
+              className="flex-1 border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
               placeholder="Ask a question…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
               disabled={loading}
             />
-            <button onClick={send} disabled={loading} className="bg-[#1a7f4b] text-white px-3 py-1.5 rounded-xl text-sm disabled:opacity-50">Send</button>
+            <button onClick={send} disabled={loading} className="bg-foundry-green text-white px-3 py-1.5 rounded-xl text-sm disabled:opacity-50">Send</button>
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ export default async function PrepStudentPage({ params }: { params: Promise<{ id
   const progress = enrollment.moduleProgress as Record<string, string>;
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2] p-6">
+    <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/prep" className="text-sm text-gray-400 hover:text-gray-600">← Runway</Link>
@@ -50,7 +50,7 @@ export default async function PrepStudentPage({ params }: { params: Promise<{ id
         {enrollment.miniProjectUrl && (
           <div className="bg-white rounded-2xl shadow-sm p-4 space-y-2">
             <p className="font-semibold text-gray-700 text-sm">Mini-project</p>
-            <a href={enrollment.miniProjectUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[#1a7f4b] hover:underline break-all">
+            <a href={enrollment.miniProjectUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-foundry-green hover:underline break-all">
               {enrollment.miniProjectUrl}
             </a>
             {enrollment.miniProjectScore !== null && (
@@ -65,7 +65,7 @@ export default async function PrepStudentPage({ params }: { params: Promise<{ id
           <p><span className="font-medium">Status:</span> {enrollment.status}</p>
           <p><span className="font-medium">Enrolled:</span> {new Date(enrollment.createdAt).toLocaleDateString()}</p>
           {enrollment.exitAssessmentId && (
-            <p><span className="font-medium">Exit assessment:</span> <Link href={`/dashboard/applicants/${enrollment.exitAssessmentId}`} className="text-[#1a7f4b] hover:underline">View →</Link></p>
+            <p><span className="font-medium">Exit assessment:</span> <Link href={`/dashboard/applicants/${enrollment.exitAssessmentId}`} className="text-foundry-green hover:underline">View →</Link></p>
           )}
         </div>
       </div>

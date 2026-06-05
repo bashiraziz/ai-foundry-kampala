@@ -13,7 +13,7 @@ interface Student {
 
 export default function ProgressGrid({ students }: { students: Student[] }) {
   const dotColor = (status: string) => {
-    if (status === "COMPLETE") return "bg-green-500";
+    if (status === "COMPLETE") return "bg-foundry-green";
     if (status === "IN_PROGRESS") return "bg-amber-400";
     return "bg-gray-200";
   };

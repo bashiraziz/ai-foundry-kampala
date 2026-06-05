@@ -39,7 +39,7 @@ function ProjectContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2] p-6">
+    <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Link href={`/prep?applicantId=${applicantId}`} className="text-sm text-gray-400 hover:text-gray-600">← Back</Link>
@@ -62,13 +62,13 @@ function ProjectContent() {
                 placeholder="https://github.com/yourname/repo"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a7f4b]"
+                className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
               />
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <button
                 onClick={submit}
                 disabled={loading || !url.trim()}
-                className="w-full bg-[#1a7f4b] text-white py-2 rounded-xl text-sm font-medium hover:bg-[#15643c] disabled:opacity-40"
+                className="w-full bg-foundry-green text-white py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-40"
               >
                 {loading ? "Evaluating…" : "Submit for evaluation →"}
               </button>
@@ -84,7 +84,7 @@ function ProjectContent() {
               {result.readyForExit ? (
                 <Link
                   href={`/assess?prep=true&applicantId=${applicantId}`}
-                  className="block w-full bg-[#1a7f4b] text-white py-3 rounded-xl font-medium text-center hover:bg-[#15643c]"
+                  className="block w-full bg-foundry-green text-white py-3 rounded-xl font-medium text-center hover:bg-foundry-green-light"
                 >
                   Take exit assessment →
                 </Link>

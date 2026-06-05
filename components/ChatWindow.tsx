@@ -50,11 +50,11 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
         )}
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            {m.role === "assistant" && <span className="mr-2 text-xl">🦁</span>}
+            {m.role === "assistant" && <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
                 m.role === "user"
-                  ? "bg-[#1a7f4b] text-white"
+                  ? "bg-foundry-green text-white"
                   : "bg-white border border-gray-200 text-gray-800"
               }`}
             >
@@ -64,7 +64,7 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
         ))}
         {loading && (
           <div className="flex justify-start">
-            <span className="mr-2 text-xl">🦁</span>
+            <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
             <div className="bg-white border border-gray-200 rounded-2xl px-4 py-2 text-gray-400 text-sm animate-pulse">
               Thinking…
             </div>
@@ -74,7 +74,7 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
       </div>
       <div className="border-t border-gray-200 p-4 flex gap-2">
         <input
-          className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a7f4b]"
+          className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
           placeholder="Ask a question…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -84,7 +84,7 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
         <button
           onClick={send}
           disabled={loading}
-          className="bg-[#1a7f4b] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#15643c] disabled:opacity-50"
+          className="bg-foundry-green text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50"
         >
           Send
         </button>

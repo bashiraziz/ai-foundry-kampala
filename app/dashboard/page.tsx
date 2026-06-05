@@ -28,29 +28,25 @@ export default async function DashboardPage() {
   const avgScore = scores.reduce((a: number, b: number) => a + b, 0) / (scores.length || 1);
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2] p-6">
+    <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">🦁</span>
-            <div>
-              <h1 className="text-xl font-bold text-gray-800">The AI Foundry Kampala — Facilitator Dashboard</h1>
-              <p className="text-sm text-gray-500">Facilitator view</p>
-            </div>
+          <div className="flex items-center gap-4">
+            <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-10" />
           </div>
-          <Link href="/" className="text-sm text-[#1a7f4b] hover:underline">Student tutor →</Link>
+          <Link href="/" className="text-sm text-foundry-green hover:underline">Student tutor →</Link>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-            <p className="text-3xl font-bold text-[#1a7f4b]">{formatted.length}</p>
+            <p className="text-3xl font-bold text-foundry-green">{formatted.length}</p>
             <p className="text-sm text-gray-500 mt-1">Active students</p>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-            <p className="text-3xl font-bold text-[#1a7f4b]">{Math.round(avgScore)}%</p>
+            <p className="text-3xl font-bold text-foundry-green">{Math.round(avgScore)}%</p>
             <p className="text-sm text-gray-500 mt-1">Avg quiz score</p>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-            <p className="text-3xl font-bold text-[#1a7f4b]">
+            <p className="text-3xl font-bold text-foundry-green">
               {formatted.reduce((a: number, s) => a + s.sessionCount, 0)}
             </p>
             <p className="text-sm text-gray-500 mt-1">Total sessions</p>

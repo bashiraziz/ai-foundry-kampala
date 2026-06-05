@@ -31,7 +31,7 @@ export default function ChatPage() {
     <div className="min-h-screen flex flex-col max-w-2xl mx-auto">
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🦁</span>
+          <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7" />
           <div>
             <p className="font-semibold text-gray-800 text-sm">AI Foundry Kampala</p>
             <p className="text-xs text-gray-400">
@@ -54,7 +54,7 @@ export default function ChatPage() {
           </a>
         </div>
       </header>
-      <div className="flex-1 flex flex-col bg-[#f7f6f2]">
+      <div className="flex-1 flex flex-col bg-bone-white">
         <ChatWindow track={track} week={week} weekLabel={weekLabel} />
       </div>
       <p className="sr-only">{name}</p>

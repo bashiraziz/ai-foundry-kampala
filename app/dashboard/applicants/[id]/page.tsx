@@ -24,7 +24,7 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
   const scores = applicant.scores as Record<string, number | string> | null;
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2] p-6">
+    <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/applicants" className="text-sm text-gray-400 hover:text-gray-600">← Applicants</Link>

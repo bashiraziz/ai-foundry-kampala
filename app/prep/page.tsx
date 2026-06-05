@@ -46,10 +46,10 @@ function PrepContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2] p-6">
+    <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">🦁</span>
+          <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7" />
           <div>
             <h1 className="text-xl font-bold text-gray-800">Runway</h1>
             <p className="text-sm text-gray-500">Build your foundation for the Developer track</p>
@@ -70,7 +70,7 @@ function PrepContent() {
                   ) : (
                     <Link
                       href={`/prep/${m.id}?applicantId=${applicantId}`}
-                      className="text-sm bg-[#1a7f4b] text-white px-4 py-1.5 rounded-lg hover:bg-[#15643c]"
+                      className="text-sm bg-foundry-green text-white px-4 py-1.5 rounded-lg hover:bg-foundry-green-light"
                     >
                       {enrollment.moduleProgress[String(m.id)] === "COMPLETE" ? "Review" : "Start →"}
                     </Link>
@@ -91,7 +91,7 @@ function PrepContent() {
         {enrollment.status === "READY_FOR_EXIT" && (
           <Link
             href={`/assess?prep=true&applicantId=${applicantId}`}
-            className="block w-full bg-[#1a7f4b] text-white py-3 rounded-xl font-medium text-center hover:bg-[#15643c]"
+            className="block w-full bg-foundry-green text-white py-3 rounded-xl font-medium text-center hover:bg-foundry-green-light"
           >
             Take exit assessment →
           </Link>

@@ -23,9 +23,8 @@ export default function LandingPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-md space-y-6">
         <div className="text-center">
-          <span className="text-5xl">🦁</span>
-          <h1 className="text-2xl font-bold text-[#1a7f4b] mt-2">AI Foundry Kampala</h1>
-          <p className="text-sm text-gray-500">Your AI advisor at The AI Foundry Kampala</p>
+          <img src="/brand/hero-mark.svg" alt="The AI Foundry Kampala" className="w-40 mx-auto mb-2" />
+          <p className="text-sm text-stone-grey">Ask Mshauri — your AI advisor</p>
         </div>
         <div className="space-y-4">
           <div>
@@ -35,7 +34,7 @@ export default function LandingPage() {
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a7f4b]"
+              className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
             />
           </div>
           <div>
@@ -47,8 +46,8 @@ export default function LandingPage() {
                   onClick={() => setTrack(t)}
                   className={`py-2 rounded-xl text-sm font-medium border transition ${
                     track === t
-                      ? "bg-[#1a7f4b] text-white border-[#1a7f4b]"
-                      : "border-gray-300 text-gray-600 hover:border-[#1a7f4b]"
+                      ? "bg-foundry-green text-white border-foundry-green"
+                      : "border-gray-300 text-gray-600 hover:border-foundry-green"
                   }`}
                 >
                   {t === "DEVELOPER" ? "Developer" : "Professional"}
@@ -61,7 +60,7 @@ export default function LandingPage() {
             <select
               value={week}
               onChange={(e) => setWeek(Number(e.target.value))}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a7f4b]"
+              className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
             >
               {Array.from({ length: 12 }, (_, i) => i + 1).map((w) => (
                 <option key={w} value={w}>
@@ -74,7 +73,7 @@ export default function LandingPage() {
         <button
           onClick={start}
           disabled={!name.trim()}
-          className="w-full bg-[#1a7f4b] text-white py-3 rounded-xl font-medium hover:bg-[#15643c] disabled:opacity-40"
+          className="w-full bg-foundry-green text-white py-3 rounded-xl font-medium hover:bg-foundry-green-light disabled:opacity-40"
         >
           Start session →
         </button>

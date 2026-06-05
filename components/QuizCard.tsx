@@ -68,7 +68,7 @@ export default function QuizCard({ track, week }: QuizCardProps) {
   if (score !== null) {
     return (
       <div className="p-6 text-center space-y-4">
-        <p className="text-4xl font-bold text-[#1a7f4b]">{score}%</p>
+        <p className="text-4xl font-bold text-foundry-green">{score}%</p>
         <p className="text-gray-600">{score >= 70 ? "Great work! 🎉" : "Keep practicing!"}</p>
         <div className="text-left space-y-4 mt-4">
           {finalQuestions.map((q, i) => (
@@ -84,7 +84,7 @@ export default function QuizCard({ track, week }: QuizCardProps) {
         </div>
         <button
           onClick={() => window.location.reload()}
-          className="bg-[#1a7f4b] text-white px-6 py-2 rounded-xl"
+          className="bg-foundry-green text-white px-6 py-2 rounded-xl"
         >
           Try again
         </button>
@@ -101,7 +101,7 @@ export default function QuizCard({ track, week }: QuizCardProps) {
         {q.options.map((opt, i) => {
           let cls = "w-full text-left border rounded-xl px-4 py-3 text-sm ";
           if (selected === null) {
-            cls += "hover:border-[#1a7f4b] hover:bg-green-50";
+            cls += "hover:border-foundry-green hover:bg-amber-50";
           } else if (i === q.answer) {
             cls += "border-green-500 bg-green-50 text-green-700";
           } else if (i === selected) {
@@ -121,7 +121,7 @@ export default function QuizCard({ track, week }: QuizCardProps) {
           <p className="text-sm text-gray-500">{q.explain}</p>
           <button
             onClick={next}
-            className="bg-[#1a7f4b] text-white px-6 py-2 rounded-xl text-sm"
+            className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm"
           >
             {current + 1 < questions.length ? "Next →" : "See results"}
           </button>

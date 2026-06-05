@@ -30,7 +30,7 @@ export default function LoginPage() {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm space-y-4">
       <div className="text-center">
-        <span className="text-4xl">🦁</span>
+        <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-10 mx-auto mb-2" />
         <h1 className="text-xl font-bold text-gray-800 mt-2">Facilitator Login</h1>
         <p className="text-sm text-gray-500">AI Foundry Kampala Dashboard</p>
       </div>
@@ -40,7 +40,7 @@ export default function LoginPage() {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a7f4b]"
+        className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
       />
       <input
         type="password"
@@ -48,12 +48,12 @@ export default function LoginPage() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && login()}
-        className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a7f4b]"
+        className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
       />
       <button
         onClick={login}
         disabled={loading}
-        className="w-full bg-[#1a7f4b] text-white py-2 rounded-xl font-medium text-sm hover:bg-[#15643c] disabled:opacity-50"
+        className="w-full bg-foundry-green text-white py-2 rounded-xl font-medium text-sm hover:bg-foundry-green-light disabled:opacity-50"
       >
         {loading ? "Signing in…" : "Sign in"}
       </button>
