@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { WEEK_TOPICS } from "@/lib/quiz";
+import { safeParseJson } from "@/lib/utils";
+
+type QuizResponse = { questions: { q: string; options: string[]; answer: number; explain: string }[] };
 
 export async function POST(req: NextRequest) {
   const { track, week, studentId } = await req.json();
   const topic = WEEK_TOPICS[track]?.[week] ?? "Agentic AI";
+  const systemPrompt = "You are a quiz generator. Return only valid JSON.";
 
   const prompt = `Generate exactly 3 multiple-choice questions about "${topic}" for the ${track} track, Week ${week} of The AI Foundry Kampala.
 
@@ -16,21 +20,30 @@ Return ONLY this JSON with no preamble, no markdown fences, no explanation:
 
 The "answer" field is the 0-based index of the correct option.`;
 
-  const raw = await chat([{ role: "user", content: prompt }], "You are a quiz generator. Return only valid JSON.");
-  const cleaned = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-  const { questions } = JSON.parse(cleaned);
+  let raw = await chat([{ role: "user", content: prompt }], systemPrompt);
+  let parsed = safeParseJson<QuizResponse>(raw);
+
+  if (!parsed?.questions) {
+    raw = await chat(
+      [
+        { role: "user", content: prompt },
+        { role: "assistant", content: raw },
+        { role: "user", content: "Your response was not valid JSON. Return ONLY the raw JSON object, nothing else." },
+      ],
+      systemPrompt
+    );
+    parsed = safeParseJson<QuizResponse>(raw);
+  }
+
+  if (!parsed?.questions || !Array.isArray(parsed.questions)) {
+    return NextResponse.json({ error: "Quiz generation failed — please try again." }, { status: 500 });
+  }
 
   const quizResult = await prisma.quizResult.create({
-    data: {
-      studentId: studentId ?? null,
-      track,
-      week,
-      score: 0,
-      questions,
-    },
+    data: { studentId: studentId ?? null, track, week, score: 0, questions: parsed.questions },
   });
 
-  return NextResponse.json({ quizId: quizResult.id, questions });
+  return NextResponse.json({ quizId: quizResult.id, questions: parsed.questions });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -46,10 +59,7 @@ export async function PATCH(req: NextRequest) {
   });
 
   const score = Math.round((correct / questions.length) * 100);
-  await prisma.quizResult.update({
-    where: { id: quizId },
-    data: { score, questions: updated },
-  });
+  await prisma.quizResult.update({ where: { id: quizId }, data: { score, questions: updated } });
 
   return NextResponse.json({ score, questions: updated });
 }

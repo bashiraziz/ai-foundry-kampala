@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
+import { safeParseJson } from "@/lib/utils";
 
 const EVAL_PROMPT = `You are evaluating a Python mini-project submission for The AI Foundry Kampala Runway program.
 
@@ -34,10 +35,27 @@ Scoring guide:
 - prints_average: 20 points
 - runs_without_error (infer from code quality): 10 points`;
 
+type EvalResult = {
+  score: number;
+  feedback: string;
+  reads_csv_correctly: boolean;
+  prints_total_items: boolean;
+  prints_cheapest: boolean;
+  prints_most_expensive: boolean;
+  prints_average: boolean;
+  runs_without_error: boolean;
+};
+
 function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
   if (!match) return null;
   return { owner: match[1], repo: match[2].replace(/\.git$/, "") };
+}
+
+async function fetchWithBranchFallback(owner: string, repo: string, filename: string): Promise<Response> {
+  const mainRes = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/main/${filename}`);
+  if (mainRes.ok) return mainRes;
+  return fetch(`https://raw.githubusercontent.com/${owner}/${repo}/master/${filename}`);
 }
 
 export async function POST(req: NextRequest) {
@@ -47,23 +65,44 @@ export async function POST(req: NextRequest) {
   if (!parsed) return NextResponse.json({ error: "Invalid GitHub URL" }, { status: 400 });
 
   const { owner, repo } = parsed;
-  const base = `https://raw.githubusercontent.com/${owner}/${repo}/main`;
 
   const [codeRes, csvRes] = await Promise.all([
-    fetch(`${base}/market_summary.py`),
-    fetch(`${base}/prices.csv`),
+    fetchWithBranchFallback(owner, repo, "market_summary.py"),
+    fetchWithBranchFallback(owner, repo, "prices.csv"),
   ]);
 
   if (!codeRes.ok || !csvRes.ok) {
-    return NextResponse.json({ error: "Could not fetch files from GitHub. Make sure the repo is public and files are on the main branch." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Could not fetch files from GitHub. Make sure the repo is public and both market_summary.py and prices.csv are present." },
+      { status: 400 }
+    );
   }
 
   const [code, csv] = await Promise.all([codeRes.text(), csvRes.text()]);
-
+  const systemPrompt = "You are a code evaluator. Return only valid JSON.";
   const prompt = EVAL_PROMPT.replace("{code}", code).replace("{csv}", csv);
-  const raw = await chat([{ role: "user", content: prompt }], "You are a code evaluator. Return only valid JSON.");
-  const cleaned = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-  const result = JSON.parse(cleaned);
+
+  let raw = await chat([{ role: "user", content: prompt }], systemPrompt);
+  let result = safeParseJson<EvalResult>(raw);
+
+  if (!result) {
+    raw = await chat(
+      [
+        { role: "user", content: prompt },
+        { role: "assistant", content: raw },
+        { role: "user", content: "Your response was not valid JSON. Return ONLY the raw JSON object, nothing else." },
+      ],
+      systemPrompt
+    );
+    result = safeParseJson<EvalResult>(raw);
+  }
+
+  if (!result) {
+    return NextResponse.json(
+      { error: "Evaluation failed — please try again or bring your project to the Saturday session." },
+      { status: 500 }
+    );
+  }
 
   const readyForExit = result.score >= 70;
 

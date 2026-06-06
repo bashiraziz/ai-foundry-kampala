@@ -22,22 +22,41 @@ export default function QuizCard({ track, week }: QuizCardProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [score, setScore] = useState<number | null>(null);
   const [finalQuestions, setFinalQuestions] = useState<Question[]>([]);
 
-  useEffect(() => {
+  const loadQuiz = () => {
+    setLoading(true);
+    setError(null);
+    setScore(null);
+    setQuestions([]);
+    setCurrent(0);
+    setSelected(null);
+    setAnswers([]);
+    setQuizId(null);
+    setFinalQuestions([]);
+
     fetch("/api/quiz", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ track, week }),
     })
-      .then((r) => r.json())
-      .then(({ quizId, questions }) => {
+      .then(async (r) => {
+        if (!r.ok) throw new Error("Failed to generate quiz");
+        return r.json();
+      })
+      .then(({ quizId, questions, error }) => {
+        if (error) throw new Error(error);
         setQuizId(quizId);
         setQuestions(questions);
-        setLoading(false);
-      });
-  }, [track, week]);
+      })
+      .catch(() => setError("Could not load the quiz — please try again."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadQuiz(); }, [track, week]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pick = (idx: number) => {
     if (selected !== null) return;
@@ -52,24 +71,41 @@ export default function QuizCard({ track, week }: QuizCardProps) {
       setCurrent(current + 1);
       setSelected(null);
     } else {
-      const res = await fetch("/api/quiz", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quizId, answers: nextAnswers }),
-      });
-      const data = await res.json();
-      setScore(data.score);
-      setFinalQuestions(data.questions);
+      setSubmitting(true);
+      try {
+        const res = await fetch("/api/quiz", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quizId, answers: nextAnswers }),
+        });
+        if (!res.ok) throw new Error("Submit failed");
+        const data = await res.json();
+        setScore(data.score);
+        setFinalQuestions(data.questions);
+      } catch {
+        setError("Could not submit your answers — please try again.");
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
   if (loading) return <p className="text-center text-gray-400 py-8">Generating quiz…</p>;
 
+  if (error) return (
+    <div className="p-6 text-center space-y-4">
+      <p className="text-red-500 text-sm">{error}</p>
+      <button onClick={loadQuiz} className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm">
+        Try again
+      </button>
+    </div>
+  );
+
   if (score !== null) {
     return (
       <div className="p-6 text-center space-y-4">
         <p className="text-4xl font-bold text-foundry-green">{score}%</p>
-        <p className="text-gray-600">{score >= 70 ? "Great work! 🎉" : "Keep practicing!"}</p>
+        <p className="text-gray-600">{score >= 70 ? "Great work!" : "Keep practicing!"}</p>
         <div className="text-left space-y-4 mt-4">
           {finalQuestions.map((q, i) => (
             <div key={i} className="border rounded-xl p-4 text-sm">
@@ -82,10 +118,7 @@ export default function QuizCard({ track, week }: QuizCardProps) {
             </div>
           ))}
         </div>
-        <button
-          onClick={() => window.location.reload()}
-          className="bg-foundry-green text-white px-6 py-2 rounded-xl"
-        >
+        <button onClick={loadQuiz} className="bg-foundry-green text-white px-6 py-2 rounded-xl">
           Try again
         </button>
       </div>
@@ -121,10 +154,12 @@ export default function QuizCard({ track, week }: QuizCardProps) {
           <p className="text-sm text-gray-500">{q.explain}</p>
           <button
             onClick={next}
-            className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm"
+            disabled={submitting}
+            className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm disabled:opacity-50"
           >
-            {current + 1 < questions.length ? "Next →" : "See results"}
+            {submitting ? "Saving…" : current + 1 < questions.length ? "Next →" : "See results"}
           </button>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
         </div>
       )}
     </div>

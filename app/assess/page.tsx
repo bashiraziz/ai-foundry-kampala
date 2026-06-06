@@ -14,6 +14,7 @@ export default function AssessPage() {
   const [loading, setLoading] = useState(false);
   const [applicantId, setApplicantId] = useState<string | null>(null);
   const [questionCount, setQuestionCount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,17 +25,25 @@ export default function AssessPage() {
     if (!name.trim()) return;
     setStarted(true);
     setLoading(true);
+    setError(null);
     const greeting: Message = { role: "user", content: `Hi, my name is ${name.trim()}` };
-    const res = await fetch("/api/assess", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [greeting], name: name.trim() }),
-    });
-    const data = await res.json();
-    setApplicantId(data.applicantId);
-    setMessages([greeting, { role: "assistant", content: data.reply }]);
-    setQuestionCount(1);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/assess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [greeting], name: name.trim() }),
+      });
+      if (!res.ok) throw new Error("Server error");
+      const data = await res.json();
+      setApplicantId(data.applicantId);
+      setMessages([greeting, { role: "assistant", content: data.reply }]);
+      setQuestionCount(1);
+    } catch {
+      setError("Could not connect to Mshauri — check your connection and try again.");
+      setStarted(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const send = async () => {
@@ -44,25 +53,34 @@ export default function AssessPage() {
     setMessages(next);
     setInput("");
     setLoading(true);
+    setError(null);
 
-    const res = await fetch("/api/assess", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: next, applicantId }),
-    });
-    const data = await res.json();
-    const reply = data.reply.replace("[ASSESSMENT_COMPLETE]", "").trim();
-    setMessages([...next, { role: "assistant", content: reply }]);
-    setQuestionCount((q) => q + 1);
-    setLoading(false);
-
-    if (data.complete) {
-      await fetch("/api/assess/complete", {
+    try {
+      const res = await fetch("/api/assess", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ applicantId: data.applicantId }),
+        body: JSON.stringify({ messages: next, applicantId }),
       });
-      setTimeout(() => router.push(`/assess/complete?id=${data.applicantId}`), 1500);
+      if (!res.ok) throw new Error("Server error");
+      const data = await res.json();
+      const reply = data.reply.replace("[ASSESSMENT_COMPLETE]", "").trim();
+      setMessages([...next, { role: "assistant", content: reply }]);
+      setQuestionCount((q) => q + 1);
+
+      if (data.complete) {
+        await fetch("/api/assess/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ applicantId: data.applicantId }),
+        });
+        setTimeout(() => router.push(`/assess/complete?id=${data.applicantId}`), 1500);
+      }
+    } catch {
+      setError("Mshauri is unavailable right now — check your connection and try again.");
+      setMessages(messages);
+      setInput(text);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +111,7 @@ export default function AssessPage() {
                 className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
               />
             </div>
+            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
             <button
               onClick={startAssessment}
               disabled={!name.trim()}
@@ -143,6 +162,14 @@ export default function AssessPage() {
             <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
             <div className="bg-white/10 border border-white/10 rounded-2xl px-4 py-2.5 text-gray-400 text-sm animate-pulse">
               Thinking…
+            </div>
+          </div>
+        )}
+        {error && (
+          <div className="flex justify-start">
+            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0 opacity-40" />
+            <div className="max-w-[75%] rounded-2xl px-4 py-2.5 text-sm bg-red-900/20 border border-red-500/30 text-red-300">
+              {error}
             </div>
           </div>
         )}

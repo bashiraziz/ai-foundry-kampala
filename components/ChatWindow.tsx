@@ -14,6 +14,7 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,14 +28,21 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
     setMessages(next);
     setInput("");
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next, track, week, studentId }),
       });
+      if (!res.ok) throw new Error("Server error");
       const { reply } = await res.json();
+      if (!reply) throw new Error("Empty response");
       setMessages([...next, { role: "assistant", content: reply }]);
+    } catch {
+      setError("Mshauri is unavailable right now — check your connection and try again.");
+      setInput(text);
+      setMessages(messages);
     } finally {
       setLoading(false);
     }
@@ -67,6 +75,14 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
             <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
             <div className="bg-white border border-gray-200 rounded-2xl px-4 py-2 text-gray-400 text-sm animate-pulse">
               Thinking…
+            </div>
+          </div>
+        )}
+        {error && (
+          <div className="flex justify-start">
+            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0 opacity-40" />
+            <div className="max-w-[75%] rounded-2xl px-4 py-2 text-sm bg-red-50 border border-red-200 text-red-600">
+              {error}
             </div>
           </div>
         )}

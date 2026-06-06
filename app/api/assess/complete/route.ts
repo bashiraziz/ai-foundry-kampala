@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
+import { safeParseJson } from "@/lib/utils";
 
 const SCORING_PROMPT = `You are a scoring engine for The AI Foundry Kampala intake assessment.
 
@@ -24,6 +25,18 @@ Return ONLY valid JSON — no preamble, no markdown fences:
   "reasoning": "3-4 sentences describing the applicant profile, what path they are recommended for, and why."
 }`;
 
+type ScoreResult = {
+  signal_coding_experience: number;
+  signal_terminal: number;
+  signal_git: number;
+  signal_code_reading: number;
+  signal_business_process: number;
+  signal_workflow_tools: number;
+  signal_motivation: number;
+  signal_self_awareness: number;
+  reasoning: string;
+};
+
 export async function POST(req: NextRequest) {
   const { applicantId } = await req.json();
 
@@ -31,12 +44,31 @@ export async function POST(req: NextRequest) {
   const messages = applicant.messages as { role: string; content: string }[];
   const transcript = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
 
+  const systemPrompt = "You are a scoring engine. Return only valid JSON.";
   const prompt = SCORING_PROMPT.replace("{transcript}", transcript);
-  const raw = await chat([{ role: "user", content: prompt }], "You are a scoring engine. Return only valid JSON.");
-  const cleaned = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-  const scores = JSON.parse(cleaned);
 
-  // Weighted scoring
+  let raw = await chat([{ role: "user", content: prompt }], systemPrompt);
+  let scores = safeParseJson<ScoreResult>(raw);
+
+  if (!scores) {
+    raw = await chat(
+      [
+        { role: "user", content: prompt },
+        { role: "assistant", content: raw },
+        { role: "user", content: "Your response was not valid JSON. Return ONLY the raw JSON object, nothing else." },
+      ],
+      systemPrompt
+    );
+    scores = safeParseJson<ScoreResult>(raw);
+  }
+
+  if (!scores) {
+    return NextResponse.json(
+      { error: "Assessment scoring failed — a facilitator will review this application manually." },
+      { status: 500 }
+    );
+  }
+
   const developerScore = Math.round(
     scores.signal_coding_experience * 2 +
     scores.signal_terminal * 2 +
@@ -52,7 +84,6 @@ export async function POST(req: NextRequest) {
     scores.signal_self_awareness * 1
   );
 
-  // Threshold logic
   let recommendation: "DEVELOPER" | "PROFESSIONAL" | "PREP" | "NOT_READY";
   if (developerScore >= 11) {
     recommendation = "DEVELOPER";
@@ -66,15 +97,7 @@ export async function POST(req: NextRequest) {
 
   await prisma.applicant.update({
     where: { id: applicantId },
-    data: {
-      scores,
-      developerScore,
-      professionalScore,
-      prepScore,
-      recommendation,
-      reasoning: scores.reasoning,
-      status: "ASSESSED",
-    },
+    data: { scores, developerScore, professionalScore, prepScore, recommendation, reasoning: scores.reasoning, status: "ASSESSED" },
   });
 
   if (recommendation === "PREP") {

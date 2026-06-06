@@ -47,6 +47,7 @@ function CompleteContent() {
   const params = useSearchParams();
   const id = params.get("id");
   const [result, setResult] = useState<Result | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -55,9 +56,23 @@ function CompleteContent() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ applicantId: id }),
     })
-      .then((r) => r.json())
-      .then(setResult);
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => { if (data.error) throw new Error(); setResult(data); })
+      .catch(() => setError(true));
   }, [id]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-forge-night flex items-center justify-center px-4">
+        <div className="text-center space-y-4 max-w-sm">
+          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-12 h-12 mx-auto opacity-40" />
+          <p className="text-white font-semibold">Something went wrong</p>
+          <p className="text-gray-400 text-sm">We could not calculate your result. A facilitator will review your assessment manually.</p>
+          <Link href="/assess" className="inline-block text-sm text-amber-400 hover:underline">← Start a new assessment</Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!result) {
     return (

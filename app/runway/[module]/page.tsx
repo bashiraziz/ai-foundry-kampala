@@ -259,6 +259,7 @@ function ModuleContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const [checked, setChecked] = useState<boolean[]>(new Array(moduleData?.checklist.length ?? 0).fill(false));
   const [marking, setMarking] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -276,14 +277,24 @@ function ModuleContent() {
     setMessages(next);
     setInput("");
     setLoading(true);
-    const res = await fetch("/api/runway/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: next, module: moduleNum }),
-    });
-    const data = await res.json();
-    setMessages([...next, { role: "assistant", content: data.reply }]);
-    setLoading(false);
+    setChatError(null);
+    try {
+      const res = await fetch("/api/runway/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: next, module: moduleNum }),
+      });
+      if (!res.ok) throw new Error("Server error");
+      const data = await res.json();
+      if (!data.reply) throw new Error("Empty response");
+      setMessages([...next, { role: "assistant", content: data.reply }]);
+    } catch {
+      setChatError("Mshauri is unavailable right now — check your connection and try again.");
+      setMessages(messages);
+      setInput(text);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const markComplete = async () => {
@@ -359,6 +370,12 @@ function ModuleContent() {
               <div className="flex justify-start">
                 <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-gray-400 text-sm animate-pulse">Thinking…</div>
+              </div>
+            )}
+            {chatError && (
+              <div className="flex justify-start">
+                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0 opacity-40" />
+                <div className="max-w-[80%] rounded-2xl px-3 py-2 text-sm bg-red-50 border border-red-200 text-red-600">{chatError}</div>
               </div>
             )}
             <div ref={bottomRef} />
