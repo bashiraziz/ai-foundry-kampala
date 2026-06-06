@@ -2,10 +2,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { MAX_ASSESSMENT_MESSAGES } from "@/lib/constants";
 
 type Message = { role: "user" | "assistant"; content: string };
-
-const MAX_QUESTIONS = 14;
 
 export default function AssessPage() {
   const router = useRouter();
@@ -88,7 +87,7 @@ export default function AssessPage() {
       setQuestionCount(nextCount);
       setLoading(false);
 
-      if (data.complete || nextCount >= MAX_QUESTIONS) {
+      if (data.complete || nextCount >= MAX_ASSESSMENT_MESSAGES) {
         await triggerCompletion(applicantId!);
       }
     } catch {

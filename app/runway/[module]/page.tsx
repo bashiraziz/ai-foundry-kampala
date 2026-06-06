@@ -256,6 +256,9 @@ function ModuleContent() {
   const applicantId = searchParams.get("applicantId");
   const moduleData = MODULE_CONTENT[moduleNum];
 
+  const chatKey = `mshauri_runway_${applicantId}_module_${moduleNum}_chat`;
+  const checklistKey = `mshauri_runway_${applicantId}_module_${moduleNum}_checklist`;
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -263,6 +266,30 @@ function ModuleContent() {
   const [checked, setChecked] = useState<boolean[]>(new Array(moduleData?.checklist.length ?? 0).fill(false));
   const [marking, setMarking] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // 7.2 — restore chat + checklist from localStorage on mount
+  useEffect(() => {
+    if (!applicantId) return;
+    try {
+      const storedChat = localStorage.getItem(chatKey);
+      if (storedChat) setMessages(JSON.parse(storedChat));
+      const storedChecklist = localStorage.getItem(checklistKey);
+      if (storedChecklist) setChecked(JSON.parse(storedChecklist));
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 7.1 — persist messages after each update
+  useEffect(() => {
+    if (!applicantId || messages.length === 0) return;
+    localStorage.setItem(chatKey, JSON.stringify(messages));
+  }, [messages, applicantId, chatKey]);
+
+  // persist checklist state
+  useEffect(() => {
+    if (!applicantId) return;
+    localStorage.setItem(checklistKey, JSON.stringify(checked));
+  }, [checked, applicantId, checklistKey]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -282,7 +309,7 @@ function ModuleContent() {
       const res = await fetch("/api/runway/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next, module: moduleNum }),
+        body: JSON.stringify({ messages: next, module: moduleNum, applicantId }),
       });
       if (!res.ok) throw new Error("Server error");
       if (!res.body) throw new Error("No response body");
@@ -319,6 +346,8 @@ function ModuleContent() {
       body: JSON.stringify({ applicantId, module: moduleNum, status: "COMPLETE" }),
     });
     setMarking(false);
+    localStorage.removeItem(chatKey);
+    localStorage.removeItem(checklistKey);
     router.push(`/runway?applicantId=${applicantId}`);
   };
 

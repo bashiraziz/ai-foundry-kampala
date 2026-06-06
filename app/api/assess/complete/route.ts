@@ -2,28 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { safeParseJson } from "@/lib/utils";
-
-const SCORING_PROMPT = `You are a scoring engine for The AI Foundry Kampala intake assessment.
-
-Score the applicant on all 8 signals using only evidence from the transcript below.
-
-SCALE: 0 = no evidence, 1 = partial, 2 = clear pass
-
-TRANSCRIPT:
-{transcript}
-
-Return ONLY valid JSON — no preamble, no markdown fences:
-{
-  "signal_coding_experience": 0,
-  "signal_terminal": 0,
-  "signal_git": 0,
-  "signal_code_reading": 0,
-  "signal_business_process": 0,
-  "signal_workflow_tools": 0,
-  "signal_motivation": 0,
-  "signal_self_awareness": 0,
-  "reasoning": "3-4 sentences describing the applicant profile, what path they are recommended for, and why."
-}`;
+import { SCORING_PROMPT } from "@/lib/prompts";
 
 type ScoreResult = {
   signal_coding_experience: number;

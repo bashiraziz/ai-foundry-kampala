@@ -56,31 +56,31 @@ Tracked here. Check off as implemented. Do not delete completed items — they s
 
 ## Priority 6 — Database indexes (slow queries as data grows)
 
-- [ ] **6.1** Add `@@index([studentId])` to `Session` model in `prisma/schema.prisma`
-- [ ] **6.2** Add `@@index([studentId])` to `QuizResult` model
-- [ ] **6.3** Add `@@index([studentId])` to `WeekProgress` model (already has unique constraint but explicit index helps reads)
-- [ ] **6.4** Run `prisma migrate dev --name add-indexes` and deploy
+- [x] **6.1** Add `@@index([studentId])` to `Session` model in `prisma/schema.prisma`
+- [x] **6.2** Add `@@index([studentId])` to `QuizResult` model
+- [x] **6.3** Add `@@index([studentId])` to `WeekProgress` model (already has unique constraint but explicit index helps reads)
+- [x] **6.4** Run `prisma migrate dev --name add-indexes` and deploy
 
 ---
 
 ## Priority 7 — Runway chat persistence (students lose context navigating between modules)
 
-- [ ] **7.1** Save Runway module chat messages to the `Session` model on each reply (same pattern as `/api/chat`)
-- [ ] **7.2** On Runway module page load, fetch the most recent Session for this applicant + module and restore chat history
-- [ ] **7.3** Add `applicantId` to the Runway chat API call so sessions can be attributed
+- [x] **7.1** Save Runway module chat messages to the `Session` model on each reply (same pattern as `/api/chat`)
+- [x] **7.2** On Runway module page load, fetch the most recent Session for this applicant + module and restore chat history
+- [x] **7.3** Add `applicantId` to the Runway chat API call so sessions can be attributed
 
 ---
 
 ## Smaller wins
 
-- [ ] **S1** `AcceptRejectButtons.tsx` — add loading state (disable button + spinner) on click; prevent double-submit
-- [ ] **S2** Login page — add `type="email"` to email input and basic client-side validation before submitting
-- [ ] **S3** `/api/runway/evaluate` — try `main` branch first, then `master` if 404; return helpful error if both fail
+- [x] **S1** `AcceptRejectButtons.tsx` — add loading state (disable button + spinner) on click; prevent double-submit
+- [x] **S2** Login page — add `type="email"` to email input and basic client-side validation before submitting
+- [x] **S3** `/api/runway/evaluate` — try `main` branch first, then `master` if 404; return helpful error if both fail
 - [x] **S4** `QuizCard.tsx` — replace `window.location.reload()` with state reset (`setPhase("loading")`, `setQuestions([])` etc.) for smoother retry
-- [ ] **S5** Extract all system prompts to `lib/prompts.ts` — tutor prompt, assessment prompt, scoring prompt, runway prompt. Remove duplication across route files.
-- [ ] **S6** Move magic numbers to `lib/constants.ts`: `MAX_ASSESSMENT_MESSAGES = 14`, `RUNWAY_MODULE_COUNT = 4`, `PASS_THRESHOLD = 70`, `WEEKS_PER_TRACK = 12`
-- [ ] **S7** Dashboard filter: add track toggle (All / Developer / Professional) to `/dashboard/page.tsx` student grid
-- [ ] **S8** `/api/applicants` GET — add session auth check (currently relies on page-level auth only; API is unprotected)
+- [x] **S5** Extract all system prompts to `lib/prompts.ts` — tutor prompt, assessment prompt, scoring prompt, runway prompt. Remove duplication across route files.
+- [x] **S6** Move magic numbers to `lib/constants.ts`: `MAX_ASSESSMENT_MESSAGES = 14`, `RUNWAY_MODULE_COUNT = 4`, `PASS_THRESHOLD = 70`, `WEEKS_PER_TRACK = 12`
+- [x] **S7** Dashboard filter: add track toggle (All / Developer / Professional) to `/dashboard/page.tsx` student grid
+- [x] **S8** `/api/applicants` GET — add session auth check (currently relies on page-level auth only; API is unprotected)
 
 ---
 

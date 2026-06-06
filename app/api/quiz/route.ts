@@ -3,22 +3,15 @@ import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { WEEK_TOPICS } from "@/lib/quiz";
 import { safeParseJson } from "@/lib/utils";
+import { QUIZ_SYSTEM_PROMPT, quizUserPrompt } from "@/lib/prompts";
 
 type QuizResponse = { questions: { q: string; options: string[]; answer: number; explain: string }[] };
 
 export async function POST(req: NextRequest) {
   const { track, week, studentId } = await req.json();
   const topic = WEEK_TOPICS[track]?.[week] ?? "Agentic AI";
-  const systemPrompt = "You are a quiz generator. Return only valid JSON.";
-
-  const prompt = `Generate exactly 3 multiple-choice questions about "${topic}" for the ${track} track, Week ${week} of The AI Foundry Kampala.
-
-Each question must include a Kampala-specific example in the explanation (dukas, boda bodas, MTN MoMo, school fees, Owino market, etc.).
-
-Return ONLY this JSON with no preamble, no markdown fences, no explanation:
-{"questions":[{"q":"...","options":["A","B","C","D"],"answer":0,"explain":"...Kampala example"}]}
-
-The "answer" field is the 0-based index of the correct option.`;
+  const systemPrompt = QUIZ_SYSTEM_PROMPT;
+  const prompt = quizUserPrompt(topic, track, week);
 
   let raw = await chat([{ role: "user", content: prompt }], systemPrompt);
   let parsed = safeParseJson<QuizResponse>(raw);

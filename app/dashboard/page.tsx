@@ -7,11 +7,25 @@ import Link from "next/link";
 
 export const revalidate = 300;
 
-export default async function DashboardPage() {
+const TRACK_TABS = [
+  { label: "All", value: "" },
+  { label: "Developer", value: "DEVELOPER" },
+  { label: "Professional", value: "PROFESSIONAL" },
+];
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ track?: string }>;
+}) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
 
+  const { track: trackFilter = "" } = await searchParams;
+  const validTrack = trackFilter === "DEVELOPER" || trackFilter === "PROFESSIONAL" ? trackFilter : undefined;
+
   const students = await prisma.student.findMany({
+    where: validTrack ? { track: validTrack } : undefined,
     include: { progress: true, quizzes: { orderBy: { createdAt: "desc" } }, sessions: true },
   });
 
@@ -56,6 +70,28 @@ export default async function DashboardPage() {
             <p className="text-sm text-gray-500 mt-1">Total sessions</p>
           </div>
         </div>
+
+        {/* Track filter */}
+        <div className="flex gap-2">
+          {TRACK_TABS.map(({ label, value }) => {
+            const active = (validTrack ?? "") === value;
+            const href = value ? `/dashboard?track=${value}` : "/dashboard";
+            return (
+              <Link
+                key={label}
+                href={href}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
+                  active
+                    ? "bg-foundry-green text-white"
+                    : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </div>
+
         <ProgressGrid students={formatted} />
       </div>
     </div>
