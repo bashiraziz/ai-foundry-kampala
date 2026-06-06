@@ -31,11 +31,11 @@ function chunkText(text: string, maxTokens = 400, overlapTokens = 50): string[] 
 
 async function embedText(text: string): Promise<number[]> {
   const apiKey = process.env.GEMINI_API_KEY!;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2:embedContent?key=${apiKey}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "models/gemini-embedding-001", content: { parts: [{ text }] } }),
+    body: JSON.stringify({ model: "models/gemini-embedding-2", content: { parts: [{ text }] } }),
   });
   if (!res.ok) {
     const err = await res.text();

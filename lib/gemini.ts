@@ -20,11 +20,11 @@ export async function geminiChat(messages: Message[], systemPrompt: string): Pro
 
 export async function geminiEmbed(text: string): Promise<number[]> {
   const apiKey = process.env.GEMINI_API_KEY!;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2:embedContent?key=${apiKey}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "models/gemini-embedding-001", content: { parts: [{ text }] } }),
+    body: JSON.stringify({ model: "models/gemini-embedding-2", content: { parts: [{ text }] } }),
   });
   if (!res.ok) throw new Error(`Embed API ${res.status}: ${await res.text()}`);
   const data = await res.json() as { embedding: { values: number[] } };
