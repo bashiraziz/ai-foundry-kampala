@@ -11,7 +11,8 @@ By the end of this week you will be able to:
 1. Write a production-quality system prompt with role, rules, output format, and guardrails
 2. Apply the three-part message structure: system, user, assistant
 3. Use few-shot examples to constrain model output format
-4. Diagnose common prompt failures and fix them
+4. Build a WhatsApp message classifier using structured JSON output
+5. Diagnose common prompt failures and fix them
 
 ---
 
@@ -19,13 +20,13 @@ By the end of this week you will be able to:
 
 **1. Context Engineering vs. Prompt Engineering**
 
-Prompt engineering focuses on the text you send. Context engineering is broader — it is the discipline of deciding what information to put in the context window, in what order, in what format, to produce reliable agent behaviour.
+Prompt engineering focuses on the text you send to the model in a single turn. Context engineering is the broader discipline of deciding what information goes into the context window, in what order, in what format, across the entire agent lifetime — to produce reliable, consistent agent behaviour. The distinction matters because prompt engineering is a craft skill (write better sentences), while context engineering is a systems skill (design the information architecture the agent operates within). Bad context engineering is the single largest cause of agent failures in production. The model is rarely the problem. If you give the model ambiguous instructions, contradictory rules, incomplete background knowledge, or poor examples, it will produce inconsistent output — not because it is broken, but because the inputs are broken. Most "the AI is wrong" complaints in production are actually "the context is wrong" problems.
 
-Bad context engineering is the #1 reason agents fail in production. The model is not the problem. The context is. If you give the model ambiguous instructions, incomplete information, or contradictory rules, it will produce inconsistent output — not because it is broken, but because the instructions are broken.
+*Kampala analogy:* A new employee at Garden City mall will perform exactly as well as their onboarding materials and their manager's instructions. Give them a vague job description and no examples, and they will improvise — sometimes correctly, sometimes not. Give them a precise role definition, clear rules, and worked examples, and they will perform consistently.
 
 **2. System Prompt Structure**
 
-A production system prompt has five sections:
+A production system prompt has five sections, and every section earns its place. The **Role** section defines who the agent is, what it is optimising for, and what its primary constraints are — in two to four sentences. This is not a creative writing exercise; it is a precision instrument. The **Context** section contains facts about the current situation that are injected dynamically at runtime: the current time, the user's account details, relevant retrieved knowledge, current inventory levels. The **Rules** section contains numbered, specific, testable constraints — things the agent must always do, must never do, or must escalate. The **Output Format** section specifies exactly what the response should look like — JSON schema, field names, data types, maximum lengths. The **Examples** section contains one to three input-output pairs in the exact required format.
 
 ```
 1. ROLE        — who the agent is and what it is optimising for
@@ -35,36 +36,35 @@ A production system prompt has five sections:
 5. EXAMPLES    — 1-3 input/output pairs showing the format
 ```
 
-Example rule quality:
-- Weak: "Be helpful and professional"
-- Strong: "Never suggest a price below 50,000 UGX. If the customer asks for a lower price, explain the minimum and offer a payment plan."
+Rule quality is where most developers fail. Compare: "Be helpful and professional" (untestable, meaningless to the model) versus "Never suggest a price below 50,000 UGX. If the customer asks for a lower price, explain the minimum and offer a payment plan in three instalments." The second rule is specific, testable, and gives the model a clear action when the trigger condition fires.
 
 **3. Few-Shot Examples**
 
-Few-shot means giving the model 2-5 examples of input → output pairs in the prompt itself. This is the most reliable way to enforce output format. For a quiz generator, you would include one complete example question with all four fields filled in.
+Few-shot prompting means including two to five input-output pairs in the prompt itself, before the actual task. This is the most reliable single technique for enforcing output format. When you show the model exactly what correct output looks like on similar inputs, it generalises the pattern to the real input with high reliability. Few-shot examples should be representative — include edge cases in your examples, not just the easy cases, because edge cases are where format breaks down. They should be in the exact output format you require — if you want JSON, show JSON, not prose. They should be short enough to leave room in the context window for the actual task content.
 
-Few-shot examples should be:
-- Representative of the real distribution (include edge cases)
-- In the exact output format you require
-- Short enough to leave room for the actual task
+A WhatsApp message classifier for a Kampala sacco might have these few-shot examples:
+
+```
+Input: "Osaawa bossy, I want to check my balance"
+Output: {"intent": "balance_inquiry", "language": "luganda_mix", "urgency": "low"}
+
+Input: "My payment bounced and I need it fixed TODAY"
+Output: {"intent": "payment_dispute", "language": "english", "urgency": "high"}
+```
+
+The model learns the pattern from the examples and applies it to every new message.
 
 **4. Temperature and Sampling**
 
-Temperature controls randomness:
-- Temperature 0 = deterministic (same output every time for same input). Use for structured data extraction, classification, JSON generation.
-- Temperature 0.7-1.0 = creative. Use for explanations, suggestions, content generation.
+Temperature controls how much randomness the model introduces when choosing its next token. Temperature 0 means the model always picks the highest-probability token — same output every time for the same input. Use this for structured data extraction, classification, JSON generation, and any task where consistency and format compliance matter more than variety. Temperature 0.7 to 1.0 introduces meaningful randomness — different outputs each time. Use this for content generation, brainstorming, explanation writing, and tasks where creative variation is valuable. For a WhatsApp classifier that must output valid JSON every time, use temperature 0 or very close to it. For an agent that writes different SMS payment reminders to avoid sounding repetitive to parents, use temperature 0.7. Getting this wrong is a common source of intermittent failures: a structured output task running at high temperature will produce invalid JSON unpredictably.
 
-For the quiz generator in this app, temperature 0.2 is appropriate — you want varied questions but reliable JSON format.
+*Kampala analogy:* Temperature 0 is like a bank teller following the exact script for "how to process a deposit." Temperature 0.8 is like asking the same person to write a friendly message to a customer — you want something different each time, and you trust their judgment on the details.
 
-**5. Output Parsing**
+**5. Output Parsing and Error Recovery**
 
-Models sometimes refuse to follow format instructions. Your code must handle this gracefully:
-- Strip markdown fences (` ```json `) before parsing
-- Use `JSON.parse` inside a try/catch
-- If parsing fails, retry once with an explicit "return only valid JSON" instruction
-- If retry fails, return a graceful error to the user
+Models sometimes produce output that is almost correct but fails to parse — a trailing comma in JSON, a markdown code fence wrapping the JSON object, a field name with a typo. Your code must handle this gracefully rather than crashing. The standard pattern: strip markdown fences before parsing, run `JSON.parse` inside a `try/catch`, and if parsing fails retry once with an explicit instruction appended to the prompt ("Return only valid JSON with no markdown, no explanation, nothing else"). If the second attempt also fails, return a structured error to the calling system — never crash silently. Log the raw model output that caused the failure so you can review it and improve the system prompt. Over time, patterns in your failure logs will tell you exactly what format instructions to add.
 
-The quiz API route in this app does exactly this.
+*Kampala analogy:* A form that arrives with a missing signature doesn't get shredded — it gets returned with a clear note: "Signature required on line 7." The agent's retry logic is that note.
 
 ---
 
@@ -90,25 +90,38 @@ RULES
 3. If no rider is available within 15 minutes of pickup, escalate to human dispatcher
 4. Never reveal rider phone numbers to customers — use order ID only
 5. All confirmations must include estimated arrival time in minutes
+6. If traffic on Entebbe Road is flagged as heavy, add 10 minutes to all Entebbe-zone ETAs
 
 OUTPUT FORMAT
-Return a JSON object: {"assignments": [{"orderId": "...", "riderId": "...", "eta_minutes": N}], "escalations": [...]}
+Return a JSON object:
+{"assignments": [{"orderId": "...", "riderId": "...", "eta_minutes": N}], "escalations": [...]}
+
+EXAMPLES
+Input: 3 orders pending, all in Kololo zone, 2 riders available in Kololo, 1 in Ntinda
+Output: {"assignments": [{"orderId": "ORD-001", "riderId": "R-07", "eta_minutes": 8}, {"orderId": "ORD-002", "riderId": "R-12", "eta_minutes": 11}], "escalations": [{"orderId": "ORD-003", "reason": "no_rider_within_15min"}]}
 ```
 
-This prompt is specific, constrained, and parseable. The model knows exactly what it needs to output.
+This prompt is specific, constrained, and parseable. The model knows exactly what it must output, what rules govern every decision, and what to do when exceptions occur. Compare this to "be a helpful dispatch assistant" — a prompt that would produce wildly inconsistent results across the first week of production.
 
 ---
 
 ### Common questions
 
 **Q: How long should a system prompt be?**
-A: As long as it needs to be and no longer. A good benchmark: if you can't explain every line of your system prompt and why it is there, it is too long. Start minimal and add rules only when you observe specific failures.
+
+As long as it needs to be, and no longer. A useful test: if you cannot explain every line of your system prompt and why it is there, it is too long. Remove lines you cannot justify. A good production system prompt for a focused agent is typically between 200 and 600 words. You will sometimes see prompts of 2,000+ words — these are usually agents that have accumulated rules reactively ("we added a rule every time something went wrong") rather than being designed deliberately. Start minimal and add rules only when you observe specific, repeated failures that a rule would prevent. Document why each rule exists in a comment block above the system prompt in your codebase — future you will thank present you.
 
 **Q: What if the model ignores my format instructions?**
-A: First, check if your format section is ambiguous. Second, add a concrete example (few-shot). Third, try starting the assistant's response yourself — some APIs allow you to prefill the beginning of the assistant message, which forces the model to continue in the specified format. Fourth, use a structured output API (Gemini and OpenAI both support JSON schema-constrained output).
+
+Work through this checklist in order. First, check if the format section is ambiguous — "return JSON" is ambiguous, "return a JSON object with exactly these fields in this structure" is not. Second, add a concrete few-shot example showing the exact format. Third, use structured output mode if your API supports it — both Gemini and OpenAI support JSON schema-constrained output that forces valid JSON at the API level. Fourth, try prefilling the start of the assistant message with an opening brace `{` — some APIs allow this and it forces the model to continue in JSON format. Fifth, lower the temperature — high-temperature settings introduce randomness that breaks format compliance. If all five steps fail, the problem is likely that your format is too complex for the model to produce reliably, and you should simplify the schema.
 
 **Q: Can I put too many rules in a system prompt?**
-A: Yes. More than 15-20 rules and the model starts to lose track of the less important ones. Prioritise: put the most critical rules first, use numbered lists, and remove any rule you have never actually needed.
+
+Yes, absolutely. More than 15 to 20 numbered rules and the model begins to lose track of lower-priority ones, especially when they conflict with natural language tendencies or with each other. Three techniques help. Prioritise: put the most critical rules first, since models pay more attention to early content. Consolidate: two rules about the same topic (price minimums and payment plans) should be one rule. Prune: if you cannot recall why a rule is there or find a test case that would violate it, remove it. The goal is a minimal set of rules that covers all the failure modes you have actually observed, not a comprehensive list of everything the agent should theoretically do.
+
+**Q: How do I build a WhatsApp message classifier for a Kampala business?**
+
+Start with your system prompt defining the agent as a classifier, your output schema (a JSON object with an intent field, a language field, and an urgency field), and five to eight few-shot examples covering the most common message types and the trickiest edge cases. Use temperature 0. Connect it to your WhatsApp webhook — each incoming message gets passed to the classifier, which returns the JSON label. Route the message to the appropriate handler based on the intent field. The key engineering decisions: how many intent categories (fewer is more reliable), how to handle messages that fit two categories (pick the primary intent), and how to handle completely unintelligible messages (return intent: "unclear", route to human).
 
 ---
 
@@ -124,10 +137,11 @@ Answer questions about fees. Don't be rude. Help parents understand their
 fees situation. Be accurate.
 ```
 
-Rewrite it using the five-section structure. The agent works for Kampala Parents School, sends fee reminders via SMS, and must:
-- Never reveal another family's balance
-- Always include the payment deadline
-- Support MTN MoMo and Airtel Money payment references
-- Escalate to the bursar if a balance is disputed
+Rewrite it using the five-section structure. The agent works for Kampala Parents School, contacts parents via SMS and WhatsApp, and must operate under these constraints:
+- Never reveal another family's balance or payment status
+- Always include the payment deadline and the exact amount due in every response
+- Support MTN MoMo (paybill: 303030) and Airtel Money (paybill: 404040) payment references
+- Escalate to the bursar if a balance is disputed or if a parent claims to have paid but the system shows no record
+- Respond in English or Luganda depending on which language the parent used
 
-Write your rewrite, then test it by writing three example inputs and predicting what the output should be.
+After writing the rewrite, create three example inputs representing different parent situations — a routine balance inquiry, a payment dispute, and a request for a payment plan — and write the exact output your rewritten system prompt should produce for each. This tests whether your rules are specific enough to produce predictable behaviour.

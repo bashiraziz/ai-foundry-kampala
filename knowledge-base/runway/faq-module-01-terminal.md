@@ -159,3 +159,73 @@ This is why we use Git. If your file was committed to a Git repository before yo
 Lesson: commit your work to Git frequently. Before deleting any file, ask yourself: "Is this committed?"
 
 For this course, be careful with `rm`. You will not need it much in Runway 1 — focus on creating things, not deleting them.
+
+---
+
+### Q: I ran `mkdir` but I cannot find the folder — where did it go?
+
+**Module:** 1
+**Lesson:** 1.3
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** Run `pwd` first to see where you currently are — you created the folder in a different location than you expected.
+
+**Full explanation:** The terminal always creates folders in the directory you are currently in. If you navigated to `/c/Users/YourName/Downloads` by accident, running `mkdir kampala_prep` creates the folder there — not on the Desktop and not in your project folder. Think of it like telling someone "put this box somewhere" while standing in a different room than you realised. The box is where you were standing, not where you meant to be.
+
+**Step-by-step fix:**
+1. In the terminal, type `pwd` and press Enter — note the path shown
+2. Open File Explorer and navigate to that exact path
+3. Your folder will be there
+4. If you want the folder somewhere else, run `cd` to go to the correct location first, then run `mkdir` again
+
+**How to confirm it worked:** After running `pwd`, open File Explorer at that path. You will see the folder you created.
+
+**If the fix did not work:** Run `ls` immediately after `mkdir` — if the folder was created, it will appear in the list. If it does not appear even in `ls`, the `mkdir` command may have had a typo. Check the folder name carefully.
+
+---
+
+### Q: I typed `cat` and the terminal is stuck — it will not give me a new prompt
+
+**Module:** 1
+**Lesson:** 1.4
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** You ran `cat` with no filename — it is now waiting for you to type input. Press Ctrl+C to cancel and return to the prompt.
+
+**Full explanation:** When you type `cat` with no filename, the terminal does not give an error — it enters "read from keyboard" mode and waits for you to type text, then print it back. The cursor just blinks. This surprises everyone the first time. It is not broken. Pressing Ctrl+C sends an interrupt signal that cancels the waiting command and returns you to the prompt. Think of Ctrl+C as the "I changed my mind, stop what you are doing" key combination in any terminal situation.
+
+**Step-by-step fix:**
+1. Press Ctrl+C (hold the Ctrl key, press C) — the terminal cancels the waiting command
+2. You will see `^C` printed and then a new `$` prompt appears
+3. Now type the correct command: `cat notes.txt` (with the filename)
+
+**How to confirm it worked:** The `$` prompt returns and you see `^C` on the screen before it.
+
+**If the fix did not work:** If Ctrl+C does not respond, try Ctrl+D (which sends an end-of-file signal). If the terminal is completely frozen, close the window and open a new one.
+
+---
+
+### Q: My terminal shows strange characters when I type — it looks broken
+
+**Module:** 1
+**Lesson:** 1.2
+**Frequency:** 1
+**Platform:** Windows
+
+**Short answer:** You are in the wrong terminal — close it and open Git Bash instead. On Windows, also check that you opened Git Bash, not Windows PowerShell or Command Prompt.
+
+**Full explanation:** Windows has several different terminal applications — Command Prompt (cmd.exe), PowerShell, Windows Terminal, and Git Bash. They each handle text encoding differently. When you open the wrong one, or when encoding settings are mismatched, you may see characters like `â€™` instead of `'`, or arrows and boxes instead of normal text. This is a display issue caused by the terminal and your font/encoding being out of sync. Git Bash (which this course uses) is configured correctly for the commands we run. If you are seeing garbled text in Git Bash, closing and reopening it usually resets the display.
+
+**Step-by-step fix:**
+1. Close the terminal window showing strange characters
+2. Right-click on your Desktop and select "Git Bash Here" — or search "Git Bash" in the Start menu
+3. In the new window, type `echo hello` and press Enter
+4. You should see `hello` printed cleanly
+
+**How to confirm it worked:** Normal text appears without garbled symbols or box characters.
+
+**If the fix did not work:** In Git Bash, right-click the title bar → Options → Text → change the character set to UTF-8 and the font to a standard monospace font (Courier New or Consolas). Click Apply, close, and reopen Git Bash.
+
+---

@@ -130,7 +130,58 @@ This entire flow happens in WhatsApp. The agent tracks the order, watches for pa
 
 ---
 
-### Common Questions
+### Technical Implementation Notes
+
+**State machine per order:**
+
+Each delivery order is modelled as a state machine with defined transitions:
+
+```
+RECEIVED → PAYMENT_PENDING → PAID → ASSIGNED → PICKED_UP → DELIVERED
+                                              ↘ FAILED (no rider, incident)
+```
+
+The state is stored in PostgreSQL. Every agent action checks and updates the state. This prevents impossible transitions — an agent cannot mark an order DELIVERED if it was never PICKED_UP.
+
+**Webhook-driven payment confirmation:**
+
+The MTN MoMo merchant account is connected via a webhook to the agent backend. When a payment arrives with the correct reference code (e.g., "QBD-2847"), the webhook fires and triggers the `assign_rider` flow automatically. The agent does not poll for payment — it reacts to the payment event. This eliminates the 30-60 second delay of manual confirmation and the risk of Fatima missing a payment notification.
+
+**Rider check-in protocol:**
+
+Every 30 minutes, the Rider Management Sub-Agent sends a zone check-in request to all riders: "Quick check-in: reply with your current zone (e.g., NTINDA, CBD, KOLOLO)." Riders reply with a zone name. The sub-agent updates `update_rider_location` for each reply. Riders who do not reply within 5 minutes are marked UNAVAILABLE. This is the most critical reliability mechanism in the system — without current location data, the assignment algorithm cannot make good decisions.
+
+**Zone matrix:**
+
+Kampala is divided into 11 zones. The price matrix is a 11x11 table stored in the database, not in the system prompt. Each cell contains the standard price and the urgent price. Updating prices requires a database update only — no system prompt change. Example:
+
+| From \ To | CBD | Nakasero | Kololo | Ntinda | Bugolobi |
+|---|---|---|---|---|---|
+| CBD | 4,000 | 5,000 | 6,000 | 8,000 | 7,000 |
+| Bugolobi | 7,000 | 6,000 | 8,000 | 9,000 | 4,000 |
+
+Zones not in the matrix (e.g., Entebbe, Mukono) are outside the service area. The agent responds: "We currently deliver within Kampala only. For deliveries to [location], please contact Fatima directly."
+
+**Two-agent architecture rationale:**
+
+The Orchestrator handles customer-facing conversation — it must be responsive and polite. The Rider Management Sub-Agent runs on a cron schedule and handles internal operations. Separating them means customer response time is never delayed by background rider management tasks. The sub-agent runs independently and updates the shared database, which the Orchestrator reads.
+
+---
+
+### Acceptance Criteria
+
+1. A customer delivery request in plain English (or Luganda) is correctly parsed into pickup zone, dropoff zone, and package type in at least 9 of 10 test cases.
+2. The price returned by `calculate_delivery_price` matches the zone matrix for the given origin/destination pair; price is in whole UGX with no decimals.
+3. No rider is ever assigned who has not checked in within the last 30 minutes — this rule is enforced even during peak load with multiple simultaneous requests.
+4. When a MoMo payment with a valid order reference arrives via webhook, `assign_rider` is triggered automatically within 60 seconds — no manual intervention by Fatima.
+5. When no rider is available within 15 minutes of the pickup zone, Fatima receives an escalation notification within 2 minutes of the unavailability being detected.
+6. A delivery marked DELIVERED cannot be re-assigned or modified by the Orchestrator — the state machine enforces terminal state immutability.
+7. Customer receives rider name and phone number only after payment confirmation — not before.
+8. An order 30+ minutes past its estimated delivery time triggers a `flag_overdue` call and an escalation message to Fatima.
+
+---
+
+### Common Implementation Questions
 
 **Q: How does the agent know a customer has paid?**
 A: The MTN MoMo merchant account sends a payment notification via webhook to the agent's backend. When the webhook fires with the correct reference code, the `assign_rider` flow triggers automatically. No manual payment confirmation by Fatima.
@@ -140,6 +191,26 @@ A: The agent waits 3 minutes for rider acknowledgement. If no response, it attem
 
 **Q: Can the agent handle multiple simultaneous orders?**
 A: Yes. Each order runs as an independent state machine in the database. The agent processes each customer message in its own context, with the order state loaded from the database. Multiple orders do not interfere with each other.
+
+---
+
+### What Could Go Wrong
+
+**1. Stale rider location data during Kampala traffic**
+
+A rider checks in from Ntinda at 8:00am and gets assigned an order at 8:28am (just within the 30-minute window). But Ntinda-CBD traffic at peak hour means the rider is now stuck near Makerere and is 45 minutes from the pickup — not 15. The location data is technically fresh but practically useless. Mitigation: the 30-minute window is a minimum safeguard, not a guarantee of accuracy. The system should also use estimated travel time calculations (zone-to-zone average times by hour) to predict whether a rider can realistically reach the pickup. If predicted travel time exceeds 30 minutes, prefer a closer rider even if their last check-in was 25 minutes ago.
+
+**2. Fraudulent payment references**
+
+A bad actor sends "QBD-2847" as a MoMo reference for a payment of 500 UGX (instead of the 9,000 UGX owed). The webhook fires, the reference matches, and the order is assigned. Mitigation: the webhook handler must validate both the reference AND the amount. `match_payment(reference, expected_amount, actual_amount)` — if actual_amount is less than 90% of expected_amount, the payment is flagged as partial and the order is not automatically assigned. Fatima reviews partial payments manually.
+
+**3. Rider double-booked by a customer directly**
+
+A rider (Joshua, phone: 0772-XXXXXX) gets assigned via QuickBoda and also accepts a direct customer job through his personal WhatsApp. He now has two deliveries but the agent does not know about the direct booking. The agent thinks Joshua is available; Joshua is not. Mitigation: the check-in protocol helps — Joshua will miss check-ins while doing the direct job, and the system will mark him UNAVAILABLE after 30 minutes of silence. The deeper fix is contractual: riders agree not to accept direct jobs during QuickBoda working hours. This is a people problem as much as a systems problem.
+
+**4. Zone boundary ambiguity**
+
+A customer says "pick up from near Owino market." Owino sits on the boundary between CBD and Nakasero zones. The price matrix gives different prices for each. The agent must make a call. Mitigation: ambiguous location descriptions trigger a clarification request: "Is that closer to the City Square side or the Ben Kiwanuka Street side?" Alternatively, famous landmarks are mapped to their nearest zone in the knowledge base so the agent can resolve common reference points without asking.
 
 ---
 

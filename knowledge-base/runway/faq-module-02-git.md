@@ -206,3 +206,75 @@ If you have already pushed, the simplest approach for this course is to leave it
 **A:** This is a Windows line-ending warning. It is not an error and it will not cause problems for your project. You can safely ignore it.
 
 The technical explanation: Mac and Linux use LF (line feed) to end lines in text files. Windows uses CRLF (carriage return + line feed). Git on Windows warns you when it converts between them. The conversion is harmless for Python scripts and CSV files.
+
+---
+
+### Q: I made a commit with a typo in the message — how do I fix it?
+
+**Module:** 2
+**Lesson:** 2.4
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** If you have not pushed yet, run `git commit --amend -m "Correct message"`. If you have already pushed, leave it — the typo does not affect your project.
+
+**Full explanation:** `git commit --amend` rewrites the most recent commit. It replaces the commit message (and optionally the staged content) without creating a new commit. This is safe when the commit exists only on your computer. Once you push a commit to GitHub, amending it and pushing again causes problems for anyone else who may have pulled your code — it rewrites history they already have. For this course, where you are the only person on your repository, an already-pushed typo is harmless. Move on and write better commit messages next time.
+
+**Step-by-step fix (before pushing):**
+1. Confirm the bad commit is the most recent one: `git log --oneline -3`
+2. Run: `git commit --amend -m "Your corrected message here"`
+3. Confirm the fix: `git log --oneline -3` — you should see the new message
+
+**How to confirm it worked:** `git log --oneline` shows the corrected message as the most recent commit.
+
+**If the fix did not work:** If you have already pushed, `git push` after `--amend` will be rejected with "rejected (non-fast-forward)". Do not force-push for this course. Accept the typo and move forward.
+
+---
+
+### Q: I have two GitHub accounts and push is going to the wrong one
+
+**Module:** 2
+**Lesson:** 2.2
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** Run `git remote -v` to see which account URL is set, then update it with the correct username.
+
+**Full explanation:** If you have a personal GitHub account and a work or school account, Git can authenticate to the wrong one — especially if you stored credentials from the other account. The remote URL controls where your code goes. If it contains the wrong username, pushes go to the wrong account (or fail entirely if the repository does not exist there). Run `git remote -v` to see the current URL and check which username appears in it.
+
+**Step-by-step fix:**
+1. Check the current remote: `git remote -v`
+2. Note the URL shown — does it have the correct GitHub username?
+3. If not, update it: `git remote set-url origin https://github.com/CORRECT_USERNAME/YOUR_REPO.git`
+4. Confirm: `git remote -v` should now show the correct URL
+5. Push again: `git push`
+
+**How to confirm it worked:** After `git push`, open `https://github.com/CORRECT_USERNAME/YOUR_REPO` in a browser — your files should be there.
+
+**If the fix did not work:** If Git still authenticates as the wrong user, your stored credentials may be the issue. On Windows, open Credential Manager → Windows Credentials and remove any stored `github.com` entries. On Mac, open Keychain Access and delete the GitHub entry. Then push again and enter the correct token when prompted.
+
+---
+
+### Q: Git is asking me to set my name and email but I already did that
+
+**Module:** 2
+**Lesson:** 2.1
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** You set it locally for one project but not globally. Run the same commands with the `--global` flag to apply them to all projects on your computer.
+
+**Full explanation:** Git has two levels of configuration: global (applies to all repositories on your computer) and local (applies only to the repository you are in). If you ran `git config user.name "Your Name"` without `--global`, you only set it for that one project. When you start a new project in a different folder, Git has no name configured and asks again. The fix is simple: always use `--global` when setting your name and email so you only have to do it once.
+
+**Step-by-step fix:**
+1. Run: `git config --global user.name "Your Full Name"`
+2. Run: `git config --global user.email "your.email@example.com"`
+3. Confirm the settings were saved: `git config --global --list`
+   — you should see `user.name=Your Full Name` and `user.email=your.email@example.com`
+4. Try your commit again
+
+**How to confirm it worked:** `git config --global --list` shows your name and email. The commit proceeds without the identity error.
+
+**If the fix did not work:** Make sure you are using double quotes around your name. If your name contains special characters (apostrophes, etc.), use single quotes on the outside: `git config --global user.name 'Amina D'\''Souza'`. Or just use your name without the special character for this course.
+
+---

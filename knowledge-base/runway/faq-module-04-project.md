@@ -168,3 +168,79 @@ If it prints "Loaded 0 rows", the CSV is not being read correctly.
 4. Take a break and come back. Seriously. Code problems that seem impossible often become obvious after 10 minutes away from the screen.
 
 Being stuck is not a sign that you cannot do this. It is the exact feeling that every developer experiences every day. The skill is not avoiding being stuck — it is knowing how to get unstuck.
+
+---
+
+### Q: My GitHub repo is private — the evaluator says it cannot access the files
+
+**Module:** 4
+**Lesson:** 4.3
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** Change the repository visibility to Public in GitHub Settings → Danger Zone → Change visibility.
+
+**Full explanation:** GitHub repositories can be either Public (anyone on the internet can read the files) or Private (only you and people you invite can see them). The evaluator has no GitHub account and cannot be invited to a private repo — it fetches files using the same anonymous access a stranger would use. If your repo is private, every fetch attempt returns a "404 Not Found" response, which the evaluator reports as "Could not fetch files." This is the most common cause of the fetch error. Changing to public does not mean anyone can edit your files — they can only read them.
+
+**Step-by-step fix:**
+1. Go to `https://github.com/YOUR_USERNAME/YOUR_REPO`
+2. Click "Settings" in the top navigation bar of the repository
+3. Scroll to the very bottom of the page — the "Danger Zone" section
+4. Click "Change visibility"
+5. Select "Make public"
+6. Type your repository name to confirm, then click the red confirmation button
+7. Wait 30 seconds, then test: open an incognito browser window and visit `https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/prices.csv` — you should see your CSV data without being logged in
+
+**How to confirm it worked:** The incognito browser window shows your CSV data. The evaluator now fetches your files successfully.
+
+**If the fix did not work:** After making it public, also confirm the file names are exactly `market_summary.py` and `prices.csv` at the root level of the repository (not inside any subfolder). Both issues together cause the fetch to fail.
+
+---
+
+### Q: I pushed to GitHub but the file is not there when I check on the website
+
+**Module:** 4
+**Lesson:** 4.2
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** Confirm the push succeeded with `git log`, then check the remote URL with `git remote -v` — you may have pushed to the wrong branch or the wrong repository.
+
+**Full explanation:** When `git push` runs without errors, the files should appear on GitHub within a few seconds. If they do not appear, one of three things happened: the push actually failed silently, you pushed to a different branch than `main`, or you pushed to a different repository than you intended. The most common cause is having two remotes configured, or the branch being named `master` instead of `main`. GitHub shows the `main` branch by default — if you pushed to `master`, the files are there but on a branch that is not shown by default.
+
+**Step-by-step fix:**
+1. Check the most recent commit: `git log --oneline -3` — is your latest commit listed?
+2. Check the remote URL: `git remote -v` — does it point to the correct repository?
+3. Check which branch you are on: `git branch` — is it `main`?
+4. If on `master`, rename it and push: `git branch -M main` then `git push -u origin main`
+5. On GitHub, go to your repository and look at the branch dropdown — check if your files are on a different branch
+
+**How to confirm it worked:** Refreshing the GitHub repository page shows your files listed at the root level with a recent commit timestamp matching your latest push.
+
+**If the fix did not work:** Run `git push --verbose` for more detailed output. If it shows "Everything up-to-date", your local and remote are already in sync — the issue is something else (check the file names and folder location).
+
+---
+
+### Q: The evaluator gave me a low score but I am sure my script works
+
+**Module:** 4
+**Lesson:** 4.4
+**Frequency:** 1
+**Platform:** All
+
+**Short answer:** Paste the exact output from running `python market_summary.py` into the Mshauri chat and ask it to compare against the expected format — the issue is likely in how the output is formatted, not in the logic.
+
+**Full explanation:** The evaluator checks two things: whether your logic is correct (does the algorithm actually find the cheapest item?) and whether your output matches the expected format (does it include the vendor name? does it say "UGX"? is the spacing right?). A script can produce correct numbers but lose points for formatting. For example, if your output says `Cheapest: onions 2500` but the expected format is `Cheapest:        onions — UGX 2500 (Tendo)`, the evaluator may score formatting points as zero. The safest diagnosis is to paste your actual terminal output directly to Mshauri and ask it to identify what is missing compared to the expected format.
+
+**Step-by-step fix:**
+1. In your terminal, run: `python market_summary.py`
+2. Copy the complete output (all lines printed)
+3. Open Mshauri chat and paste the output with the message: "The evaluator scored my script [X] points. Here is what my script prints. What is wrong compared to the expected output?"
+4. Mshauri will identify the specific formatting or logic gap
+5. Fix the issue, commit, push, and resubmit
+
+**How to confirm it worked:** After fixing the identified issue and resubmitting, the score increases and the specific feedback item no longer appears.
+
+**If the fix did not work:** Also share your `market_summary.py` code with Mshauri — sometimes the issue is in the logic, not just the formatting. Paste the full code and the full output together for the most accurate diagnosis.
+
+---

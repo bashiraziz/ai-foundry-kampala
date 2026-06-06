@@ -26,7 +26,7 @@ Kampala Primary Schools face a universal challenge: tracking school fees across 
 
 ### The Agent Solution
 
-**Agent name**: Schol Fees Tracker (internal name; parents see "Kampala Academy Support")
+**Agent name**: School Fees Tracker (internal name; parents see "Kampala Academy Support")
 
 **Trigger 1**: Incoming parent WhatsApp message
 **Trigger 2**: Daily 7am cron job for payment matching and reminder scheduling
@@ -125,7 +125,62 @@ Consistency is an equity issue in school fee management. Families with business 
 
 ---
 
-### Common Questions
+### Technical Implementation Notes
+
+**Daily cron job logic:**
+
+The 7am cron job runs three tasks in sequence:
+
+1. **Payment matching**: Process any overnight MoMo and Airtel Money payments that arrived without being matched in real time. For each unmatched payment, run `match_momo_payment`. Payments with confidence >= 0.85 are auto-matched and the parent receives a confirmation. Payments below 0.85 confidence go to the bursary office's exception queue.
+
+2. **Balance refresh**: Recalculate all student balances for the current term. Flag any accounts where the balance changed unexpectedly (possible data error).
+
+3. **Reminder scheduling**: For accounts with overdue balances, check whether a reminder was sent in the last 7 days. If not, queue a WhatsApp reminder via `send_whatsapp`. The reminder is sent at 9am (not 7am when the cron runs) to be respectful of parents' morning routines.
+
+**Fuzzy name matching algorithm:**
+
+`match_momo_payment` uses a two-factor scoring system:
+
+- **Name similarity score** (0-1): Levenshtein distance between the MoMo sender name and each parent name on file, normalised. "Hajjat Namyalo" vs "Namyalo Hajjat" scores ~0.85 (same names, different order). "Hajjat Namyalo" vs "Namuyalo Hajjati" scores ~0.78 (spelling variations common with mobile money registration).
+
+- **Amount match score** (0 or 0.3 bonus): If the payment amount exactly matches a student's outstanding balance, +0.3 is added to the score. If it matches a partial instalment (e.g., 50% of the term fee), +0.15 is added.
+
+Combined score must exceed 0.85 for auto-match. This threshold was set based on testing with 200 real MoMo transactions from a pilot school — at 0.85, false positive rate (crediting the wrong account) was below 0.5%.
+
+**Hardship detection keywords:**
+
+The system prompt instructs the model to detect hardship language. The knowledge base includes a hardship pattern list: phrases like "struggling", "lost my job", "cannot afford", "asking for more time", "nze sirimu ssente" (Luganda: I have no money), "ntuuze" (Luganda: I am broke). When any of these patterns appear, `flag_hardship` is called before any further response is generated. The model is instructed not to ask follow-up financial questions after detecting hardship — it acknowledges, flags, and closes warmly.
+
+**Data retention:**
+
+Conversation logs are stored for 12 months (one academic year) and then purged. Fee records are retained for 7 years (Uganda tax record retention requirement). Parent phone numbers are stored as hashed values in the conversation log — the actual number is in a separate table. If a parent requests their data, the bursary office retrieves it manually. This design reduces the data available in the conversation log while keeping the fee records intact for audit purposes.
+
+**Multi-payment-method reconciliation:**
+
+Each payment method arrives differently:
+- **MoMo**: Webhook fires in real time; reference is in the notification payload
+- **Airtel Money**: Webhook fires with 10-15 minute delay
+- **Bank transfer**: CSV export from Stanbic uploaded manually by bursary staff each morning
+- **Cash**: Entered manually by bursary staff after issuing a receipt
+
+The agent handles MoMo and Airtel automatically. Bank transfers and cash are entered by staff via a simple web interface — the agent then sends the parent a confirmation WhatsApp message.
+
+---
+
+### Acceptance Criteria
+
+1. A parent who sends their child's name and class receives their correct current balance within 30 seconds, with the correct payment instructions included in the reply.
+2. A parent who sends only a child's name (without class) is asked to provide the class before any balance information is shared — no balance is returned on name alone.
+3. A parent who mentions financial difficulty in any message receives no further automated reminders for that student for at least 14 days; a hardship review case is created in the bursary queue.
+4. An incoming MoMo payment with a matching sender name (confidence >= 0.85) and matching amount is auto-matched and the parent receives a confirmation within 2 minutes of the payment notification.
+5. An incoming MoMo payment with confidence below 0.85 is never auto-matched — it goes to the bursary exception queue with the sender name, amount, and top 3 candidate matches listed.
+6. The daily 9am reminder is only sent to accounts with overdue balances that have not received a reminder in the last 7 days — no family receives more than one reminder per week.
+7. A parent asking about another family's balance receives no information about that family, regardless of how the question is phrased.
+8. The `generate_fee_statement` output is accurate: total charged, total paid, and balance outstanding all reconcile correctly against the payment records in the database.
+
+---
+
+### Common Implementation Questions
 
 **Q: What if a parent receives a reminder for a payment they already made?**
 A: If the payment was made via a recognised channel (MoMo, Airtel, bank transfer), it should be matched and recorded before reminders run. If the parent paid cash, they must have a receipt. The agent says: "Our records show a balance of X UGX. If you believe this is incorrect, please bring your receipt to the bursary office or WhatsApp a photo of it to this number." This is the escalation path for cash payment disputes.
@@ -135,6 +190,26 @@ A: No. Refunds are handled manually by the bursary office. The agent can acknowl
 
 **Q: Is this compliant with Uganda's Data Protection and Privacy Act?**
 A: The processing of student and parent financial data requires a legal basis. In a school-parent relationship, the contract for educational services provides the legal basis for processing fee-related data. Schools should include a data processing notice in their admission paperwork. Conversation logs should be retained for a limited period (e.g., 12 months) and not shared with third parties.
+
+---
+
+### What Could Go Wrong
+
+**1. Sending a reminder to a family in genuine crisis**
+
+A parent loses a job and WhatsApp messages the school explaining their situation — but sends the message through a family member's phone, not their own. Their account is not flagged for hardship. At 9am the next day, the automated reminder arrives on the parent's registered number. This is a failure of the hardship detection system: the signal came through an unregistered channel. Mitigation: train bursary staff to flag hardship cases manually whenever they learn of one through any channel (calls, parent evenings, notes from teachers). The `flag_hardship` tool must be accessible to bursary staff, not just the agent.
+
+**2. Wrong account credited due to a confident but incorrect match**
+
+Two parents in the school have very similar names and children with similar term fees. The fuzzy matching algorithm scores both candidates above 0.85. The system auto-matches to the wrong account. Fee is credited to Family A; Family B's balance remains unpaid; Family B receives a reminder; dispute ensues. Mitigation: when two candidates score within 0.05 of each other, treat it as a tie and escalate to the bursary office rather than auto-matching. The tiebreak rule protects against the worst-case similarity scenario.
+
+**3. A parent extracting another family's information through a social engineering attempt**
+
+A parent claims: "I am calling on behalf of my sister — her child is AMINA P4B." The agent verifies name and class (both correct) and shares the balance. This is a genuine privacy failure. The identity verification step is minimal by design (the school does not have passwords). Mitigation: the agent should only share balance information in response to direct requests from the registered phone number on file. If the phone number requesting the balance does not match any registered parent number for that student, the agent says: "For security, I can only share balance information to the phone number registered for this student. Please ask the registered contact to get in touch, or visit the bursary office."
+
+**4. MoMo webhook failure causes payments to go unprocessed**
+
+The webhook integration fails silently (common during periods of MTN MoMo maintenance). Payments arrive at MTN but the school's system never receives the notifications. Parents receive no confirmation; the bursary sees no payment; reminders go out for fees that have been paid. Mitigation: the daily cron job includes a reconciliation step that compares the MoMo merchant statement (CSV downloaded each morning) against the payment records in the database. Any payment in the statement that is not in the database is flagged. This catch-up mechanism ensures webhook failures are discovered within 24 hours.
 
 ---
 
