@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function geminiChat(messages: Message[], systemPrompt: string): Promise<string> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
     systemInstruction: systemPrompt,
   });
   const history = messages.slice(0, -1).map((m) => ({
