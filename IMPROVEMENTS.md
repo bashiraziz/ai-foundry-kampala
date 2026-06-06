@@ -31,10 +31,10 @@ Tracked here. Check off as implemented. Do not delete completed items — they s
 
 ## Priority 3 — RAG track/week filtering (wrong content retrieved)
 
-- [ ] **3.1** Remove `_track` and `_week` underscore prefixes in `lib/rag.ts` — make them real parameters
-- [ ] **3.2** Add WHERE clause to `retrieveContext()`: when no `sourcePrefix` provided, filter `source LIKE 'knowledge-base/syllabus/{track}/%'` to scope to the right track
-- [ ] **3.3** Update all call sites (`/api/chat`, `/api/runway/chat`) to pass track correctly
-- [ ] **3.4** Verify with a test query: Developer Week 3 question should not pull Professional track chunks
+- [x] **3.1** Remove `_track` and `_week` underscore prefixes in `lib/rag.ts` — make them real parameters
+- [x] **3.2** Add WHERE clause to `retrieveContext()`: when no `sourcePrefix` provided, filter `source LIKE 'knowledge-base/syllabus/{track}/%'` to scope to the right track
+- [x] **3.3** Update all call sites (`/api/chat`, `/api/runway/chat`) to pass track correctly
+- [x] **3.4** Verify with a test query: Developer Week 3 question should not pull Professional track chunks
 
 ---
 

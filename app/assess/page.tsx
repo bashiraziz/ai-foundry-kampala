@@ -5,6 +5,8 @@ import Link from "next/link";
 
 type Message = { role: "user" | "assistant"; content: string };
 
+const MAX_QUESTIONS = 14;
+
 export default function AssessPage() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -12,6 +14,7 @@ export default function AssessPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const [applicantId, setApplicantId] = useState<string | null>(null);
   const [questionCount, setQuestionCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +22,23 @@ export default function AssessPage() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, loading, completing]);
+
+  const triggerCompletion = async (id: string) => {
+    setCompleting(true);
+    setError(null);
+    try {
+      await fetch("/api/assess/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicantId: id }),
+      });
+      router.push(`/assess/complete?id=${id}`);
+    } catch {
+      setError("Could not calculate your result — please try again.");
+      setCompleting(false);
+    }
+  };
 
   const startAssessment = async () => {
     if (!name.trim()) return;
@@ -48,7 +67,7 @@ export default function AssessPage() {
 
   const send = async () => {
     const text = input.trim();
-    if (!text || loading) return;
+    if (!text || loading || completing) return;
     const next: Message[] = [...messages, { role: "user", content: text }];
     setMessages(next);
     setInput("");
@@ -65,21 +84,17 @@ export default function AssessPage() {
       const data = await res.json();
       const reply = data.reply.replace("[ASSESSMENT_COMPLETE]", "").trim();
       setMessages([...next, { role: "assistant", content: reply }]);
-      setQuestionCount((q) => q + 1);
+      const nextCount = questionCount + 1;
+      setQuestionCount(nextCount);
+      setLoading(false);
 
-      if (data.complete) {
-        await fetch("/api/assess/complete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ applicantId: data.applicantId }),
-        });
-        setTimeout(() => router.push(`/assess/complete?id=${data.applicantId}`), 1500);
+      if (data.complete || nextCount >= MAX_QUESTIONS) {
+        await triggerCompletion(applicantId!);
       }
     } catch {
       setError("Mshauri is unavailable right now — check your connection and try again.");
       setMessages(messages);
       setInput(text);
-    } finally {
       setLoading(false);
     }
   };
@@ -138,10 +153,15 @@ export default function AssessPage() {
           <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
           <div>
             <p className="font-semibold text-white text-sm">Track Assessment</p>
-            <p className="text-xs text-gray-400">Getting to know you — question {Math.min(questionCount, 8)} of 8</p>
+            <p className="text-xs text-gray-400">
+              {completing
+                ? "Calculating your result…"
+                : `Getting to know you — question ${Math.min(questionCount, 8)} of 8`}
+            </p>
           </div>
         </div>
       </header>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -165,6 +185,14 @@ export default function AssessPage() {
             </div>
           </div>
         )}
+        {completing && (
+          <div className="flex justify-start">
+            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
+            <div className="bg-white/10 border border-white/10 rounded-2xl px-4 py-2.5 text-gray-100 text-sm animate-pulse">
+              Thank you — I have everything I need. Calculating your result…
+            </div>
+          </div>
+        )}
         {error && (
           <div className="flex justify-start">
             <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0 opacity-40" />
@@ -175,24 +203,40 @@ export default function AssessPage() {
         )}
         <div ref={bottomRef} />
       </div>
-      <div className="border-t border-white/10 p-4 flex gap-2">
-        <input
-          className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-foundry-green"
-          placeholder="Your answer…"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          disabled={loading}
-          autoFocus
-        />
-        <button
-          onClick={send}
-          disabled={loading || !input.trim()}
-          className="bg-foundry-green text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50 transition"
-        >
-          Send
-        </button>
-      </div>
+
+      {!completing && (
+        <div className="border-t border-white/10 p-4 space-y-2">
+          <div className="flex gap-2">
+            <input
+              className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-foundry-green"
+              placeholder="Your answer…"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && send()}
+              disabled={loading}
+              autoFocus
+            />
+            <button
+              onClick={send}
+              disabled={loading || !input.trim()}
+              className="bg-foundry-green text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50 transition"
+            >
+              Send
+            </button>
+          </div>
+          {questionCount >= 5 && applicantId && (
+            <div className="text-center">
+              <button
+                onClick={() => triggerCompletion(applicantId)}
+                disabled={loading}
+                className="text-xs text-gray-500 hover:text-gray-300 transition disabled:opacity-40"
+              >
+                I&apos;ve answered everything — calculate my result →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
