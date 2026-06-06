@@ -20,12 +20,12 @@ Tracked here. Check off as implemented. Do not delete completed items — they s
 
 ## Priority 2 — Streaming LLM responses (perceived speed on slow connections)
 
-- [ ] **2.1** Add `geminiStream()` to `lib/gemini.ts` using `streamGenerateContent` — returns a `ReadableStream`
-- [ ] **2.2** Add `openrouterStream()` to `lib/openrouter.ts` using SSE streaming
-- [ ] **2.3** Update `/api/chat/route.ts` to return a streaming response (`StreamingTextResponse` or native `Response` with readable stream)
-- [ ] **2.4** Update `ChatWindow.tsx` to consume the stream — append tokens as they arrive, show cursor while streaming
-- [ ] **2.5** Update `/api/runway/chat/route.ts` to stream
-- [ ] **2.6** Streaming fallback: if Gemini stream errors mid-response, complete with OpenRouter non-stream (acceptable degradation)
+- [x] **2.1** Add `geminiStream()` to `lib/gemini.ts` using `streamGenerateContent` — returns a `ReadableStream`
+- [x] **2.2** Add `openrouterStream()` to `lib/openrouter.ts` using SSE streaming
+- [x] **2.3** Update `/api/chat/route.ts` to return a streaming response (`StreamingTextResponse` or native `Response` with readable stream)
+- [x] **2.4** Update `ChatWindow.tsx` to consume the stream — append tokens as they arrive, show cursor while streaming
+- [x] **2.5** Update `/api/runway/chat/route.ts` to stream
+- [x] **2.6** Streaming fallback: if Gemini stream errors mid-response, complete with OpenRouter non-stream (acceptable degradation)
 
 ---
 
