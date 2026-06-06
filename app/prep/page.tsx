@@ -31,7 +31,7 @@ function PrepContent() {
       .then((d) => setEnrollment(d.enrollment));
   }, [applicantId, router]);
 
-  if (!enrollment) return <p className="text-center text-slate-400 mt-20 animate-pulse">Loading your progress…</p>;
+  if (!enrollment) return <p className="text-center text-stone-grey mt-20 animate-pulse">Loading your progress…</p>;
 
   const statusBadge = (moduleId: number) => {
     const s = enrollment.moduleProgress[String(moduleId)];
@@ -49,7 +49,7 @@ function PrepContent() {
     <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7" />
+          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
           <div>
             <h1 className="text-xl font-bold text-gray-800">Runway</h1>
             <p className="text-sm text-gray-500">Build your foundation for the Developer track</p>

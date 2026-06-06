@@ -13,7 +13,7 @@ export default function QuizPage() {
   useEffect(() => {
     const t = localStorage.getItem("kc_track");
     const w = localStorage.getItem("kc_week");
-    if (!t || !w) { router.push("/"); return; }
+    if (!t || !w) { router.push("/start"); return; }
     setTrack(t);
     setWeek(Number(w));
     setReady(true);

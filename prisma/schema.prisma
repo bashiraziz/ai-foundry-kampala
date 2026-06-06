@@ -31,8 +31,8 @@ model Session {
 
 model QuizResult {
   id        String   @id @default(cuid())
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id])
+  studentId String?
+  student   Student? @relation(fields: [studentId], references: [id])
   track     Track
   week      Int
   score     Int

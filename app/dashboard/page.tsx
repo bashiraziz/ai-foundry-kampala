@@ -34,7 +34,11 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-4">
             <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-10" />
           </div>
-          <Link href="/" className="text-sm text-foundry-green hover:underline">Student tutor →</Link>
+          <div className="flex gap-4">
+            <Link href="/dashboard/applicants" className="text-sm text-stone-grey hover:text-forge-night">Applicants</Link>
+            <Link href="/dashboard/prep" className="text-sm text-stone-grey hover:text-forge-night">Runway</Link>
+            <Link href="/start" className="text-sm text-foundry-green hover:underline">Student tutor →</Link>
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">

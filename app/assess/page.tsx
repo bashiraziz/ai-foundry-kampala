@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -68,30 +69,44 @@ export default function AssessPage() {
   if (!started) {
     return (
       <div className="min-h-screen bg-forge-night flex items-center justify-center px-4">
-        <div className="bg-slate-800 rounded-2xl p-8 w-full max-w-md space-y-6 text-white">
+        <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-32 mx-auto" />
-            <h1 className="text-2xl font-bold mt-2">The AI Foundry Kampala — Intake Assessment</h1>
-            <p className="text-slate-400 text-sm mt-1">Ask Mshauri — your AI advisor</p>
+            <Link href="/">
+              <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-8 mx-auto opacity-90" />
+            </Link>
           </div>
-          <p className="text-slate-300 text-sm">
-            This is a short conversation to help us find the right path for you — Developer track, Professional track, or our Prep program. It takes about 10 minutes.
-          </p>
-          <input
-            type="text"
-            placeholder="Your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && startAssessment()}
-            className="w-full bg-forge-night border border-slate-600 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={startAssessment}
-            disabled={!name.trim()}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 disabled:opacity-40"
-          >
-            Start →
-          </button>
+          <div className="bg-white rounded-2xl p-8 space-y-6 shadow-lg">
+            <div>
+              <h1 className="text-xl font-bold text-forge-night">Intake Assessment</h1>
+              <p className="text-stone-grey text-sm mt-1">
+                A 10-minute conversation with Mshauri to find your path — Developer, Professional, or Runway.
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">Your name</label>
+              <input
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && startAssessment()}
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
+              />
+            </div>
+            <button
+              onClick={startAssessment}
+              disabled={!name.trim()}
+              className="w-full bg-amber-400 text-forge-night font-semibold py-3 rounded-xl hover:bg-amber-300 disabled:opacity-40 transition"
+            >
+              Start assessment →
+            </button>
+            <p className="text-center text-xs text-stone-grey">
+              Not applying yet?{" "}
+              <Link href="/start" className="text-foundry-green hover:underline">
+                Talk to Mshauri
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -99,21 +114,25 @@ export default function AssessPage() {
 
   return (
     <div className="min-h-screen bg-forge-night flex flex-col max-w-2xl mx-auto">
-      <header className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="Mshauri" className="w-8 h-8" />
+      <header className="bg-forge-night border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-3">
+          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
           <div>
             <p className="font-semibold text-white text-sm">Track Assessment</p>
-            <p className="text-xs text-slate-400">Getting to know you — question {Math.min(questionCount, 8)} of 8</p>
+            <p className="text-xs text-gray-400">Getting to know you — question {Math.min(questionCount, 8)} of 8</p>
           </div>
         </div>
       </header>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            {m.role === "assistant" && <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />}
-            <div className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
-              m.role === "user" ? "bg-blue-600 text-white" : "bg-slate-800 border border-slate-700 text-slate-200"
+            {m.role === "assistant" && (
+              <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
+            )}
+            <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed ${
+              m.role === "user"
+                ? "bg-foundry-green text-white"
+                : "bg-white/10 border border-white/10 text-gray-100"
             }`}>
               {m.content}
             </div>
@@ -121,25 +140,28 @@ export default function AssessPage() {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl px-4 py-2 text-slate-400 text-sm animate-pulse">Thinking…</div>
+            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
+            <div className="bg-white/10 border border-white/10 rounded-2xl px-4 py-2.5 text-gray-400 text-sm animate-pulse">
+              Thinking…
+            </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
-      <div className="border-t border-slate-700 p-4 flex gap-2">
+      <div className="border-t border-white/10 p-4 flex gap-2">
         <input
-          className="flex-1 bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-foundry-green"
           placeholder="Your answer…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
           disabled={loading}
+          autoFocus
         />
         <button
           onClick={send}
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+          disabled={loading || !input.trim()}
+          className="bg-foundry-green text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50 transition"
         >
           Send
         </button>

@@ -50,7 +50,7 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
         )}
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            {m.role === "assistant" && <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />}
+            {m.role === "assistant" && <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
                 m.role === "user"
@@ -64,7 +64,7 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
         ))}
         {loading && (
           <div className="flex justify-start">
-            <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
+            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
             <div className="bg-white border border-gray-200 rounded-2xl px-4 py-2 text-gray-400 text-sm animate-pulse">
               Thinking…
             </div>

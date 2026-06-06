@@ -75,9 +75,11 @@ export async function POST(req: NextRequest) {
   const reply = await chat(messages, ASSESSMENT_SYSTEM_PROMPT);
   const complete = reply.includes("[ASSESSMENT_COMPLETE]");
 
+  // Save the full conversation including Mshauri's reply so scoring has the complete transcript
+  const fullMessages = [...messages, { role: "assistant", content: reply }];
   await prisma.applicant.update({
     where: { id },
-    data: { messages },
+    data: { messages: fullMessages },
   });
 
   return NextResponse.json({ reply, applicantId: id, complete });

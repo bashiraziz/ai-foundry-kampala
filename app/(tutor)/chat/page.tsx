@@ -15,7 +15,7 @@ export default function ChatPage() {
     const n = localStorage.getItem("kc_name");
     const t = localStorage.getItem("kc_track");
     const w = localStorage.getItem("kc_week");
-    if (!n || !t || !w) { router.push("/"); return; }
+    if (!n || !t || !w) { router.push("/start"); return; }
     setName(n);
     setTrack(t);
     setWeek(Number(w));
@@ -47,7 +47,7 @@ export default function ChatPage() {
             Take quiz →
           </a>
           <a
-            href="/"
+            href="/start"
             className="text-xs text-gray-400 hover:text-gray-600"
           >
             ← Back

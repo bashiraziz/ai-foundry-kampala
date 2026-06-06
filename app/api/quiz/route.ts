@@ -22,7 +22,7 @@ The "answer" field is the 0-based index of the correct option.`;
 
   const quizResult = await prisma.quizResult.create({
     data: {
-      studentId: studentId ?? "anonymous",
+      studentId: studentId ?? null,
       track,
       week,
       score: 0,

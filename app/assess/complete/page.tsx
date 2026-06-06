@@ -12,6 +12,37 @@ interface Result {
   prepScore: number;
 }
 
+const CONFIG = {
+  DEVELOPER: {
+    headline: "Developer track — you qualify.",
+    sub: "The facilitator will be in touch with your cohort start date.",
+    accentClass: "text-foundry-green",
+    barClass: "bg-foundry-green",
+    pill: "bg-green-100 text-green-700",
+  },
+  PROFESSIONAL: {
+    headline: "Professional track — strong fit.",
+    sub: "The facilitator will be in touch with your cohort start date.",
+    accentClass: "text-amber-400",
+    barClass: "bg-amber-400",
+    pill: "bg-amber-100 text-amber-700",
+  },
+  PREP: {
+    headline: "Runway — your path in starts here.",
+    sub: "You have been enrolled in the Runway program. Begin below.",
+    accentClass: "text-amber-400",
+    barClass: "bg-amber-400",
+    pill: "bg-amber-100 text-amber-700",
+  },
+  NOT_READY: {
+    headline: "Not quite yet — here is what to do first.",
+    sub: "Come back when you are ready. New cohorts run regularly.",
+    accentClass: "text-gray-300",
+    barClass: "bg-gray-400",
+    pill: "bg-gray-100 text-gray-500",
+  },
+} as const;
+
 function CompleteContent() {
   const params = useSearchParams();
   const id = params.get("id");
@@ -28,53 +59,65 @@ function CompleteContent() {
       .then(setResult);
   }, [id]);
 
-  if (!result) return <p className="text-center text-slate-400 mt-20 animate-pulse">Calculating your result…</p>;
+  if (!result) {
+    return (
+      <div className="min-h-screen bg-forge-night flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-12 h-12 mx-auto animate-pulse" />
+          <p className="text-gray-400 text-sm">Calculating your result…</p>
+        </div>
+      </div>
+    );
+  }
 
-  const config = {
-    DEVELOPER: {
-      icon: "✅",
-      headline: "Developer track — you qualify.",
-      sub: "The facilitator will be in touch with your cohort start date.",
-      cls: "text-green-400",
-    },
-    PROFESSIONAL: {
-      icon: "✅",
-      headline: "Professional track — strong fit.",
-      sub: "The facilitator will be in touch with your cohort start date.",
-      cls: "text-green-400",
-    },
-    PREP: {
-      icon: "🛤️",
-      headline: "Runway — your path in starts here.",
-      sub: "You have been enrolled in the Runway program.",
-      cls: "text-amber-400",
-    },
-    NOT_READY: {
-      icon: "⏳",
-      headline: "Not quite yet — here is what to do first.",
-      sub: "Come back when you are ready. The club runs new cohorts regularly.",
-      cls: "text-slate-300",
-    },
-  }[result.recommendation];
+  const cfg = CONFIG[result.recommendation];
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex items-center justify-center px-4">
-      <div className="bg-[#1e293b] rounded-2xl p-8 w-full max-w-md space-y-4 text-white text-center">
-        <div className="text-5xl">{config.icon}</div>
-        <h1 className={`text-xl font-bold ${config.cls}`}>{config.headline}</h1>
-        <p className="text-slate-300 text-sm leading-relaxed">{result.reasoning}</p>
-        <p className="text-slate-400 text-sm">{config.sub}</p>
-        {result.recommendation === "PREP" && (
-          <Link
-            href={`/prep?applicantId=${id}`}
-            className="block w-full bg-amber-500 text-white py-3 rounded-xl font-medium hover:bg-amber-600 mt-4"
-          >
-            Begin Runway →
+    <div className="min-h-screen bg-forge-night flex items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <Link href="/">
+            <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-7 mx-auto opacity-80" />
           </Link>
-        )}
-        <Link href="/assess" className="block text-slate-500 text-sm mt-2 hover:text-slate-300">
-          ← Start a new assessment
-        </Link>
+        </div>
+        <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
+          <div className={`h-1.5 ${cfg.barClass}`} />
+          <div className="p-8 space-y-4">
+            <span className={`text-xs font-mono font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full ${cfg.pill}`}>
+              {result.recommendation === "NOT_READY" ? "Not ready" : result.recommendation}
+            </span>
+            <h1 className={`text-xl font-bold ${cfg.accentClass}`}>{cfg.headline}</h1>
+            <p className="text-stone-grey text-sm leading-relaxed">{result.reasoning}</p>
+            <p className="text-gray-400 text-sm">{cfg.sub}</p>
+
+            <div className="grid grid-cols-3 gap-3 pt-2 text-center border-t border-gray-100">
+              {[
+                { label: "Developer", value: result.developerScore },
+                { label: "Professional", value: result.professionalScore },
+                { label: "Runway", value: result.prepScore },
+              ].map((s) => (
+                <div key={s.label} className="bg-gray-50 rounded-xl p-2">
+                  <p className="text-lg font-bold text-forge-night">{s.value ?? "—"}</p>
+                  <p className="text-xs text-stone-grey">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {result.recommendation === "PREP" && (
+              <Link
+                href={`/prep?applicantId=${id}`}
+                className="block w-full text-center bg-amber-400 text-forge-night font-semibold py-3 rounded-xl hover:bg-amber-300 transition"
+              >
+                Begin Runway →
+              </Link>
+            )}
+            <div className="text-center">
+              <Link href="/assess" className="text-sm text-stone-grey hover:text-forge-night transition">
+                ← Start a new assessment
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -82,7 +125,11 @@ function CompleteContent() {
 
 export default function CompletePage() {
   return (
-    <Suspense fallback={<p className="text-center text-slate-400 mt-20">Loading…</p>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-forge-night flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Loading…</p>
+      </div>
+    }>
       <CompleteContent />
     </Suspense>
   );
