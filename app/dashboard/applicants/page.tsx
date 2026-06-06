@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
-export const revalidate = 60;
+const PAGE_SIZE = 50;
 
 const BADGE: Record<string, string> = {
   DEVELOPER: "bg-green-100 text-green-700",
@@ -13,21 +13,47 @@ const BADGE: Record<string, string> = {
   NOT_READY: "bg-gray-100 text-gray-500",
 };
 
-export default async function ApplicantsPage() {
+export default async function ApplicantsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; page?: string }>;
+}) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
 
-  const applicants = await prisma.applicant.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  const { q = "", page: pageStr = "0" } = await searchParams;
+  const page = Math.max(0, parseInt(pageStr) || 0);
+  const search = q.trim();
 
-  const counts = {
-    all: applicants.length,
-    PENDING: applicants.filter((a) => a.status === "PENDING").length,
-    DEVELOPER: applicants.filter((a) => a.recommendation === "DEVELOPER").length,
-    PROFESSIONAL: applicants.filter((a) => a.recommendation === "PROFESSIONAL").length,
-    PREP: applicants.filter((a) => a.recommendation === "PREP").length,
-    NOT_READY: applicants.filter((a) => a.recommendation === "NOT_READY").length,
+  const where = search ? { name: { contains: search, mode: "insensitive" as const } } : undefined;
+
+  const [applicants, filteredTotal, counts] = await Promise.all([
+    prisma.applicant.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: PAGE_SIZE,
+      skip: page * PAGE_SIZE,
+    }),
+    prisma.applicant.count({ where }),
+    Promise.all([
+      prisma.applicant.count(),
+      prisma.applicant.count({ where: { status: "PENDING" } }),
+      prisma.applicant.count({ where: { recommendation: "DEVELOPER" } }),
+      prisma.applicant.count({ where: { recommendation: "PROFESSIONAL" } }),
+      prisma.applicant.count({ where: { recommendation: "PREP" } }),
+      prisma.applicant.count({ where: { recommendation: "NOT_READY" } }),
+    ]),
+  ]);
+
+  const [total, pending, developer, professional, prep, notReady] = counts;
+  const totalPages = Math.ceil(filteredTotal / PAGE_SIZE);
+
+  const pageUrl = (p: number) => {
+    const params = new URLSearchParams();
+    if (search) params.set("q", search);
+    if (p > 0) params.set("page", String(p));
+    const qs = params.toString();
+    return `/dashboard/applicants${qs ? `?${qs}` : ""}`;
   };
 
   return (
@@ -39,14 +65,50 @@ export default async function ApplicantsPage() {
             <h1 className="text-xl font-bold text-gray-800">Applicants</h1>
           </div>
         </div>
+
+        {/* Summary counts — always reflect the full dataset, not the filtered view */}
         <div className="grid grid-cols-6 gap-3 text-center">
-          {Object.entries(counts).map(([k, v]) => (
-            <div key={k} className="bg-white rounded-xl p-3 shadow-sm">
-              <p className="text-2xl font-bold text-gray-800">{v}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{k === "all" ? "Total" : k.charAt(0) + k.slice(1).toLowerCase()}</p>
+          {[
+            { label: "Total", value: total },
+            { label: "Pending", value: pending },
+            { label: "Developer", value: developer },
+            { label: "Professional", value: professional },
+            { label: "Runway", value: prep },
+            { label: "Not ready", value: notReady },
+          ].map(({ label, value }) => (
+            <div key={label} className="bg-white rounded-xl p-3 shadow-sm">
+              <p className="text-2xl font-bold text-gray-800">{value}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{label}</p>
             </div>
           ))}
         </div>
+
+        {/* Search */}
+        <form method="get" action="/dashboard/applicants" className="flex gap-2">
+          <input
+            name="q"
+            type="search"
+            defaultValue={search}
+            placeholder="Search by name…"
+            className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green bg-white"
+          />
+          <button
+            type="submit"
+            className="bg-foundry-green text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light transition"
+          >
+            Search
+          </button>
+          {search && (
+            <Link
+              href="/dashboard/applicants"
+              className="px-4 py-2 rounded-xl text-sm text-gray-500 hover:text-gray-700 border border-gray-200 bg-white"
+            >
+              Clear
+            </Link>
+          )}
+        </form>
+
+        {/* Table */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -82,8 +144,36 @@ export default async function ApplicantsPage() {
                   </td>
                 </tr>
               ))}
+              {applicants.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-sm">
+                    {search ? `No applicants matching "${search}"` : "No applicants yet."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between text-sm">
+              <p className="text-gray-400">
+                Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filteredTotal)} of {filteredTotal}
+              </p>
+              <div className="flex gap-2">
+                {page > 0 && (
+                  <Link href={pageUrl(page - 1)} className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                    ← Prev
+                  </Link>
+                )}
+                {page < totalPages - 1 && (
+                  <Link href={pageUrl(page + 1)} className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                    Next →
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

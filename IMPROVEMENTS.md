@@ -40,9 +40,9 @@ Tracked here. Check off as implemented. Do not delete completed items — they s
 
 ## Priority 4 — Assessment robustness (students getting stuck)
 
-- [ ] **4.1** Force-complete trigger: if user has sent 14+ messages and `[ASSESSMENT_COMPLETE]` has not appeared, automatically POST to `/api/assess/complete` — prevents infinite loops
-- [ ] **4.2** Add "I've answered everything" button to `app/assess/page.tsx` that manually triggers completion — escape hatch for edge cases
-- [ ] **4.3** Scoring retry: in `/api/assess/complete`, if JSON parse fails, resend with an explicit "return ONLY raw JSON, no other text" instruction and try once more before failing
+- [x] **4.1** Force-complete trigger: if user has sent 14+ messages and `[ASSESSMENT_COMPLETE]` has not appeared, automatically POST to `/api/assess/complete` — prevents infinite loops
+- [x] **4.2** Add "I've answered everything" button to `app/assess/page.tsx` that manually triggers completion — escape hatch for edge cases
+- [x] **4.3** Scoring retry: in `/api/assess/complete`, if JSON parse fails, resend with an explicit "return ONLY raw JSON, no other text" instruction and try once more before failing (done in Priority 1)
 
 ---
 
