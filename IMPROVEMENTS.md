@@ -48,9 +48,9 @@ Tracked here. Check off as implemented. Do not delete completed items — they s
 
 ## Priority 5 — Dashboard performance (won't scale past ~100 applicants)
 
-- [ ] **5.1** Add pagination to `/dashboard/applicants/page.tsx` — `take: 50, skip: page * 50`, prev/next controls
-- [ ] **5.2** Add name search input to applicants page — filter by `name ILIKE %query%` server-side
-- [ ] **5.3** Add pagination to student session history in `/dashboard/students/[id]/page.tsx` — load latest 10 sessions, "load more" button
+- [x] **5.1** Add pagination to `/dashboard/applicants/page.tsx` — `take: 50, skip: page * 50`, prev/next controls
+- [x] **5.2** Add name search input to applicants page — filter by `name ILIKE %query%` server-side
+- [x] **5.3** Add pagination to student session history in `/dashboard/students/[id]/page.tsx` — load latest 10 sessions, "load more" button
 
 ---
 

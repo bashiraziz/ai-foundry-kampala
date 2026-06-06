@@ -27,6 +27,8 @@ model Session {
   week      Int
   messages  Json
   createdAt DateTime @default(now())
+
+  @@index([studentId])
 }
 
 model QuizResult {
@@ -38,6 +40,8 @@ model QuizResult {
   score     Int
   questions Json
   createdAt DateTime @default(now())
+
+  @@index([studentId])
 }
 
 model WeekProgress {
@@ -49,6 +53,7 @@ model WeekProgress {
   updatedAt DateTime   @updatedAt
 
   @@unique([studentId, week])
+  @@index([studentId])
 }
 
 model KnowledgeChunk {
@@ -140,6 +145,8 @@ model Applicant {
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
   prepEnrollment    PrepEnrollment?
+
+  @@index([createdAt])
 }
 
 model PrepEnrollment {
