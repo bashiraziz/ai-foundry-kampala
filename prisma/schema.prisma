@@ -55,7 +55,7 @@ model KnowledgeChunk {
   id        String                      @id @default(cuid())
   source    String
   content   String
-  embedding Unsupported("vector(768)")?
+  embedding Unsupported("vector(3072)")?
   createdAt DateTime                    @default(now())
 }
 

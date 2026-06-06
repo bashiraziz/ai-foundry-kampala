@@ -19,7 +19,14 @@ export async function geminiChat(messages: Message[], systemPrompt: string): Pro
 }
 
 export async function geminiEmbed(text: string): Promise<number[]> {
-  const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
-  const result = await model.embedContent(text);
-  return result.embedding.values;
+  const apiKey = process.env.GEMINI_API_KEY!;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${apiKey}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "models/gemini-embedding-001", content: { parts: [{ text }] } }),
+  });
+  if (!res.ok) throw new Error(`Embed API ${res.status}: ${await res.text()}`);
+  const data = await res.json() as { embedding: { values: number[] } };
+  return data.embedding.values;
 }
