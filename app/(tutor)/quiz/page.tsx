@@ -11,8 +11,8 @@ export default function QuizPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const t = localStorage.getItem("kc_track");
-    const w = localStorage.getItem("kc_week");
+    const t = localStorage.getItem("mshauri_track");
+    const w = localStorage.getItem("mshauri_week");
     if (!t || !w) { router.push("/start"); return; }
     setTrack(t);
     setWeek(Number(w));

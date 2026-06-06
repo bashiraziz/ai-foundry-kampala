@@ -23,7 +23,7 @@ function ProjectContent() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/prep/evaluate", {
+      const res = await fetch("/api/runway/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ applicantId, githubUrl: url.trim() }),
@@ -42,7 +42,7 @@ function ProjectContent() {
     <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <Link href={`/prep?applicantId=${applicantId}`} className="text-sm text-gray-400 hover:text-gray-600">← Back</Link>
+          <Link href={`/runway?applicantId=${applicantId}`} className="text-sm text-gray-400 hover:text-gray-600">← Back</Link>
           <h1 className="text-xl font-bold text-gray-800">Mini-Project Submission</h1>
         </div>
         <div className="bg-white rounded-2xl shadow-sm p-6 space-y-4">

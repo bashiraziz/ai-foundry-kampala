@@ -276,7 +276,7 @@ function ModuleContent() {
     setMessages(next);
     setInput("");
     setLoading(true);
-    const res = await fetch("/api/prep/chat", {
+    const res = await fetch("/api/runway/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: next, module: moduleNum }),
@@ -289,13 +289,13 @@ function ModuleContent() {
   const markComplete = async () => {
     if (!applicantId) return;
     setMarking(true);
-    await fetch("/api/prep", {
+    await fetch("/api/runway", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ applicantId, module: moduleNum, status: "COMPLETE" }),
     });
     setMarking(false);
-    router.push(`/prep?applicantId=${applicantId}`);
+    router.push(`/runway?applicantId=${applicantId}`);
   };
 
   const allChecked = checked.every(Boolean);
@@ -304,10 +304,10 @@ function ModuleContent() {
     <div className="min-h-screen bg-bone-white">
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7" />
+          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
           <p className="font-semibold text-gray-800 text-sm">Module {moduleNum}: {moduleData.title}</p>
         </div>
-        <Link href={`/prep?applicantId=${applicantId}`} className="text-xs text-gray-400 hover:text-gray-600">← Back</Link>
+        <Link href={`/runway?applicantId=${applicantId}`} className="text-xs text-gray-400 hover:text-gray-600">← Back</Link>
       </header>
       <div className="grid grid-cols-1 lg:grid-cols-2 max-w-6xl mx-auto gap-0 lg:gap-6 p-4">
         {/* Lesson */}
@@ -349,7 +349,7 @@ function ModuleContent() {
             <p className="text-xs text-gray-400 text-center">Ask Mshauri anything about this module</p>
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                {m.role === "assistant" && <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />}
+                {m.role === "assistant" && <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />}
                 <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${
                   m.role === "user" ? "bg-foundry-green text-white" : "bg-gray-50 border border-gray-200 text-gray-700"
                 }`}>{m.content}</div>
@@ -357,7 +357,7 @@ function ModuleContent() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />
+                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-gray-400 text-sm animate-pulse">Thinking…</div>
               </div>
             )}

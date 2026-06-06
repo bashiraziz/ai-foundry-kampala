@@ -28,7 +28,7 @@ export default async function PrepStudentPage({ params }: { params: Promise<{ id
     <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard/prep" className="text-sm text-gray-400 hover:text-gray-600">← Runway</Link>
+          <Link href="/dashboard/runway" className="text-sm text-gray-400 hover:text-gray-600">← Runway</Link>
           <h1 className="text-xl font-bold text-gray-800">{enrollment.applicant.name}</h1>
         </div>
         <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">

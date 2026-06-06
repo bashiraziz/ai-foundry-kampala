@@ -12,9 +12,9 @@ export default function ChatPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const n = localStorage.getItem("kc_name");
-    const t = localStorage.getItem("kc_track");
-    const w = localStorage.getItem("kc_week");
+    const n = localStorage.getItem("mshauri_name");
+    const t = localStorage.getItem("mshauri_track");
+    const w = localStorage.getItem("mshauri_week");
     if (!n || !t || !w) { router.push("/start"); return; }
     setName(n);
     setTrack(t);

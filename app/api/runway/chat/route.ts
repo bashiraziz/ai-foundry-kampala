@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   const { messages, module: moduleNum } = await req.json();
   const title = MODULE_TITLES[moduleNum] ?? "Foundations";
   const lastMessage = messages[messages.length - 1]?.content ?? "";
-  const sourcePrefix = `knowledge-base/prep/module-0${moduleNum}`;
+  const sourcePrefix = `knowledge-base/runway/module-0${moduleNum}`;
   const context = await retrieveContext(lastMessage, "PREP", 0, 5, sourcePrefix);
 
   const systemPrompt = PREP_SYSTEM_PROMPT

@@ -37,7 +37,7 @@ export default async function PrepDashboardPage() {
             return (
               <Link
                 key={e.id}
-                href={`/dashboard/prep/${e.id}`}
+                href={`/dashboard/runway/${e.id}`}
                 className="block bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition"
               >
                 <div className="flex items-center justify-between mb-2">

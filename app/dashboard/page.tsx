@@ -36,7 +36,7 @@ export default async function DashboardPage() {
           </div>
           <div className="flex gap-4">
             <Link href="/dashboard/applicants" className="text-sm text-stone-grey hover:text-forge-night">Applicants</Link>
-            <Link href="/dashboard/prep" className="text-sm text-stone-grey hover:text-forge-night">Runway</Link>
+            <Link href="/dashboard/runway" className="text-sm text-stone-grey hover:text-forge-night">Runway</Link>
             <Link href="/start" className="text-sm text-foundry-green hover:underline">Student tutor →</Link>
           </div>
         </div>

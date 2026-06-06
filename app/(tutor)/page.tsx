@@ -313,7 +313,7 @@ export default function LandingPage() {
           <div className="flex flex-wrap gap-5 text-sm">
             <Link href="/assess" className="hover:text-white transition">Apply</Link>
             <Link href="/start" className="hover:text-white transition">Mshauri</Link>
-            <Link href="/prep" className="hover:text-white transition">Runway</Link>
+            <Link href="/runway" className="hover:text-white transition">Runway</Link>
             <Link href="/login" className="hover:text-white transition">Staff login</Link>
           </div>
         </div>

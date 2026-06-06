@@ -12,9 +12,9 @@ export default function StartPage() {
 
   const start = () => {
     if (!name.trim()) return;
-    localStorage.setItem("kc_name", name.trim());
-    localStorage.setItem("kc_track", track);
-    localStorage.setItem("kc_week", String(week));
+    localStorage.setItem("mshauri_name", name.trim());
+    localStorage.setItem("mshauri_track", track);
+    localStorage.setItem("mshauri_week", String(week));
     router.push("/chat");
   };
 

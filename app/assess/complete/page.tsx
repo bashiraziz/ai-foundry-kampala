@@ -90,22 +90,9 @@ function CompleteContent() {
             <p className="text-stone-grey text-sm leading-relaxed">{result.reasoning}</p>
             <p className="text-gray-400 text-sm">{cfg.sub}</p>
 
-            <div className="grid grid-cols-3 gap-3 pt-2 text-center border-t border-gray-100">
-              {[
-                { label: "Developer", value: result.developerScore },
-                { label: "Professional", value: result.professionalScore },
-                { label: "Runway", value: result.prepScore },
-              ].map((s) => (
-                <div key={s.label} className="bg-gray-50 rounded-xl p-2">
-                  <p className="text-lg font-bold text-forge-night">{s.value ?? "—"}</p>
-                  <p className="text-xs text-stone-grey">{s.label}</p>
-                </div>
-              ))}
-            </div>
-
             {result.recommendation === "PREP" && (
               <Link
-                href={`/prep?applicantId=${id}`}
+                href={`/runway?applicantId=${id}`}
                 className="block w-full text-center bg-amber-400 text-forge-night font-semibold py-3 rounded-xl hover:bg-amber-300 transition"
               >
                 Begin Runway →

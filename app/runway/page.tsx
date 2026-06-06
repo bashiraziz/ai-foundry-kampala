@@ -26,7 +26,7 @@ function PrepContent() {
 
   useEffect(() => {
     if (!applicantId) { router.push("/assess"); return; }
-    fetch(`/api/prep?applicantId=${applicantId}`)
+    fetch(`/api/runway?applicantId=${applicantId}`)
       .then((r) => r.json())
       .then((d) => setEnrollment(d.enrollment));
   }, [applicantId, router]);
@@ -69,7 +69,7 @@ function PrepContent() {
                     <span className="text-gray-300 text-xl">🔒</span>
                   ) : (
                     <Link
-                      href={`/prep/${m.id}?applicantId=${applicantId}`}
+                      href={`/runway/${m.id}?applicantId=${applicantId}`}
                       className="text-sm bg-foundry-green text-white px-4 py-1.5 rounded-lg hover:bg-foundry-green-light"
                     >
                       {enrollment.moduleProgress[String(m.id)] === "COMPLETE" ? "Review" : "Start →"}
@@ -82,7 +82,7 @@ function PrepContent() {
         </div>
         {enrollment.moduleProgress["4"] === "COMPLETE" && (
           <Link
-            href={`/prep/project?applicantId=${applicantId}`}
+            href={`/runway/project?applicantId=${applicantId}`}
             className="block w-full bg-amber-500 text-white py-3 rounded-xl font-medium text-center hover:bg-amber-600"
           >
             Submit mini-project →
