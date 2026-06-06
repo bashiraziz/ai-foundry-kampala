@@ -13,6 +13,7 @@ const config: Config = {
         "amber-light":         "#fef3c7",
         "crown-red":           "#dc2626",
         "forge-night":         "#1c1c2e",
+        "forge-deep":          "#0f1117",
         "stone-grey":          "#6b7280",
         "bone-white":          "#f9fafb",
       },

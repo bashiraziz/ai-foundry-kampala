@@ -21,51 +21,64 @@ export default function StartPage() {
   const topics = WEEK_TOPICS[track];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-bone-white">
-      <Link href="/" className="mb-8">
-        <img src="/brand/hero-mark.svg" alt="The AI Foundry Kampala" className="w-36" />
+    <div className="min-h-screen bg-forge-deep flex flex-col items-center justify-center px-4 py-12">
+      <Link href="/" className="mb-8 opacity-60 hover:opacity-90 transition">
+        <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-7" />
       </Link>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-md space-y-6">
+
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 space-y-6 animate-scale-in">
         <div>
-          <h1 className="text-lg font-semibold text-forge-night">Talk to Mshauri</h1>
-          <p className="text-sm text-stone-grey mt-1">Your AI advisor — available any time, knows your curriculum.</p>
+          <h1 className="text-xl font-bold text-forge-night">Talk to Mshauri</h1>
+          <p className="text-sm text-stone-grey mt-1">Your AI tutor — trained on the Foundry curriculum, available any time.</p>
         </div>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Your name</label>
+
+        <div className="space-y-5">
+          {/* Name */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide block">Your name</label>
             <input
               type="text"
-              placeholder="Enter your name"
+              placeholder="e.g. Tendo Nakabiri"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && start()}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
+              autoFocus
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green/20 focus:border-foundry-green transition"
             />
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Track</label>
+
+          {/* Track */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide block">Track</label>
             <div className="grid grid-cols-2 gap-2">
               {(["DEVELOPER", "PROFESSIONAL"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setTrack(t)}
-                  className={`py-2 rounded-xl text-sm font-medium border transition ${
+                  className={`py-3 px-4 rounded-xl text-sm font-medium border transition-all text-left ${
                     track === t
-                      ? "bg-foundry-green text-white border-foundry-green"
-                      : "border-gray-300 text-gray-600 hover:border-foundry-green"
+                      ? t === "DEVELOPER"
+                        ? "bg-foundry-green text-white border-foundry-green"
+                        : "bg-amber-400 text-forge-night border-amber-400"
+                      : "border-gray-200 text-gray-600 hover:border-gray-300"
                   }`}
                 >
-                  {t === "DEVELOPER" ? "Developer" : "Professional"}
+                  <span className="block font-semibold">{t === "DEVELOPER" ? "Developer" : "Professional"}</span>
+                  <span className={`block text-xs mt-0.5 ${track === t ? "opacity-80" : "text-gray-400"}`}>
+                    {t === "DEVELOPER" ? "Code-first" : "No-code friendly"}
+                  </span>
                 </button>
               ))}
             </div>
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Current week</label>
+
+          {/* Week */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide block">Current week</label>
             <select
               value={week}
               onChange={(e) => setWeek(Number(e.target.value))}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green/20 focus:border-foundry-green transition appearance-none bg-white"
             >
               {Array.from({ length: 12 }, (_, i) => i + 1).map((w) => (
                 <option key={w} value={w}>
@@ -75,13 +88,19 @@ export default function StartPage() {
             </select>
           </div>
         </div>
+
         <button
           onClick={start}
           disabled={!name.trim()}
-          className="w-full bg-foundry-green text-white py-3 rounded-xl font-medium hover:bg-foundry-green-light disabled:opacity-40 transition"
+          className="w-full bg-foundry-green text-white py-3 rounded-xl font-semibold hover:bg-foundry-green-light disabled:opacity-40 transition text-sm"
         >
           Start session →
         </button>
+
+        <p className="text-center text-xs text-gray-400">
+          Applying?{" "}
+          <Link href="/assess" className="text-foundry-green hover:underline">Take the intake assessment →</Link>
+        </p>
       </div>
     </div>
   );

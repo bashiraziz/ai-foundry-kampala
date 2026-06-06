@@ -15,6 +15,8 @@ interface QuizCardProps {
   week: number;
 }
 
+const LABELS = ["A", "B", "C", "D"];
+
 export default function QuizCard({ track, week }: QuizCardProps) {
   const [quizId, setQuizId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -44,7 +46,7 @@ export default function QuizCard({ track, week }: QuizCardProps) {
       body: JSON.stringify({ track, week }),
     })
       .then(async (r) => {
-        if (!r.ok) throw new Error("Failed to generate quiz");
+        if (!r.ok) throw new Error();
         return r.json();
       })
       .then(({ quizId, questions, error }) => {
@@ -78,7 +80,7 @@ export default function QuizCard({ track, week }: QuizCardProps) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ quizId, answers: nextAnswers }),
         });
-        if (!res.ok) throw new Error("Submit failed");
+        if (!res.ok) throw new Error();
         const data = await res.json();
         setScore(data.score);
         setFinalQuestions(data.questions);
@@ -90,76 +92,142 @@ export default function QuizCard({ track, week }: QuizCardProps) {
     }
   };
 
-  if (loading) return <p className="text-center text-gray-400 py-8">Generating quiz…</p>;
-
-  if (error) return (
-    <div className="p-6 text-center space-y-4">
-      <p className="text-red-500 text-sm">{error}</p>
-      <button onClick={loadQuiz} className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm">
-        Try again
-      </button>
-    </div>
-  );
-
-  if (score !== null) {
+  if (loading) {
     return (
-      <div className="p-6 text-center space-y-4">
-        <p className="text-4xl font-bold text-foundry-green">{score}%</p>
-        <p className="text-gray-600">{score >= 70 ? "Great work!" : "Keep practicing!"}</p>
-        <div className="text-left space-y-4 mt-4">
-          {finalQuestions.map((q, i) => (
-            <div key={i} className="border rounded-xl p-4 text-sm">
-              <p className="font-medium mb-1">{q.q}</p>
-              <p className={q.correct ? "text-green-600" : "text-red-500"}>
-                Your answer: {q.options[q.chosen!]} {q.correct ? "✓" : "✗"}
-              </p>
-              {!q.correct && <p className="text-gray-500">Correct: {q.options[q.answer]}</p>}
-              <p className="text-gray-400 mt-1">{q.explain}</p>
-            </div>
-          ))}
+      <div className="p-10 text-center space-y-3">
+        <div className="flex items-center justify-center gap-1.5 text-stone-grey">
+          <span className="typing-dot" />
+          <span className="typing-dot" />
+          <span className="typing-dot" />
         </div>
-        <button onClick={loadQuiz} className="bg-foundry-green text-white px-6 py-2 rounded-xl">
+        <p className="text-sm text-gray-400">Generating quiz…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-10 text-center space-y-4">
+        <p className="text-sm text-red-500">{error}</p>
+        <button onClick={loadQuiz} className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light transition">
           Try again
         </button>
       </div>
     );
   }
 
+  if (score !== null) {
+    const pass = score >= 70;
+    return (
+      <div className="p-6 space-y-6 animate-scale-in">
+        {/* Score header */}
+        <div className={`rounded-2xl p-6 text-center ${pass ? "bg-green-50 border border-green-100" : "bg-amber-50 border border-amber-100"}`}>
+          <p className={`text-5xl font-bold mb-1 ${pass ? "text-foundry-green" : "text-amber-600"}`}>{score}%</p>
+          <p className={`text-sm font-medium ${pass ? "text-green-700" : "text-amber-700"}`}>
+            {pass ? "Great work — you passed!" : "Keep practicing — you'll get there."}
+          </p>
+        </div>
+
+        {/* Review */}
+        <div className="space-y-3">
+          {finalQuestions.map((q, i) => (
+            <div key={i} className={`rounded-xl border p-4 text-sm space-y-2 ${q.correct ? "border-green-100 bg-green-50/40" : "border-red-100 bg-red-50/40"}`}>
+              <p className="font-medium text-gray-800">{q.q}</p>
+              <div className="flex items-center gap-1.5">
+                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${q.correct ? "bg-green-500 text-white" : "bg-red-400 text-white"}`}>
+                  {q.correct ? "✓" : "✗"}
+                </span>
+                <span className={`${q.correct ? "text-green-700" : "text-red-600"}`}>
+                  {LABELS[q.chosen!]}: {q.options[q.chosen!]}
+                </span>
+              </div>
+              {!q.correct && (
+                <p className="text-gray-500 text-xs pl-5.5">Correct: {LABELS[q.answer]}: {q.options[q.answer]}</p>
+              )}
+              <p className="text-gray-400 text-xs leading-relaxed">{q.explain}</p>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={loadQuiz} className="w-full bg-foundry-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-foundry-green-light transition">
+          Try another quiz
+        </button>
+      </div>
+    );
+  }
+
   const q = questions[current];
+  const progress = (current / questions.length) * 100;
+
   return (
-    <div className="p-6 space-y-4">
-      <p className="text-xs text-gray-400">Question {current + 1} of {questions.length}</p>
-      <p className="font-medium text-gray-800">{q.q}</p>
+    <div className="p-6 space-y-5 animate-fade-in">
+      {/* Progress */}
       <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-medium text-stone-grey">Question {current + 1} of {questions.length}</p>
+          <div className="flex gap-1">
+            {questions.map((_, i) => (
+              <div key={i} className={`w-6 h-1 rounded-full transition-colors ${i <= current ? "bg-foundry-green" : "bg-gray-200"}`} />
+            ))}
+          </div>
+        </div>
+        <div className="h-0.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full bg-foundry-green rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+
+      {/* Question */}
+      <p className="text-base font-semibold text-gray-800 leading-snug">{q.q}</p>
+
+      {/* Options */}
+      <div className="space-y-2.5">
         {q.options.map((opt, i) => {
-          let cls = "w-full text-left border rounded-xl px-4 py-3 text-sm ";
+          let base = "w-full text-left flex items-start gap-3 px-4 py-3 rounded-xl border text-sm transition-all ";
+
           if (selected === null) {
-            cls += "hover:border-foundry-green hover:bg-amber-50";
+            base += "border-gray-200 hover:border-foundry-green hover:bg-green-50/30 cursor-pointer";
           } else if (i === q.answer) {
-            cls += "border-green-500 bg-green-50 text-green-700";
+            base += "border-green-400 bg-green-50 text-green-800";
           } else if (i === selected) {
-            cls += "border-red-400 bg-red-50 text-red-600";
+            base += "border-red-300 bg-red-50 text-red-700";
           } else {
-            cls += "opacity-50";
+            base += "border-gray-100 opacity-40";
           }
+
+          const labelBg =
+            selected === null
+              ? "bg-gray-100 text-gray-500"
+              : i === q.answer
+              ? "bg-green-500 text-white"
+              : i === selected
+              ? "bg-red-400 text-white"
+              : "bg-gray-100 text-gray-400";
+
           return (
-            <button key={i} className={cls} onClick={() => pick(i)}>
-              {opt}
+            <button key={i} className={base} onClick={() => pick(i)}>
+              <span className={`w-5 h-5 rounded-md flex-shrink-0 flex items-center justify-center text-[11px] font-bold mt-0.5 ${labelBg}`}>
+                {LABELS[i]}
+              </span>
+              <span className="flex-1 leading-relaxed">{opt}</span>
             </button>
           );
         })}
       </div>
+
       {selected !== null && (
-        <div className="space-y-3">
-          <p className="text-sm text-gray-500">{q.explain}</p>
+        <div className="space-y-3 animate-fade-up">
+          <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
+            <p className="text-xs font-medium text-stone-grey mb-1">Explanation</p>
+            <p className="text-sm text-gray-600 leading-relaxed">{q.explain}</p>
+          </div>
           <button
             onClick={next}
             disabled={submitting}
-            className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm disabled:opacity-50"
+            className="w-full bg-foundry-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50 transition"
           >
-            {submitting ? "Saving…" : current + 1 < questions.length ? "Next →" : "See results"}
+            {submitting ? "Saving…" : current + 1 < questions.length ? "Next question →" : "See results →"}
           </button>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         </div>
       )}
     </div>

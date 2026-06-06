@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
 import { WEEK_TOPICS } from "@/lib/quiz";
+import Link from "next/link";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -26,37 +27,40 @@ export default function ChatPage() {
 
   const topics = WEEK_TOPICS[track] as Record<number, string>;
   const weekLabel = topics[week] ?? "";
+  const isDev = track === "DEVELOPER";
 
   return (
-    <div className="min-h-screen flex flex-col max-w-2xl mx-auto">
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="Mshauri" className="w-7 h-7" />
+    <div className="h-screen flex flex-col max-w-2xl mx-auto">
+      {/* Header */}
+      <header className="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-8 h-8" />
           <div>
-            <p className="font-semibold text-gray-800 text-sm">AI Foundry Kampala</p>
-            <p className="text-xs text-gray-400">
-              {track === "DEVELOPER" ? "Developer" : "Professional"} · Week {week}: {weekLabel}
+            <p className="font-semibold text-forge-night text-sm">Mshauri</p>
+            <p className="text-xs text-stone-grey">
+              <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle ${isDev ? "bg-foundry-green" : "bg-amber-400"}`} />
+              {isDev ? "Developer" : "Professional"} · Week {week}: {weekLabel}
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <a
+        <div className="flex items-center gap-3">
+          <Link
             href="/quiz"
-            className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg font-medium hover:bg-amber-200"
+            className="text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100 px-3 py-1.5 rounded-lg hover:bg-amber-100 transition"
           >
-            Take quiz →
-          </a>
-          <a
-            href="/start"
-            className="text-xs text-gray-400 hover:text-gray-600"
-          >
-            ← Back
-          </a>
+            Weekly quiz →
+          </Link>
+          <Link href="/start" className="text-xs text-gray-400 hover:text-gray-600 transition">
+            Change week
+          </Link>
         </div>
       </header>
-      <div className="flex-1 flex flex-col bg-bone-white">
+
+      {/* Chat */}
+      <div className="flex-1 min-h-0 bg-gray-50/50">
         <ChatWindow track={track} week={week} weekLabel={weekLabel} />
       </div>
+
       <p className="sr-only">{name}</p>
     </div>
   );

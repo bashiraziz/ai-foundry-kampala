@@ -266,8 +266,8 @@ function ModuleContent() {
   const [checked, setChecked] = useState<boolean[]>(new Array(moduleData?.checklist.length ?? 0).fill(false));
   const [marking, setMarking] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // 7.2 — restore chat + checklist from localStorage on mount
   useEffect(() => {
     if (!applicantId) return;
     try {
@@ -279,13 +279,11 @@ function ModuleContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 7.1 — persist messages after each update
   useEffect(() => {
     if (!applicantId || messages.length === 0) return;
     localStorage.setItem(chatKey, JSON.stringify(messages));
   }, [messages, applicantId, chatKey]);
 
-  // persist checklist state
   useEffect(() => {
     if (!applicantId) return;
     localStorage.setItem(checklistKey, JSON.stringify(checked));
@@ -303,6 +301,7 @@ function ModuleContent() {
     const next: Message[] = [...messages, { role: "user", content: text }];
     setMessages(next);
     setInput("");
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
     setLoading(true);
     setChatError(null);
     try {
@@ -325,7 +324,7 @@ function ModuleContent() {
         const { done, value } = await reader.read();
         if (done) break;
         fullContent += decoder.decode(value, { stream: true });
-        setMessages([...next, { role: "assistant", content: fullContent + " ▋" }]);
+        setMessages([...next, { role: "assistant", content: fullContent + "▋" }]);
       }
       setMessages([...next, { role: "assistant", content: fullContent }]);
     } catch {
@@ -335,6 +334,16 @@ function ModuleContent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = Math.min(e.target.scrollHeight, 100) + "px";
   };
 
   const markComplete = async () => {
@@ -352,86 +361,160 @@ function ModuleContent() {
   };
 
   const allChecked = checked.every(Boolean);
+  const checkedCount = checked.filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-bone-white">
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
-          <p className="font-semibold text-gray-800 text-sm">Module {moduleNum}: {moduleData.title}</p>
-        </div>
-        <Link href={`/runway?applicantId=${applicantId}`} className="text-xs text-gray-400 hover:text-gray-600">← Back</Link>
-      </header>
-      <div className="grid grid-cols-1 lg:grid-cols-2 max-w-6xl mx-auto gap-0 lg:gap-6 p-4">
-        {/* Lesson */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
-          <div className="prose prose-sm max-w-none whitespace-pre-wrap text-gray-700 text-sm leading-relaxed">
-            {moduleData.content}
+    <div className="min-h-screen bg-forge-deep flex flex-col">
+      {/* Header */}
+      <header className="flex-shrink-0 border-b border-white/[0.06] px-4 py-3">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono text-gray-500">0{moduleNum}</span>
+                <p className="text-white font-semibold text-sm">{moduleData.title}</p>
+              </div>
+              <p className="text-gray-500 text-xs">Runway · {checkedCount}/{moduleData.checklist.length} checks complete</p>
+            </div>
           </div>
-          <div>
-            <p className="font-semibold text-gray-700 text-sm mb-2">Module checklist</p>
-            <div className="space-y-2">
+          <Link href={`/runway?applicantId=${applicantId}`} className="text-xs text-gray-500 hover:text-gray-300 transition">
+            ← Runway
+          </Link>
+        </div>
+      </header>
+
+      {/* Content */}
+      <div className="flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+
+        {/* Lesson panel */}
+        <div className="bg-white rounded-2xl overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed whitespace-pre-wrap font-mono">
+              {moduleData.content}
+            </div>
+          </div>
+
+          {/* Checklist */}
+          <div className="border-t border-gray-100 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-forge-night">Module checklist</p>
+              <span className="text-xs text-stone-grey">{checkedCount}/{moduleData.checklist.length}</span>
+            </div>
+            <div className="space-y-2.5">
               {moduleData.checklist.map((item, i) => (
-                <label key={i} className="flex items-start gap-2 text-sm text-gray-600 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5 accent-foundry-green"
-                    checked={checked[i]}
-                    onChange={() => {
-                      const next = [...checked];
-                      next[i] = !next[i];
-                      setChecked(next);
-                    }}
-                  />
-                  {item}
+                <label key={i} className="flex items-start gap-3 cursor-pointer group">
+                  <div className={`w-5 h-5 flex-shrink-0 mt-0.5 rounded-md border-2 flex items-center justify-center transition-all ${
+                    checked[i]
+                      ? "bg-foundry-green border-foundry-green"
+                      : "border-gray-300 group-hover:border-foundry-green/50"
+                  }`}>
+                    {checked[i] && (
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={checked[i]}
+                      onChange={() => {
+                        const next = [...checked];
+                        next[i] = !next[i];
+                        setChecked(next);
+                      }}
+                    />
+                  </div>
+                  <span className={`text-sm leading-snug transition-colors ${checked[i] ? "text-gray-400 line-through" : "text-gray-700"}`}>
+                    {item}
+                  </span>
                 </label>
               ))}
             </div>
+            <button
+              onClick={markComplete}
+              disabled={!allChecked || marking}
+              className="w-full bg-foundry-green text-white py-3 rounded-xl text-sm font-semibold hover:bg-foundry-green-light disabled:opacity-40 transition mt-2"
+            >
+              {marking ? "Saving…" : "Mark module complete →"}
+            </button>
           </div>
-          <button
-            onClick={markComplete}
-            disabled={!allChecked || marking}
-            className="w-full bg-foundry-green text-white py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-40"
-          >
-            {marking ? "Saving…" : "Mark module complete →"}
-          </button>
         </div>
-        {/* Chat */}
-        <div className="bg-white rounded-2xl shadow-sm flex flex-col h-[500px] lg:h-auto">
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            <p className="text-xs text-gray-400 text-center">Ask Mshauri anything about this module</p>
-            {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                {m.role === "assistant" && <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />}
-                <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${
-                  m.role === "user" ? "bg-foundry-green text-white" : "bg-gray-50 border border-gray-200 text-gray-700"
-                }`}>{m.content}</div>
-              </div>
-            ))}
-            {loading && (
-              <div className="flex justify-start">
-                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0" />
-                <div className="bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-gray-400 text-sm animate-pulse">Thinking…</div>
+
+        {/* Chat panel */}
+        <div className="flex flex-col h-[520px] lg:h-auto rounded-2xl border border-white/[0.06] bg-white/[0.03] overflow-hidden">
+          {/* Chat messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.length === 0 && (
+              <div className="text-center py-10 space-y-2 animate-fade-in">
+                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-8 h-8 mx-auto opacity-40" />
+                <p className="text-gray-500 text-sm">Ask Mshauri anything about this module</p>
+                <p className="text-gray-600 text-xs">Enter to send · Shift+Enter for new line</p>
               </div>
             )}
+
+            {messages.map((m, i) => (
+              <div key={i} className={`flex items-end gap-2 animate-fade-up ${m.role === "user" ? "flex-row-reverse" : ""}`}>
+                {m.role === "assistant" && (
+                  <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5" />
+                )}
+                <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
+                  m.role === "user"
+                    ? "bg-foundry-green text-white rounded-br-sm"
+                    : "bg-white/[0.08] border border-white/[0.08] text-gray-100 rounded-bl-sm"
+                }`}>
+                  {m.content}
+                </div>
+              </div>
+            ))}
+
+            {loading && (
+              <div className="flex items-end gap-2 animate-fade-up">
+                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5" />
+                <div className="bg-white/[0.08] border border-white/[0.08] rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5 text-gray-400">
+                  <span className="typing-dot" />
+                  <span className="typing-dot" />
+                  <span className="typing-dot" />
+                </div>
+              </div>
+            )}
+
             {chatError && (
-              <div className="flex justify-start">
-                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-1.5 flex-shrink-0 opacity-40" />
-                <div className="max-w-[80%] rounded-2xl px-3 py-2 text-sm bg-red-50 border border-red-200 text-red-600">{chatError}</div>
+              <div className="flex items-end gap-2 animate-fade-up">
+                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5 opacity-30" />
+                <div className="max-w-[78%] rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm bg-red-900/30 border border-red-500/20 text-red-300">
+                  {chatError}
+                </div>
               </div>
             )}
             <div ref={bottomRef} />
           </div>
-          <div className="border-t border-gray-100 p-3 flex gap-2">
-            <input
-              className="flex-1 border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green"
-              placeholder="Ask a question…"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && send()}
-              disabled={loading}
-            />
-            <button onClick={send} disabled={loading} className="bg-foundry-green text-white px-3 py-1.5 rounded-xl text-sm disabled:opacity-50">Send</button>
+
+          {/* Chat input */}
+          <div className="flex-shrink-0 border-t border-white/[0.06] p-3">
+            <div className="flex items-end gap-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl px-4 py-2.5 focus-within:border-white/20 transition">
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 resize-none focus:outline-none leading-relaxed"
+                placeholder="Ask a question…"
+                value={input}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+                disabled={loading}
+                style={{ maxHeight: "100px" }}
+              />
+              <button
+                onClick={send}
+                disabled={loading || !input.trim()}
+                className="w-7 h-7 bg-amber-400 text-forge-night rounded-lg flex items-center justify-center flex-shrink-0 hover:bg-amber-300 disabled:opacity-30 transition mb-0.5"
+                aria-label="Send"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M1 11L11 1M11 1H4M11 1V8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>

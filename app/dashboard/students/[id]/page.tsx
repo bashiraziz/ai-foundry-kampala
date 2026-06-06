@@ -28,72 +28,105 @@ export default async function StudentPage({
 
   const totalSessions = await prisma.session.count({ where: { studentId: id } });
   const hasMore = !showAll && totalSessions > SESSION_PREVIEW_COUNT;
+  const isDev = student.track === "DEVELOPER";
 
   return (
     <div className="min-h-screen bg-bone-white p-6">
       <div className="max-w-3xl mx-auto space-y-6">
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600">← Dashboard</Link>
-          <h1 className="text-xl font-bold text-gray-800">{student.name}</h1>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${student.track === "DEVELOPER" ? "bg-green-100 text-green-700" : "bg-purple-100 text-purple-700"}`}>
-            {student.track}
+
+        {/* Header */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600 transition">← Dashboard</Link>
+          <h1 className="text-xl font-bold text-forge-night">{student.name}</h1>
+          <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${isDev ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+            {isDev ? "Developer" : "Professional"}
           </span>
         </div>
 
-        <div>
-          <h2 className="text-sm font-semibold text-gray-600 mb-2">Quiz history</h2>
-          <div className="space-y-2">
-            {student.quizzes.map((q) => (
-              <div key={q.id} className="bg-white rounded-xl p-4 shadow-sm text-sm">
-                <div className="flex justify-between mb-1">
-                  <span className="text-gray-500">Week {q.week} · {new Date(q.createdAt).toLocaleDateString()}</span>
-                  <span className="font-bold text-foundry-green">{q.score}%</span>
-                </div>
-              </div>
-            ))}
-            {student.quizzes.length === 0 && <p className="text-gray-400 text-sm">No quizzes yet.</p>}
-          </div>
+        {/* Quiz history */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <p className="text-sm font-semibold text-gray-700 mb-4">Quiz history</p>
+          {student.quizzes.length > 0 ? (
+            <div className="space-y-2">
+              {student.quizzes.map((q) => {
+                const pass = q.score >= 70;
+                return (
+                  <div key={q.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                    <div>
+                      <p className="text-sm text-gray-700 font-medium">Week {q.week}</p>
+                      <p className="text-xs text-gray-400">{new Date(q.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${pass ? "bg-foundry-green" : "bg-amber-400"}`}
+                          style={{ width: `${q.score}%` }}
+                        />
+                      </div>
+                      <span className={`text-sm font-bold ${pass ? "text-foundry-green" : "text-amber-600"}`}>
+                        {q.score}%
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400">No quizzes yet.</p>
+          )}
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-gray-600">
+        {/* Session history */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-semibold text-gray-700">
               Session history
-              <span className="ml-2 text-gray-400 font-normal">({totalSessions} total)</span>
-            </h2>
+              <span className="ml-2 text-gray-400 font-normal text-xs">({totalSessions} total)</span>
+            </p>
             {showAll && totalSessions > SESSION_PREVIEW_COUNT && (
-              <Link
-                href={`/dashboard/students/${id}`}
-                className="text-xs text-gray-400 hover:text-gray-600"
-              >
+              <Link href={`/dashboard/students/${id}`} className="text-xs text-gray-400 hover:text-gray-600 transition">
                 Show recent only
               </Link>
             )}
           </div>
-          <div className="space-y-2">
-            {student.sessions.map((s) => {
-              const msgs = s.messages as { role: string; content: string }[];
-              return (
-                <details key={s.id} className="bg-white rounded-xl shadow-sm">
-                  <summary className="p-4 cursor-pointer text-sm text-gray-600">
-                    Week {s.week} · {new Date(s.createdAt).toLocaleDateString()} · {msgs.length} messages
-                  </summary>
-                  <div className="px-4 pb-4 space-y-2">
-                    {msgs.map((m, i) => (
-                      <div key={i} className={`text-xs p-2 rounded-lg ${m.role === "user" ? "bg-green-50 text-green-800" : "bg-gray-50 text-gray-600"}`}>
-                        <span className="font-medium">{m.role === "user" ? student.name : "Mshauri"}: </span>
-                        {m.content}
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              );
-            })}
-            {student.sessions.length === 0 && <p className="text-gray-400 text-sm">No sessions yet.</p>}
-          </div>
+
+          {student.sessions.length > 0 ? (
+            <div className="space-y-2">
+              {student.sessions.map((s) => {
+                const msgs = s.messages as { role: string; content: string }[];
+                return (
+                  <details key={s.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                    <summary className="px-4 py-3 cursor-pointer text-sm text-gray-600 hover:bg-gray-50 transition list-none flex items-center justify-between">
+                      <span>Week {s.week} · {new Date(s.createdAt).toLocaleDateString()}</span>
+                      <span className="text-xs text-gray-400">{msgs.length} messages</span>
+                    </summary>
+                    <div className="px-4 pb-4 space-y-1.5 bg-gray-50/50">
+                      {msgs.map((m, i) => (
+                        <div
+                          key={i}
+                          className={`text-xs px-3 py-2 rounded-lg leading-relaxed ${
+                            m.role === "user"
+                              ? "bg-green-50 border border-green-100 text-green-900"
+                              : "bg-white border border-gray-100 text-gray-600"
+                          }`}
+                        >
+                          <span className="font-semibold mr-1.5">
+                            {m.role === "user" ? student.name : "Mshauri"}:
+                          </span>
+                          {m.content}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400">No sessions yet.</p>
+          )}
 
           {hasMore && (
-            <div className="mt-3 text-center">
+            <div className="mt-4 text-center">
               <Link
                 href={`/dashboard/students/${id}?sessions=all`}
                 className="text-sm text-foundry-green hover:underline"
