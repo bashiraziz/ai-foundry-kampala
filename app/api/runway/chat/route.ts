@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { chat } from "@/lib/llm";
+import { NextRequest } from "next/server";
+import { chatStream } from "@/lib/llm";
 import { retrieveContext } from "@/lib/rag";
 
 const MODULE_TITLES: Record<number, string> = {
@@ -46,6 +46,31 @@ export async function POST(req: NextRequest) {
     .replace("{moduleTitle}", title)
     .replace("{context}", context);
 
-  const reply = await chat(messages, systemPrompt);
-  return NextResponse.json({ reply });
+  const encoder = new TextEncoder();
+  const { readable, writable } = new TransformStream<Uint8Array>();
+  const writer = writable.getWriter();
+
+  (async () => {
+    try {
+      const stream = await chatStream(messages, systemPrompt);
+      const reader = stream.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        await writer.write(encoder.encode(value));
+      }
+    } catch (err) {
+      console.error("Runway chat stream error:", err);
+    } finally {
+      await writer.close();
+    }
+  })();
+
+  return new Response(readable, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "no-cache",
+    },
+  });
 }

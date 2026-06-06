@@ -29,6 +29,7 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
     setInput("");
     setLoading(true);
     setError(null);
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -36,9 +37,22 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
         body: JSON.stringify({ messages: next, track, week, studentId }),
       });
       if (!res.ok) throw new Error("Server error");
-      const { reply } = await res.json();
-      if (!reply) throw new Error("Empty response");
-      setMessages([...next, { role: "assistant", content: reply }]);
+      if (!res.body) throw new Error("No response body");
+
+      setLoading(false);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = "";
+
+      setMessages([...next, { role: "assistant", content: "▋" }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullContent += decoder.decode(value, { stream: true });
+        setMessages([...next, { role: "assistant", content: fullContent + " ▋" }]);
+      }
+      setMessages([...next, { role: "assistant", content: fullContent }]);
     } catch {
       setError("Mshauri is unavailable right now — check your connection and try again.");
       setInput(text);
@@ -58,7 +72,9 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
         )}
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            {m.role === "assistant" && <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />}
+            {m.role === "assistant" && (
+              <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7 mr-2 flex-shrink-0" />
+            )}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
                 m.role === "user"

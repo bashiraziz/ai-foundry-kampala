@@ -7,14 +7,14 @@ Tracked here. Check off as implemented. Do not delete completed items — they s
 
 ## Priority 1 — Silent failures (students get no feedback when things break)
 
-- [ ] **1.1** Add `safeParseJson()` helper in `lib/utils.ts` — strips markdown fences, parses JSON, returns null on failure. Used everywhere LLM output is parsed.
-- [ ] **1.2** Apply `safeParseJson` in `/api/quiz` POST — if LLM returns malformed JSON, retry with a stricter prompt before returning 500
-- [ ] **1.3** Apply `safeParseJson` in `/api/assess/complete` — if scoring JSON fails, retry once, then return a graceful degraded result rather than crashing
-- [ ] **1.4** Apply `safeParseJson` in `/api/runway/evaluate` — score parse failure should return a clear error to the student, not a 500
-- [ ] **1.5** Error state + message in `ChatWindow.tsx` — catch fetch failures, show "Mshauri is unavailable right now — try again in a moment" inline
-- [ ] **1.6** Error state in `QuizCard.tsx` — catch fetch failures on quiz load and answer submit, show inline message with retry button
-- [ ] **1.7** Error state on `app/assess/page.tsx` — catch failures on message send, show inline error so student knows to retry
-- [ ] **1.8** Error state on `app/runway/[module]/page.tsx` chat — same pattern as ChatWindow
+- [x] **1.1** Add `safeParseJson()` helper in `lib/utils.ts` — strips markdown fences, parses JSON, returns null on failure. Used everywhere LLM output is parsed.
+- [x] **1.2** Apply `safeParseJson` in `/api/quiz` POST — if LLM returns malformed JSON, retry with a stricter prompt before returning 500
+- [x] **1.3** Apply `safeParseJson` in `/api/assess/complete` — if scoring JSON fails, retry once, then return a graceful degraded result rather than crashing
+- [x] **1.4** Apply `safeParseJson` in `/api/runway/evaluate` — score parse failure should return a clear error to the student, not a 500
+- [x] **1.5** Error state + message in `ChatWindow.tsx` — catch fetch failures, show "Mshauri is unavailable right now — try again in a moment" inline
+- [x] **1.6** Error state in `QuizCard.tsx` — catch fetch failures on quiz load and answer submit, show inline message with retry button
+- [x] **1.7** Error state on `app/assess/page.tsx` — catch failures on message send, show inline error so student knows to retry
+- [x] **1.8** Error state on `app/runway/[module]/page.tsx` chat — same pattern as ChatWindow
 
 ---
 
@@ -76,7 +76,7 @@ Tracked here. Check off as implemented. Do not delete completed items — they s
 - [ ] **S1** `AcceptRejectButtons.tsx` — add loading state (disable button + spinner) on click; prevent double-submit
 - [ ] **S2** Login page — add `type="email"` to email input and basic client-side validation before submitting
 - [ ] **S3** `/api/runway/evaluate` — try `main` branch first, then `master` if 404; return helpful error if both fail
-- [ ] **S4** `QuizCard.tsx` — replace `window.location.reload()` with state reset (`setPhase("loading")`, `setQuestions([])` etc.) for smoother retry
+- [x] **S4** `QuizCard.tsx` — replace `window.location.reload()` with state reset (`setPhase("loading")`, `setQuestions([])` etc.) for smoother retry
 - [ ] **S5** Extract all system prompts to `lib/prompts.ts` — tutor prompt, assessment prompt, scoring prompt, runway prompt. Remove duplication across route files.
 - [ ] **S6** Move magic numbers to `lib/constants.ts`: `MAX_ASSESSMENT_MESSAGES = 14`, `RUNWAY_MODULE_COUNT = 4`, `PASS_THRESHOLD = 70`, `WEEKS_PER_TRACK = 12`
 - [ ] **S7** Dashboard filter: add track toggle (All / Developer / Professional) to `/dashboard/page.tsx` student grid

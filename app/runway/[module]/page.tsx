@@ -285,9 +285,22 @@ function ModuleContent() {
         body: JSON.stringify({ messages: next, module: moduleNum }),
       });
       if (!res.ok) throw new Error("Server error");
-      const data = await res.json();
-      if (!data.reply) throw new Error("Empty response");
-      setMessages([...next, { role: "assistant", content: data.reply }]);
+      if (!res.body) throw new Error("No response body");
+
+      setLoading(false);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = "";
+
+      setMessages([...next, { role: "assistant", content: "▋" }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullContent += decoder.decode(value, { stream: true });
+        setMessages([...next, { role: "assistant", content: fullContent + " ▋" }]);
+      }
+      setMessages([...next, { role: "assistant", content: fullContent }]);
     } catch {
       setChatError("Mshauri is unavailable right now — check your connection and try again.");
       setMessages(messages);

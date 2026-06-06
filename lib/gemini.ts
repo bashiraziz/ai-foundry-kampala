@@ -13,9 +13,36 @@ export async function geminiChat(messages: Message[], systemPrompt: string): Pro
     parts: [{ text: m.content }],
   }));
   const lastMessage = messages[messages.length - 1].content;
-  const chat = model.startChat({ history });
-  const result = await chat.sendMessage(lastMessage);
+  const chatSession = model.startChat({ history });
+  const result = await chatSession.sendMessage(lastMessage);
   return result.response.text();
+}
+
+export async function geminiChatStream(
+  messages: Message[],
+  systemPrompt: string
+): Promise<ReadableStream<string>> {
+  const model = genAI.getGenerativeModel({
+    model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+    systemInstruction: systemPrompt,
+  });
+  const history = messages.slice(0, -1).map((m) => ({
+    role: m.role === "user" ? "user" : "model",
+    parts: [{ text: m.content }],
+  }));
+  const lastMessage = messages[messages.length - 1].content;
+  const chatSession = model.startChat({ history });
+  const result = await chatSession.sendMessageStream(lastMessage);
+
+  return new ReadableStream<string>({
+    async start(controller) {
+      for await (const chunk of result.stream) {
+        const text = chunk.text();
+        if (text) controller.enqueue(text);
+      }
+      controller.close();
+    },
+  });
 }
 
 export async function geminiEmbed(text: string): Promise<number[]> {
