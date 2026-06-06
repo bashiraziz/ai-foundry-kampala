@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Archivo:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Space+Mono:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -37,6 +37,46 @@ code, pre, .mono {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* ── Design v2 CSS vars ── */
+:root {
+  --cream:     #F4ECDD;
+  --cream-2:   #EBE0CD;
+  --ink:       #1A1410;
+  --ink-2:     #221A13;
+  --line-lt:   #DCCFB8;
+  --line-dk:   #382A1E;
+  --muted-lt:  #6A5F4D;
+  --muted-dk:  #B3A488;
+  --clay:      #D8542B;
+  --clay-deep: #B5421E;
+  --forest:    #1F5E45;
+  --marigold:  #F2B23E;
+  --plum:      #6B3A52;
+}
+
+/* ── Ticker marquee ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.ticker-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 26px;
+  animation: marquee 26s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+}
+
+/* ── Mshauri badge pulse ── */
+@keyframes mshauri-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(242,178,62,0.5); }
+  70%  { box-shadow: 0 0 0 12px rgba(242,178,62,0); }
+  100% { box-shadow: 0 0 0 0 rgba(242,178,62,0); }
+}
+.mshauri-pulse { animation: mshauri-pulse 2.2s infinite; }
 
 /* ── Animations ── */
 @keyframes fade-up {

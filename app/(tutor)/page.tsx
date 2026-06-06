@@ -2,248 +2,127 @@ import Link from "next/link";
 
 export const metadata = {
   title: "The AI Foundry Kampala — Build With AI",
-  description:
-    "Uganda's AI learning hub. Intensive tracks for developers, professionals, and first-time builders.",
+  description: "Uganda's AI learning hub. Intensive tracks for developers, professionals, and first-time builders.",
 };
-
-const tracks = [
-  {
-    id: "developer",
-    label: "Developer",
-    tag: "12 weeks · Code-first",
-    accent: "border-l-foundry-green",
-    tagColor: "text-foundry-green",
-    dot: "bg-foundry-green",
-    description:
-      "Build production AI agents, RAG pipelines, and deployed applications from first principles. Kampala-context problems, real code, real tools.",
-    outcomes: ["Ship a working AI agent", "Deploy to production", "Read and write specs"],
-    href: "/assess",
-  },
-  {
-    id: "professional",
-    label: "Professional",
-    tag: "12 weeks · No-code friendly",
-    accent: "border-l-amber-500",
-    tagColor: "text-amber-600",
-    dot: "bg-amber-500",
-    description:
-      "Apply AI to your domain. Automate workflows, audit AI systems, scope agents for your organisation. No coding required.",
-    outcomes: ["Map and automate a workflow", "Write an AI project spec", "Lead AI transformation"],
-    href: "/assess",
-  },
-  {
-    id: "runway",
-    label: "Runway",
-    tag: "4 modules · Self-paced",
-    accent: "border-l-stone-grey",
-    tagColor: "text-stone-grey",
-    dot: "bg-stone-grey",
-    description:
-      "Terminal, Git, Python basics, and a mini-project. The foundation for students who need to build technical confidence before the Developer track.",
-    outcomes: ["Navigate the terminal", "Push code to GitHub", "Write a Python script"],
-    href: "/assess",
-  },
-];
-
-const steps = [
-  {
-    n: "01",
-    title: "Take the intake assessment",
-    body: "A 10-minute conversation with Mshauri, our AI advisor. No exam — just a chat to understand where you are and where you want to go.",
-  },
-  {
-    n: "02",
-    title: "Get placed on the right path",
-    body: "Mshauri scores your responses across 8 signals and recommends Developer, Professional, or Runway. The facilitator confirms your cohort start date.",
-  },
-  {
-    n: "03",
-    title: "Build with your cohort",
-    body: "12 weeks of structured learning, Saturday Fusion Labs, and a capstone project you can put in front of a real client.",
-  },
-];
-
-const projects = [
-  {
-    name: "Duka Accountant",
-    tagline: "AI bookkeeper for informal traders",
-    description: "Reads M-Pesa and MTN MoMo transaction history. Categorises expenses, flags anomalies, produces a weekly cash-flow summary in plain language.",
-    track: "Developer capstone",
-    color: "bg-foundry-green",
-  },
-  {
-    name: "Boda Dispatch",
-    tagline: "Intelligent route and load dispatch",
-    description: "Assigns delivery jobs to boda boda riders based on location, capacity, and traffic. Sends WhatsApp confirmations. Logs every delivery.",
-    track: "Developer capstone",
-    color: "bg-foundry-green-dark",
-  },
-  {
-    name: "School Fees Tracker",
-    tagline: "Payment reconciliation for school administrators",
-    description: "Matches bank deposits against student records, flags outstanding balances, sends SMS reminders, and produces a monthly report for the bursar.",
-    track: "Professional capstone",
-    color: "bg-amber-600",
-  },
-];
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-bone-white">
+    <div className="min-h-screen flex flex-col font-archivo bg-cream text-ink">
 
-      {/* ── Nav ── */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/">
-            <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-7" />
-          </Link>
-          <div className="flex items-center gap-5">
-            <Link href="/start" className="text-sm text-stone-grey hover:text-forge-night transition hidden sm:block">
-              Mshauri
-            </Link>
-            <Link href="/login" className="text-sm text-stone-grey hover:text-forge-night transition hidden sm:block">
-              Staff
-            </Link>
-            <Link
-              href="/assess"
-              className="text-sm font-medium bg-foundry-green text-white px-4 py-1.5 rounded-full hover:bg-foundry-green-light transition"
-            >
-              Apply now
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* ── Hero ── */}
-      <section className="bg-forge-night text-white">
-        <div className="max-w-5xl mx-auto px-6 py-20 sm:py-28">
-          <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-amber-400 mb-5">
-              <span className="w-4 h-px bg-amber-400" />
-              Kampala, Uganda
+      {/* ── 1. NAV ── */}
+      <header className="sticky top-0 z-50 bg-ink text-cream">
+        <div className="max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)] h-[76px] flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="w-[34px] h-[34px] bg-marigold rounded-[9px] -rotate-6 grid place-items-center flex-shrink-0">
+              <span className="font-bricolage font-black text-[18px] text-ink rotate-6 leading-none">F</span>
             </span>
-            <h1 className="text-4xl sm:text-6xl font-display font-bold leading-tight mb-6">
-              Build With AI.
-              <br />
-              <span className="text-amber-400">From Kampala.</span>
-            </h1>
-            <p className="text-lg text-gray-300 leading-relaxed mb-10 max-w-xl">
-              The AI Foundry Kampala is an intensive learning hub training developers,
-              analysts, and domain experts to build real AI systems — grounded in
-              Kampala problems, Kampala context.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/assess"
-                className="bg-amber-400 text-forge-night font-semibold px-6 py-3 rounded-xl hover:bg-amber-300 transition"
-              >
-                Apply — take the assessment →
-              </Link>
-              <Link
-                href="/start"
-                className="border border-gray-600 text-gray-300 font-medium px-6 py-3 rounded-xl hover:border-gray-400 hover:text-white transition"
-              >
-                Talk to Mshauri
-              </Link>
-            </div>
-          </div>
+            <span className="font-bricolage font-extrabold text-[16px] tracking-[0.01em] whitespace-nowrap">
+              THE AI FOUNDRY <em className="not-italic text-marigold">KAMPALA</em>
+            </span>
+          </Link>
+          <nav className="flex items-center gap-8">
+            <Link href="#tracks" className="hidden lg:block font-archivo text-[15px] font-semibold text-cream/70 hover:text-cream transition whitespace-nowrap">Tracks</Link>
+            <Link href="#how" className="hidden lg:block font-archivo text-[15px] font-semibold text-cream/70 hover:text-cream transition whitespace-nowrap">How it works</Link>
+            <Link href="#mshauri" className="hidden lg:block font-archivo text-[15px] font-semibold text-cream/70 hover:text-cream transition whitespace-nowrap">Mshauri</Link>
+            <Link href="/assess" className="font-archivo font-bold text-[15px] bg-clay text-[#1a0d06] px-6 py-[13px] rounded-full hover:bg-[#e85f33] hover:-translate-y-px transition whitespace-nowrap">
+              Apply now →
+            </Link>
+          </nav>
         </div>
+      </header>
 
-        {/* Stats bar */}
-        <div className="border-t border-white/10">
-          <div className="max-w-5xl mx-auto px-6 py-5 grid grid-cols-2 sm:grid-cols-4 gap-6">
+      {/* ── 2. HERO ── */}
+      <section className="bg-ink text-cream relative overflow-hidden">
+        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(1100px 520px at 82% -8%, rgba(216,84,43,0.30), transparent 56%), radial-gradient(760px 460px at 6% 14%, rgba(242,178,62,0.13), transparent 60%)" }} />
+        <div className="relative z-10 max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)] pt-[92px] pb-[78px]">
+          <div className="inline-flex items-center gap-3 bg-forest font-space-mono font-bold text-[12.5px] tracking-[0.1em] uppercase px-[18px] py-[9px] rounded-full mb-8 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-marigold flex-shrink-0" />
+            Kampala, Uganda · <span className="text-marigold">Intensive AI Training</span>
+          </div>
+          <h1 className="font-bricolage font-bold leading-[1.0] tracking-[-0.035em] max-w-[1150px]" style={{ fontSize: "clamp(50px, 7.4vw, 104px)", paddingBottom: "0.06em" }}>
+            Build with <span className="text-clay">AI.</span><br />
+            Forged in <span className="italic font-semibold" style={{ color: "#23CB87" }}>Kampala.</span>
+          </h1>
+          <p className="font-archivo mt-8 max-w-[620px] text-[20px] leading-[1.55] text-muted-dk">
+            An intensive learning hub training developers, analysts, and domain experts to build real AI systems — grounded in Kampala problems, Kampala context.
+          </p>
+          <div className="flex flex-wrap gap-4 mt-10">
+            <Link href="/assess" className="font-archivo font-bold text-[16px] bg-clay text-[#1a0d06] px-[30px] py-[17px] rounded-full hover:bg-[#e85f33] hover:-translate-y-px transition">
+              Apply — take the assessment →
+            </Link>
+            <Link href="/start" className="font-archivo font-bold text-[16px] border-2 border-line-dk text-cream px-[30px] py-[17px] rounded-full hover:border-marigold hover:text-marigold transition">
+              Talk to Mshauri
+            </Link>
+          </div>
+          {/* Stats strip */}
+          <div className="mt-[78px] border-t border-line-dk grid grid-cols-2 lg:grid-cols-4">
             {[
-              { v: "3", l: "Tracks" },
-              { v: "12", l: "Weeks" },
-              { v: "Saturday", l: "Fusion Labs" },
-              { v: "24 / 7", l: "AI Advisor" },
-            ].map((s) => (
-              <div key={s.l}>
-                <p className="text-xl font-bold text-white">{s.v}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{s.l}</p>
+              { num: "3", accent: true, label: "Learning tracks" },
+              { num: "12 wks", accent: false, label: "Core cohort" },
+              { num: "Sat", accent: false, label: "Fusion Labs" },
+              { num: "24/7", accent: false, label: "Mshauri advisor" },
+            ].map((s, i) => (
+              <div key={i} className={`pt-[30px] pb-1 pr-2 ${i < 3 ? "border-r border-line-dk" : ""} ${i === 1 ? "lg:border-r border-r-0" : ""}`}>
+                <p className={`font-bricolage font-extrabold text-[40px] tracking-[-0.02em] ${s.accent ? "text-clay" : "text-cream"}`}>{s.num}</p>
+                <p className="mt-2 font-space-mono text-[11.5px] tracking-[0.1em] uppercase text-muted-dk">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Tracks ── */}
-      <section className="py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-forge-night mb-3">Choose your path</h2>
-            <p className="text-stone-grey max-w-lg">Three tracks designed around where you are — and where the work is.</p>
+      {/* ── 3. TICKER ── */}
+      <div className="bg-ink border-t border-line-dk py-[18px] overflow-hidden whitespace-nowrap">
+        <div className="ticker-track font-bricolage font-extrabold text-[18px] tracking-[0.03em] uppercase text-cream">
+          <span>Duka Accountant</span><span className="text-marigold">✦</span>
+          <span>Boda Dispatch</span><span className="text-marigold">✦</span>
+          <span>School Fees Tracker</span><span className="text-marigold">✦</span>
+          <span>Real systems, real clients</span><span className="text-marigold">✦</span>
+          <span>Duka Accountant</span><span className="text-marigold">✦</span>
+          <span>Boda Dispatch</span><span className="text-marigold">✦</span>
+          <span>School Fees Tracker</span><span className="text-marigold">✦</span>
+          <span>Real systems, real clients</span><span className="text-marigold">✦</span>
+        </div>
+      </div>
+
+      {/* ── 4. TRACKS ── */}
+      <section className="py-[100px] bg-cream" id="tracks">
+        <div className="max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)]">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-[50px]">
+            <div>
+              <p className="font-space-mono text-[12px] tracking-[0.14em] uppercase text-clay mb-[18px]">// Programmes</p>
+              <h2 className="font-bricolage font-black uppercase tracking-[-0.015em] leading-[0.96] text-ink" style={{ fontSize: "clamp(34px, 5vw, 58px)" }}>
+                Choose<br />your path
+              </h2>
+            </div>
+            <p className="font-archivo max-w-[360px] text-[16px] leading-[1.55] lg:text-right text-muted-lt">
+              Three tracks designed around where you are — and where the work is.
+            </p>
           </div>
-          <div className="grid sm:grid-cols-3 gap-5">
-            {tracks.map((t) => (
-              <div
-                key={t.id}
-                className={`bg-white rounded-2xl border-l-4 ${t.accent} border border-gray-100 p-6 flex flex-col shadow-sm hover:shadow-md transition`}
-              >
-                <div>
-                  <h3 className="text-lg font-semibold text-forge-night">{t.label}</h3>
-                  <span className={`text-xs font-mono ${t.tagColor} block mb-3`}>{t.tag}</span>
-                  <p className="text-sm text-stone-grey leading-relaxed mb-4">{t.description}</p>
-                </div>
-                <ul className="space-y-1.5 flex-1 mb-5">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-[22px]">
+            {[
+              { idx: "01 — DEVELOPER", title: "Developer", meta: "12 weeks · code-first", bg: "bg-clay", body: "Build production AI agents, RAG pipelines, and deployed applications from first principles. Kampala-context problems, real code, real tools.", outcomes: ["Ship a working AI agent", "Deploy to production", "Read and write specs"] },
+              { idx: "02 — PROFESSIONAL", title: "Professional", meta: "12 weeks · no-code friendly", bg: "bg-forest", body: "Apply AI to your domain. Automate workflows, audit AI systems, and scope agents for your organisation. No coding required.", outcomes: ["Map and automate a workflow", "Write an AI project spec", "Lead AI transformation"] },
+              { idx: "03 — RUNWAY", title: "Runway", meta: "4 modules · self-paced", bg: "bg-plum", body: "Terminal, Git, Python basics, and a mini-project. The foundation for students who need technical confidence before the Developer track.", outcomes: ["Navigate the terminal", "Push code to GitHub", "Write a Python script"] },
+            ].map((t) => (
+              <div key={t.title} className={`${t.bg} rounded-[22px] p-[34px_30px] text-cream flex flex-col`}>
+                <div className="font-space-mono text-[12px] tracking-[0.08em] opacity-80">{t.idx}</div>
+                <h3 className="font-bricolage font-extrabold text-[30px] uppercase tracking-[-0.01em] mt-3">{t.title}</h3>
+                <div className="font-space-mono text-[12.5px] mt-2 opacity-90">{t.meta}</div>
+                <p className="font-archivo text-[14.5px] leading-[1.55] mt-[18px] opacity-95">{t.body}</p>
+                <ul className="mt-[22px] flex flex-col gap-[11px] flex-1">
                   {t.outcomes.map((o) => (
-                    <li key={o} className="flex items-start gap-2 text-sm text-gray-600">
-                      <span className={`w-1.5 h-1.5 rounded-full ${t.dot} mt-1.5 flex-shrink-0`} />
+                    <li key={o} className="font-archivo text-[14.5px] flex items-start gap-3 font-medium">
+                      <span className="w-[7px] h-[7px] rounded-full bg-marigold mt-[7px] flex-shrink-0" />
                       {o}
                     </li>
                   ))}
                 </ul>
-                <Link href={t.href} className={`text-sm font-medium ${t.tagColor} hover:underline`}>
-                  Apply for this track →
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── How it works ── */}
-      <section className="bg-white py-20 border-y border-gray-100">
-        <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-forge-night mb-12">How it works</h2>
-          <div className="grid sm:grid-cols-3 gap-10">
-            {steps.map((s) => (
-              <div key={s.n}>
-                <p className="text-4xl font-bold text-gray-100 font-mono mb-3">{s.n}</p>
-                <h3 className="text-base font-semibold text-forge-night mb-2">{s.title}</h3>
-                <p className="text-sm text-stone-grey leading-relaxed">{s.body}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-12">
-            <Link
-              href="/assess"
-              className="inline-block bg-foundry-green text-white font-semibold px-6 py-3 rounded-xl hover:bg-foundry-green-light transition"
-            >
-              Start your assessment →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Capstone projects ── */}
-      <section className="py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-forge-night mb-3">What you&apos;ll build</h2>
-            <p className="text-stone-grey max-w-lg">
-              Capstone projects are real systems built around real Kampala problems — not toy demos.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-5">
-            {projects.map((p) => (
-              <div key={p.name} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition">
-                <div className={`${p.color} h-2`} />
-                <div className="p-6">
-                  <p className="text-xs font-mono text-stone-grey mb-2">{p.track}</p>
-                  <h3 className="text-base font-semibold text-forge-night mb-1">{p.name}</h3>
-                  <p className="text-xs text-amber-600 font-medium mb-3">{p.tagline}</p>
-                  <p className="text-sm text-stone-grey leading-relaxed">{p.description}</p>
+                <div className="mt-auto pt-[28px]">
+                  <Link href="/assess" className="inline-flex items-center gap-2 font-space-mono text-[13px] font-bold group">
+                    Apply for this track
+                    <span className="w-[30px] h-[30px] rounded-full bg-cream text-ink grid place-items-center text-[15px] group-hover:translate-x-[3px] transition">→</span>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -251,70 +130,169 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Mshauri ── */}
-      <section className="bg-foundry-green text-white py-20">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-start gap-12">
-          <div className="flex-1">
-            <span className="text-xs font-mono tracking-widest uppercase text-green-300 mb-3 block">AI Advisor · Available 24/7</span>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Meet Mshauri</h2>
-            <p className="text-green-100 leading-relaxed max-w-md mb-6">
-              Mshauri is your personal AI advisor — trained on the Foundry curriculum, available any time.
-              Ask it anything: explain a concept, review your code approach, challenge an idea,
-              or tell you what to tackle next. It knows your track and your week.
-            </p>
-            <Link
-              href="/start"
-              className="inline-block bg-white text-foundry-green font-semibold px-5 py-2.5 rounded-xl hover:bg-green-50 transition"
-            >
-              Start a conversation →
-            </Link>
-          </div>
-          <div className="bg-foundry-green-dark rounded-2xl p-5 font-mono text-sm w-full sm:w-96 shrink-0 space-y-4">
-            <p className="text-green-400 text-xs border-b border-white/10 pb-2">Mshauri · Developer track · Week 3</p>
+      {/* ── 5. HOW IT WORKS ── */}
+      <section className="bg-ink text-cream py-[100px]" id="how">
+        <div className="max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)]">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-[50px]">
             <div>
-              <p className="text-green-300 text-xs mb-1">You</p>
-              <p className="text-white">What is context engineering and why does it matter more than prompt engineering?</p>
+              <p className="font-space-mono text-[12px] tracking-[0.14em] uppercase text-clay mb-[18px]">// Process</p>
+              <h2 className="font-bricolage font-black uppercase tracking-[-0.015em] leading-[0.96]" style={{ fontSize: "clamp(34px, 5vw, 58px)" }}>
+                How it works
+              </h2>
             </div>
+            <p className="font-archivo max-w-[360px] text-[16px] leading-[1.55] lg:text-right text-muted-dk">
+              From first contact to a shipped capstone in twelve weeks.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3">
+            {[
+              { n: "01", title: "Take the intake assessment", body: "A 10-minute conversation with Mshauri, our AI advisor. No exam — just a chat to understand where you are and where you want to go." },
+              { n: "02", title: "Get placed on the right path", body: "Mshauri scores your responses across 8 signals and recommends Developer, Professional, or Runway. The facilitator confirms your cohort start date." },
+              { n: "03", title: "Build with your cohort", body: "12 weeks of structured learning, Saturday Fusion Labs, and a capstone project you can put in front of a real client." },
+            ].map((s, i) => (
+              <div key={s.n} className={`${i > 0 ? "border-t border-line-dk pt-7 mt-7 lg:mt-0 lg:pt-0 lg:border-t-0 lg:border-l lg:border-line-dk lg:pl-9" : ""}`}>
+                <p className="font-bricolage font-black text-[60px] text-marigold tracking-[-0.02em] leading-none">{s.n}</p>
+                <h3 className="font-bricolage font-extrabold text-[21px] uppercase tracking-[-0.005em] mt-[22px]">{s.title}</h3>
+                <p className="font-archivo text-muted-dk text-[15.5px] leading-[1.58] mt-[14px]">{s.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. CAPSTONES ── */}
+      <section className="py-[100px] bg-cream" id="build">
+        <div className="max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)]">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-[50px]">
             <div>
-              <p className="text-green-300 text-xs mb-1">Mshauri</p>
-              <p className="text-green-100 leading-relaxed">
-                Prompt engineering asks &quot;what do I say?&quot; Context engineering asks &quot;what does the model need to know to do its job well?&quot; — think of it like briefing a new market vendor versus just telling them what to sell today. Week 3 goes deep on this.
+              <p className="font-space-mono text-[12px] tracking-[0.14em] uppercase text-clay mb-[18px]">// Capstones</p>
+              <h2 className="font-bricolage font-black uppercase tracking-[-0.015em] leading-[0.96] text-ink" style={{ fontSize: "clamp(34px, 5vw, 58px)" }}>
+                What you&apos;ll build
+              </h2>
+            </div>
+            <p className="font-archivo max-w-[360px] text-[16px] leading-[1.55] lg:text-right text-muted-lt">
+              Real systems built around real Kampala problems — not toy demos.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-[22px]">
+            {[
+              { bar: "bg-clay", tagColor: "text-clay-deep", tag: "Developer capstone", name: "Duka Accountant", sub: "AI bookkeeper for informal traders", body: "Reads M-Pesa and MTN MoMo transaction history. Categorises expenses, flags anomalies, and produces a weekly cash-flow summary in plain language." },
+              { bar: "bg-forest", tagColor: "text-forest", tag: "Developer capstone", name: "Boda Dispatch", sub: "Intelligent route and load dispatch", body: "Assigns delivery jobs to boda boda riders based on location, capacity, and traffic. Sends WhatsApp confirmations. Logs every delivery." },
+              { bar: "bg-plum", tagColor: "text-plum", tag: "Professional capstone", name: "School Fees Tracker", sub: "Payment reconciliation for administrators", body: "Matches bank deposits against student records, flags outstanding balances, sends SMS reminders, and produces a monthly report for the bursar." },
+            ].map((p) => (
+              <div key={p.name} className="rounded-[22px] overflow-hidden border border-line-lt bg-white flex flex-col">
+                <div className={`h-[10px] ${p.bar}`} />
+                <div className="p-[30px_30px_34px] flex flex-col flex-1">
+                  <p className={`font-space-mono text-[11px] tracking-[0.08em] uppercase ${p.tagColor}`}>{p.tag}</p>
+                  <h3 className="font-bricolage font-extrabold text-[25px] tracking-[-0.01em] mt-[14px] text-ink">{p.name}</h3>
+                  <p className="font-archivo text-[14.5px] mt-[6px] text-muted-lt font-semibold">{p.sub}</p>
+                  <p className="font-archivo text-[14.5px] leading-[1.56] mt-[18px] text-muted-lt">{p.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7. MSHAURI ── */}
+      <section className="bg-forest text-cream py-[100px]" id="mshauri">
+        <div className="max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[64px] items-center">
+            <div>
+              <div className="inline-flex items-center gap-[10px] bg-cream/10 font-space-mono text-[12px] tracking-[0.08em] uppercase px-4 py-2 rounded-full mb-6">
+                <span className="w-2 h-2 rounded-full bg-marigold mshauri-pulse flex-shrink-0" />
+                AI Advisor · Available 24/7
+              </div>
+              <h2 className="font-bricolage font-black uppercase tracking-[-0.015em] leading-[0.96]" style={{ fontSize: "clamp(38px, 5vw, 58px)" }}>
+                Meet Mshauri
+              </h2>
+              <p className="font-archivo text-[17px] leading-[1.6] mt-[22px] max-w-[460px]" style={{ color: "#d8e6df" }}>
+                Your personal AI advisor — trained on the Foundry curriculum, available any time. Ask it anything: explain a concept, review your code approach, challenge an idea, or tell you what to tackle next. It knows your track and your week.
               </p>
+              <div className="mt-[34px]">
+                <Link href="/start" className="font-archivo font-bold text-[15px] bg-cream text-ink px-6 py-[14px] rounded-full hover:bg-cream-2 hover:-translate-y-px transition inline-block">
+                  Start a conversation →
+                </Link>
+              </div>
+            </div>
+            {/* Chat mockup */}
+            <div className="bg-ink rounded-[20px] p-[26px] border border-cream/10" style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.35)" }}>
+              <div className="flex items-center gap-[10px] font-space-mono text-[11.5px] text-muted-dk pb-[18px] border-b border-line-dk">
+                <span className="w-[26px] h-[26px] rounded-[8px] flex-shrink-0" style={{ background: "linear-gradient(150deg, #F2B23E, #D8542B)" }} />
+                Mshauri · Developer track · Week 3
+              </div>
+              <div className="mt-[18px]">
+                <p className="font-space-mono text-[11px] tracking-[0.08em] uppercase text-muted-dk mb-2">You</p>
+                <div className="font-archivo text-[15px] leading-[1.55] px-[18px] py-[14px] rounded-[14px] rounded-br-[4px] text-cream" style={{ background: "#221A13" }}>
+                  What is context engineering and why does it matter more than prompt engineering?
+                </div>
+              </div>
+              <div className="mt-[18px]">
+                <p className="font-space-mono text-[11px] tracking-[0.08em] uppercase text-muted-dk mb-2">Mshauri</p>
+                <div className="font-archivo text-[15px] leading-[1.55] px-[18px] py-[14px] rounded-[14px] rounded-bl-[4px] text-cream" style={{ background: "rgba(242,178,62,0.12)", border: "1px solid rgba(242,178,62,0.22)" }}>
+                  Prompt engineering asks &ldquo;what do I say?&rdquo; Context engineering asks &ldquo;what does the model need to know to do its job well?&rdquo; — think of it like briefing a new market vendor versus just telling them what to sell today. Week 3 goes deep on this.
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="bg-amber-50 border-t border-amber-100 py-16">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-forge-night mb-4">
+      {/* ── 8. FINAL CTA ── */}
+      <section className="bg-marigold text-ink text-center py-[110px]">
+        <div className="max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)]">
+          <h2 className="font-bricolage font-black uppercase tracking-[-0.025em] leading-[0.95]" style={{ fontSize: "clamp(46px, 7vw, 90px)" }}>
             Ready to build?
           </h2>
-          <p className="text-stone-grey mb-8 max-w-md mx-auto">
+          <p className="font-archivo text-[19px] mt-6 max-w-[540px] mx-auto" style={{ color: "#5a3f12" }}>
             The assessment takes 10 minutes. Mshauri will guide you through it — no pressure, no exam.
           </p>
-          <Link
-            href="/assess"
-            className="inline-block bg-foundry-green text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-foundry-green-light transition text-base"
-          >
-            Take the intake assessment →
-          </Link>
+          <div className="mt-10">
+            <Link href="/assess" className="font-archivo font-bold text-[16px] bg-ink text-cream px-[30px] py-[17px] rounded-full hover:opacity-90 hover:-translate-y-px transition inline-block">
+              Take the intake assessment →
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="bg-forge-night text-gray-500 py-10">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div>
-            <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-6 opacity-60 mb-2" />
-            <p className="text-xs">Kampala, Uganda</p>
+      {/* ── 9. FOOTER ── */}
+      <footer className="bg-ink text-cream">
+        <div className="max-w-[1320px] mx-auto px-[clamp(48px,7.5vw,140px)]">
+          <div className="pt-[88px] pb-[56px] grid grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr] gap-10 lg:gap-12 items-start">
+            <div className="col-span-2 lg:col-span-1">
+              <div className="flex items-center gap-3">
+                <span className="w-[34px] h-[34px] bg-marigold rounded-[9px] -rotate-6 grid place-items-center flex-shrink-0">
+                  <span className="font-bricolage font-black text-[18px] text-ink rotate-6 leading-none">F</span>
+                </span>
+                <span className="font-bricolage font-extrabold text-[17px] tracking-[0.01em] whitespace-nowrap">
+                  THE AI FOUNDRY <em className="not-italic text-marigold">KAMPALA</em>
+                </span>
+              </div>
+              <p className="font-archivo mt-[22px] text-[15px] leading-[1.55] text-muted-dk max-w-[360px]">
+                An intensive AI learning hub training developers, professionals, and first-time builders to ship real systems — from Kampala.
+              </p>
+              <p className="font-space-mono text-[12px] text-muted-dk mt-5 tracking-[0.06em]">Kampala, Uganda · 00°19′N 32°35′E</p>
+            </div>
+            <div>
+              <h4 className="font-space-mono text-[11px] tracking-[0.12em] uppercase text-muted-dk mb-5 whitespace-nowrap">Programme</h4>
+              {[["Tracks", "#tracks"], ["How it works", "#how"], ["Capstones", "#build"]].map(([l, h]) => (
+                <Link key={l} href={h} className="font-archivo block w-fit text-[15px] mb-[14px] text-cream hover:text-marigold transition whitespace-nowrap">{l}</Link>
+              ))}
+            </div>
+            <div>
+              <h4 className="font-space-mono text-[11px] tracking-[0.12em] uppercase text-muted-dk mb-5 whitespace-nowrap">Get started</h4>
+              {[["Apply", "/assess"], ["Mshauri", "/start"], ["Runway", "/prep"]].map(([l, h]) => (
+                <Link key={l} href={h} className="font-archivo block w-fit text-[15px] mb-[14px] text-cream hover:text-marigold transition whitespace-nowrap">{l}</Link>
+              ))}
+            </div>
+            <div>
+              <h4 className="font-space-mono text-[11px] tracking-[0.12em] uppercase text-muted-dk mb-5 whitespace-nowrap">Foundry</h4>
+              <Link href="/login" className="font-archivo block w-fit text-[15px] mb-[14px] text-cream hover:text-marigold transition whitespace-nowrap">Staff login</Link>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-5 text-sm">
-            <Link href="/assess" className="hover:text-white transition">Apply</Link>
-            <Link href="/start" className="hover:text-white transition">Mshauri</Link>
-            <Link href="/runway" className="hover:text-white transition">Runway</Link>
-            <Link href="/login" className="hover:text-white transition">Staff login</Link>
+          <div className="border-t border-line-dk pt-[26px] pb-[26px] font-space-mono text-[11.5px] text-muted-dk flex justify-between tracking-[0.04em]">
+            <span>© 2026 The AI Foundry Kampala</span>
+            <span>Build with AI. From Kampala.</span>
           </div>
         </div>
       </footer>
