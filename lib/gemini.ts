@@ -8,12 +8,21 @@ export async function geminiChat(messages: Message[], systemPrompt: string): Pro
     model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
     systemInstruction: systemPrompt,
   });
-  const history = messages.slice(0, -1).map((m) => ({
-    role: m.role === "user" ? "user" : "model",
-    parts: [{ text: m.content }],
-  }));
+  const priorMessages = messages.slice(0, -1);
+  // Gemini requires history to start with a user turn.
+  // If the first stored message is the assistant greeting (triggered by our synthetic "begin"),
+  // prepend that synthetic user turn so the history is valid.
+  const rawHistory = priorMessages.length > 0 && priorMessages[0].role !== "user"
+    ? [{ role: "user" as const, parts: [{ text: "begin" }] }, ...priorMessages.map((m) => ({
+        role: m.role === "user" ? "user" as const : "model" as const,
+        parts: [{ text: m.content }],
+      }))]
+    : priorMessages.map((m) => ({
+        role: m.role === "user" ? "user" as const : "model" as const,
+        parts: [{ text: m.content }],
+      }));
   const lastMessage = messages.length > 0 ? messages[messages.length - 1].content : "begin";
-  const chatSession = model.startChat({ history });
+  const chatSession = model.startChat({ history: rawHistory });
   const result = await chatSession.sendMessage(lastMessage);
   return result.response.text();
 }
