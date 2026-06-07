@@ -12,7 +12,7 @@ export async function geminiChat(messages: Message[], systemPrompt: string): Pro
     role: m.role === "user" ? "user" : "model",
     parts: [{ text: m.content }],
   }));
-  const lastMessage = messages[messages.length - 1].content;
+  const lastMessage = messages.length > 0 ? messages[messages.length - 1].content : "begin";
   const chatSession = model.startChat({ history });
   const result = await chatSession.sendMessage(lastMessage);
   return result.response.text();
