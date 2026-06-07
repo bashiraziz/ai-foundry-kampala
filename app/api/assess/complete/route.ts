@@ -68,10 +68,8 @@ export async function POST(req: NextRequest) {
     recommendation = "DEVELOPER";
   } else if (professionalScore >= 5) {
     recommendation = "PROFESSIONAL";
-  } else if (prepScore >= 4) {
-    recommendation = "PREP";
   } else {
-    recommendation = "NOT_READY";
+    recommendation = "PREP";
   }
 
   await prisma.applicant.update({

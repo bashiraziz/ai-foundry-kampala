@@ -31,19 +31,19 @@ const CONFIG = {
   },
   PREP: {
     label: "Runway program",
-    headline: "Your path in starts with Runway.",
-    sub: "You've been enrolled in Runway — a short program to build the foundation for the Developer track.",
+    headline: "Your journey starts here — welcome to Runway.",
+    sub: "Runway is your launchpad. No prior experience needed — just the motivation to grow. You're in.",
     pill: "bg-amber-100 text-amber-800",
     bar: "bg-amber-400",
     cta: "Begin Runway →",
   },
   NOT_READY: {
-    label: "Not ready yet",
-    headline: "Not quite yet — here is what to do first.",
-    sub: "Come back when you're ready. New cohorts run regularly.",
-    pill: "bg-gray-100 text-gray-600",
-    bar: "bg-gray-300",
-    cta: null,
+    label: "Runway program",
+    headline: "Your journey starts here — welcome to Runway.",
+    sub: "Runway is your launchpad. No prior experience needed — just the motivation to grow. You're in.",
+    pill: "bg-amber-100 text-amber-800",
+    bar: "bg-amber-400",
+    cta: "Begin Runway →",
   },
 } as const;
 
