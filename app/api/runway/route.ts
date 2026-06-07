@@ -5,7 +5,11 @@ export async function GET(req: NextRequest) {
   const applicantId = req.nextUrl.searchParams.get("applicantId");
   if (!applicantId) return NextResponse.json({ error: "applicantId required" }, { status: 400 });
 
-  const enrollment = await prisma.prepEnrollment.findUnique({ where: { applicantId } });
+  const enrollment = await prisma.prepEnrollment.upsert({
+    where: { applicantId },
+    update: {},
+    create: { applicantId, currentModule: 1, moduleProgress: {} },
+  });
   return NextResponse.json({ enrollment });
 }
 
