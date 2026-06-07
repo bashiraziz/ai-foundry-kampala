@@ -6,6 +6,110 @@ import { MAX_ASSESSMENT_MESSAGES } from "@/lib/constants";
 
 type Message = { role: "user" | "assistant"; content: string };
 
+const PAGE_CSS = `
+  .assess-shell { background: var(--ink); color: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* NAV */
+  .assess-nav { background: var(--ink); border-bottom: 1px solid var(--line-dk); height: 76px; display: flex; align-items: center; flex-shrink: 0; }
+  .assess-nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+  .assess-nav .lockup { display: flex; align-items: center; gap: 12px; }
+  .assess-nav .lockup .mark { width: 34px; height: 34px; background: var(--marigold); border-radius: 9px; display: grid; place-items: center; transform: rotate(-6deg); flex-shrink: 0; }
+  .assess-nav .lockup .mark span { font-family: "Bricolage Grotesque"; font-weight: 900; font-size: 18px; color: var(--ink); transform: rotate(6deg); display: block; line-height: 1; }
+  .assess-nav .lockup .name { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 16px; letter-spacing: 0.01em; white-space: nowrap; }
+  .assess-nav .lockup .name em { font-style: normal; color: var(--marigold); }
+
+  /* START SCREEN */
+  .assess-start { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+  .start-card { background: var(--ink-2); border: 1px solid var(--line-dk); border-radius: 24px; padding: 44px 40px; width: 100%; max-width: 440px; }
+  .start-card .lead { font-family: "Space Mono"; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--marigold); margin-bottom: 16px; }
+  .start-card h1 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 34px; letter-spacing: -0.02em; line-height: 1.05; }
+  .start-card p { font-size: 15px; line-height: 1.6; color: var(--muted-dk); margin-top: 14px; }
+  .start-card .field { margin-top: 28px; }
+  .start-card .field label { font-family: "Space Mono"; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-dk); display: block; margin-bottom: 10px; }
+  .start-card .field input { width: 100%; background: var(--ink); border: 1.5px solid var(--line-dk); border-radius: 12px; padding: 15px 18px; color: var(--cream); font-family: "Archivo"; font-size: 15.5px; outline: none; transition: border-color .15s; }
+  .start-card .field input::placeholder { color: #7a6e5b; }
+  .start-card .field input:focus { border-color: var(--marigold); }
+  .start-card .btn-start { margin-top: 24px; width: 100%; justify-content: center; }
+  .start-card .note { font-family: "Space Mono"; font-size: 11.5px; color: var(--muted-dk); text-align: center; margin-top: 18px; }
+  .start-card .err { color: #ff6b5b; font-size: 14px; margin-top: 12px; text-align: center; }
+
+  /* CHAT SCREEN */
+  .assess-body { position: relative; overflow: hidden; flex: 1; }
+  .assess-bg { position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(1000px 520px at 85% -10%, rgba(216,84,43,0.22), transparent 56%),
+      radial-gradient(720px 480px at 0% 110%, rgba(31,94,69,0.28), transparent 60%);
+  }
+  .assess-wrap { position: relative; z-index: 2; padding-top: 44px; padding-bottom: 64px; }
+
+  .assess-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+  .assess-head .lead { font-family: "Space Mono"; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--marigold); }
+  .assess-head .q-of { font-family: "Space Mono"; font-size: 12px; color: var(--muted-dk); letter-spacing: 0.08em; }
+  .pbar { height: 6px; border-radius: 999px; background: rgba(244,236,221,0.1); overflow: hidden; margin-bottom: 40px; }
+  .pbar span { display: block; height: 100%; background: linear-gradient(90deg, var(--marigold), var(--clay)); border-radius: 999px; transition: width .5s ease; }
+
+  .assess-grid { display: grid; grid-template-columns: 1fr 320px; gap: 40px; align-items: start; }
+
+  .conv { display: flex; flex-direction: column; gap: 26px; }
+  .row { display: flex; gap: 14px; max-width: 680px; }
+  .row .av { width: 38px; height: 38px; border-radius: 11px; flex: none; display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 16px; flex-shrink: 0; }
+  .row.bot .av { background: linear-gradient(150deg, var(--marigold), var(--clay)); color: #1a0d06; }
+  .row.you { margin-left: auto; flex-direction: row-reverse; }
+  .row.you .av { background: var(--ink-2); border: 1px solid var(--line-dk); color: var(--muted-dk); font-family: "Space Mono"; font-size: 12px; font-weight: 700; }
+  .who { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-dk); margin-bottom: 7px; }
+  .row.you .who { text-align: right; }
+  .msg { font-size: 15.5px; line-height: 1.58; padding: 15px 19px; border-radius: 16px; }
+  .row.bot .msg { background: var(--ink-2); border: 1px solid var(--line-dk); border-top-left-radius: 5px; color: var(--cream); }
+  .row.you .msg { background: var(--clay); color: #1a0d06; font-weight: 600; border-top-right-radius: 5px; }
+
+  .input-area { margin-top: 36px; max-width: 680px; }
+  .input-bar { display: flex; align-items: center; gap: 12px; background: var(--ink-2); border: 1.5px solid var(--line-dk); border-radius: 16px; padding: 8px 8px 8px 20px; }
+  .input-bar textarea { flex: 1; background: transparent; border: none; outline: none; color: var(--cream); font-family: "Archivo"; font-size: 15.5px; resize: none; }
+  .input-bar textarea::placeholder { color: var(--muted-dk); }
+  .input-bar .send { width: 44px; height: 44px; border-radius: 11px; background: var(--clay); color: #1a0d06; border: none; display: grid; place-items: center; font-size: 19px; cursor: pointer; transition: background .15s; flex-shrink: 0; }
+  .input-bar .send:hover { background: #e85f33; }
+  .input-bar .send:disabled { opacity: 0.4; cursor: default; }
+  .escape { margin-top: 14px; text-align: center; }
+  .escape button { font-family: "Space Mono"; font-size: 12px; color: rgba(242,178,62,0.7); background: none; border: none; cursor: pointer; }
+  .escape button:hover { color: var(--marigold); }
+
+  .rail { background: var(--ink-2); border: 1px solid var(--line-dk); border-radius: 20px; padding: 26px 24px; position: sticky; top: 100px; }
+  .rail h3 { font-family: "Space Mono"; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-dk); }
+  .rail .sub { font-size: 13.5px; color: var(--muted-dk); margin-top: 12px; line-height: 1.5; }
+  .signals { margin-top: 22px; display: flex; flex-direction: column; gap: 2px; }
+  .sig { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .sig:last-child { border-bottom: none; }
+  .sig .tick { width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .sig.done .tick { background: var(--forest); color: var(--cream); }
+  .sig.active .tick { background: var(--marigold); color: #1a0d06; box-shadow: 0 0 0 4px rgba(242,178,62,0.15); }
+  .sig.todo .tick { background: transparent; border: 1.5px solid var(--line-dk); color: var(--muted-dk); }
+  .sig .snm { font-size: 14px; font-weight: 500; }
+  .sig.todo .snm { color: var(--muted-dk); }
+  .sig.active .snm { color: var(--marigold); font-weight: 600; }
+  .rail .foretell { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line-dk); }
+  .rail .foretell .lbl { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-dk); }
+  .rail .foretell .lean { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+  .rail .foretell .lean .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--clay); flex-shrink: 0; }
+  .rail .foretell .lean .nm { font-family: "Bricolage Grotesque"; font-weight: 700; font-size: 19px; }
+  .rail .foretell .conf { font-size: 12.5px; color: var(--muted-dk); margin-top: 6px; }
+
+  @media (max-width: 900px) {
+    .assess-grid { grid-template-columns: 1fr; }
+    .rail { position: static; }
+  }
+`;
+
+const SIGNALS = [
+  "Motivation & goals",
+  "Coding background",
+  "Time commitment",
+  "Comfort with logic",
+  "Domain expertise",
+  "Learning style",
+  "Tooling familiarity",
+  "Project ambition",
+];
+
 export default function AssessPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<"start" | "chat" | "completing">("start");
@@ -99,172 +203,181 @@ export default function AssessPage() {
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
   };
 
-  /* ── Entry screen ── */
-  if (phase === "start") {
-    return (
-      <div className="min-h-screen bg-forge-deep flex flex-col items-center justify-center px-4">
-        <Link href="/" className="mb-8 opacity-70 hover:opacity-100 transition">
-          <img src="/brand/lockup-horizontal.svg" alt="The AI Foundry Kampala" className="h-7" />
-        </Link>
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 space-y-6 animate-scale-in">
-          <div className="space-y-1">
-            <h1 className="text-xl font-bold text-forge-night">Intake assessment</h1>
-            <p className="text-sm text-stone-grey leading-relaxed">
-              A 10-minute conversation with Mshauri to find the right path for you. No exam — just a chat.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">Your name</label>
-            <input
-              type="text"
-              placeholder="e.g. Tendo Nakabiri"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && startAssessment()}
-              autoFocus
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green/20 focus:border-foundry-green transition"
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <button
-            onClick={startAssessment}
-            disabled={!name.trim() || loading}
-            className="w-full bg-amber-400 text-forge-night font-semibold py-3 rounded-xl hover:bg-amber-300 disabled:opacity-40 transition text-sm"
-          >
-            {loading ? "Starting…" : "Begin assessment →"}
-          </button>
-          <p className="text-center text-xs text-gray-400">Takes about 10 minutes</p>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── Completing screen ── */
-  if (phase === "completing") {
-    return (
-      <div className="min-h-screen bg-forge-deep flex items-center justify-center">
-        <div className="text-center space-y-4 animate-fade-in">
-          <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-14 h-14 mx-auto animate-pulse" />
-          <div>
-            <p className="text-white font-semibold text-lg">Scoring your assessment…</p>
-            <p className="text-gray-400 text-sm mt-1">This takes a few seconds</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── Chat screen ── */
   const progressPct = Math.min((messageCount / MAX_ASSESSMENT_MESSAGES) * 100, 100);
   const showEscapeHatch = messageCount >= 5 && !completing;
+  const doneCount = Math.min(Math.floor(messageCount / 1.5), 8);
 
-  return (
-    <div className="min-h-screen bg-forge-deep flex flex-col">
-      {/* Header */}
-      <header className="flex-shrink-0 border-b border-white/[0.06] px-4 py-3">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
-            <div>
-              <p className="text-white text-sm font-semibold">Mshauri</p>
-              <p className="text-gray-500 text-xs">Intake assessment</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-24 h-1 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-amber-400 rounded-full transition-all duration-500"
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
-            <Link href="/" className="text-xs text-gray-500 hover:text-gray-300 transition">Exit</Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto py-6">
-        <div className="max-w-2xl mx-auto px-4 space-y-4">
-          {messages.map((m, i) => (
-            <div
-              key={i}
-              className={`flex items-end gap-2.5 animate-fade-up ${m.role === "user" ? "flex-row-reverse" : ""}`}
-            >
-              {m.role === "assistant" && (
-                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5" />
-              )}
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap break-words ${
-                  m.role === "user"
-                    ? "bg-foundry-green text-white rounded-br-sm"
-                    : "bg-white/[0.07] border border-white/[0.08] text-gray-100 rounded-bl-sm"
-                }`}
-              >
-                {m.content}
-              </div>
-            </div>
-          ))}
-
-          {loading && (
-            <div className="flex items-end gap-2.5 animate-fade-up">
-              <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5" />
-              <div className="bg-white/[0.07] border border-white/[0.08] rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5 text-gray-400">
-                <span className="typing-dot" />
-                <span className="typing-dot" />
-                <span className="typing-dot" />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="flex items-end gap-2.5 animate-fade-up">
-              <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5 opacity-30" />
-              <div className="max-w-[78%] rounded-2xl rounded-bl-sm px-4 py-3 text-sm bg-red-900/30 border border-red-500/20 text-red-300">
-                {error}
-              </div>
-            </div>
-          )}
-
-          <div ref={bottomRef} />
+  if (phase === "completing") {
+    return (
+      <div className="assess-shell" style={{ alignItems: "center", justifyContent: "center" }}>
+        <style>{PAGE_CSS}</style>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ width: 56, height: 56, borderRadius: 14, background: "linear-gradient(150deg, var(--marigold), var(--clay))", display: "grid", placeItems: "center", margin: "0 auto 24px", fontSize: 28 }}>M</div>
+          <p style={{ fontFamily: '"Bricolage Grotesque"', fontWeight: 700, fontSize: 22 }}>Scoring your assessment…</p>
+          <p style={{ color: "var(--muted-dk)", fontSize: 14, marginTop: 8 }}>This takes a few seconds</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Input */}
-      <div className="flex-shrink-0 border-t border-white/[0.06] p-4">
-        <div className="max-w-2xl mx-auto space-y-2">
-          {showEscapeHatch && (
-            <div className="text-center animate-fade-in">
-              <button
-                onClick={() => applicantId && triggerCompletion(applicantId)}
-                disabled={completing}
-                className="text-xs text-amber-400/70 hover:text-amber-400 transition"
-              >
-                I've answered everything — score my assessment →
-              </button>
+  if (phase === "start") {
+    return (
+      <div className="assess-shell">
+        <style>{PAGE_CSS}</style>
+        <nav className="assess-nav">
+          <div className="wrap">
+            <Link href="/" className="lockup">
+              <span className="mark"><span>F</span></span>
+              <span className="name">THE AI FOUNDRY <em>KAMPALA</em></span>
+            </Link>
+          </div>
+        </nav>
+        <div className="assess-start">
+          <div className="start-card">
+            <div className="lead">Intake Assessment · with Mshauri</div>
+            <h1>Find your track.</h1>
+            <p>A 10-minute conversation with Mshauri to place you on the right path. No exam — just a chat. No wrong answers.</p>
+            <div className="field">
+              <label htmlFor="name">Your name</label>
+              <input
+                id="name"
+                type="text"
+                placeholder="e.g. Tendo Nakabiri"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && startAssessment()}
+                autoFocus
+              />
             </div>
-          )}
-          <div className="flex items-end gap-2 bg-white/[0.06] border border-white/[0.08] rounded-2xl px-4 py-2.5 focus-within:border-white/20 transition">
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 resize-none focus:outline-none leading-relaxed"
-              placeholder="Type your reply…"
-              value={input}
-              onChange={handleInput}
-              onKeyDown={handleKeyDown}
-              disabled={loading || completing}
-              style={{ maxHeight: "120px" }}
-            />
+            {error && <p className="err">{error}</p>}
             <button
-              onClick={send}
-              disabled={loading || completing || !input.trim()}
-              className="w-7 h-7 bg-amber-400 text-forge-night rounded-lg flex items-center justify-center flex-shrink-0 hover:bg-amber-300 disabled:opacity-30 transition mb-0.5"
-              aria-label="Send"
+              className="btn btn-clay btn-lg btn-start"
+              onClick={startAssessment}
+              disabled={!name.trim() || loading}
             >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M1 11L11 1M11 1H4M11 1V8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              {loading ? "Starting…" : "Begin assessment →"}
             </button>
+            <p className="note">Takes about 10 minutes</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="assess-shell">
+      <style>{PAGE_CSS}</style>
+      <nav className="assess-nav">
+        <div className="wrap">
+          <Link href="/" className="lockup">
+            <span className="mark"><span>F</span></span>
+            <span className="name">THE AI FOUNDRY <em>KAMPALA</em></span>
+          </Link>
+          <Link href="/" style={{ fontFamily: '"Space Mono"', fontSize: 12, color: "var(--muted-dk)" }}>Exit</Link>
+        </div>
+      </nav>
+
+      <div className="assess-body">
+        <div className="assess-bg" />
+        <div className="wrap assess-wrap">
+          <div className="assess-head">
+            <div className="lead">Intake Assessment · with Mshauri</div>
+            <div className="q-of">Question {Math.min(messageCount + 1, 8)} of 8</div>
+          </div>
+          <div className="pbar"><span style={{ width: `${progressPct}%` }} /></div>
+
+          <div className="assess-grid">
+            <div>
+              <div className="conv">
+                {messages.map((m, i) => (
+                  <div key={i} className={`row ${m.role === "assistant" ? "bot" : "you"}`}>
+                    <div className="av">{m.role === "assistant" ? "M" : "You"}</div>
+                    <div>
+                      <div className="who">{m.role === "assistant" ? "Mshauri" : name}</div>
+                      <div className="msg">{m.content}</div>
+                    </div>
+                  </div>
+                ))}
+
+                {loading && (
+                  <div className="row bot">
+                    <div className="av">M</div>
+                    <div>
+                      <div className="who">Mshauri</div>
+                      <div className="msg" style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--muted-dk)" }}>
+                        <span className="typing-dot" />
+                        <span className="typing-dot" />
+                        <span className="typing-dot" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="row bot">
+                    <div className="av" style={{ opacity: 0.4 }}>M</div>
+                    <div>
+                      <div className="msg" style={{ background: "rgba(255,100,80,0.1)", border: "1px solid rgba(255,100,80,0.2)", color: "#ff6b5b", borderRadius: 16 }}>{error}</div>
+                    </div>
+                  </div>
+                )}
+
+                <div ref={bottomRef} />
+              </div>
+
+              <div className="input-area">
+                <div className="input-bar">
+                  <textarea
+                    ref={textareaRef}
+                    rows={1}
+                    placeholder="Type your reply…"
+                    value={input}
+                    onChange={handleInput}
+                    onKeyDown={handleKeyDown}
+                    disabled={loading || completing}
+                    style={{ maxHeight: 120 }}
+                  />
+                  <button
+                    className="send"
+                    onClick={send}
+                    disabled={loading || completing || !input.trim()}
+                    aria-label="Send"
+                  >
+                    ↑
+                  </button>
+                </div>
+                {showEscapeHatch && (
+                  <div className="escape">
+                    <button onClick={() => applicantId && triggerCompletion(applicantId)} disabled={completing}>
+                      I&apos;ve answered everything — score my assessment →
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <aside className="rail">
+              <h3>What Mshauri is learning</h3>
+              <div className="sub">Eight signals shape your placement. Nothing here is pass-or-fail.</div>
+              <div className="signals">
+                {SIGNALS.map((sig, i) => {
+                  const state = i < doneCount ? "done" : i === doneCount ? "active" : "todo";
+                  return (
+                    <div key={sig} className={`sig ${state}`}>
+                      <span className="tick">{state === "done" ? "✓" : i + 1}</span>
+                      <span className="snm">{sig}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              {messageCount >= 2 && (
+                <div className="foretell">
+                  <div className="lbl">Leaning toward</div>
+                  <div className="lean"><span className="dot" /><span className="nm">Developer track</span></div>
+                  <div className="conf">Early read · confidence builds as we go</div>
+                </div>
+              )}
+            </aside>
           </div>
         </div>
       </div>
