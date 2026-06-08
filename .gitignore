@@ -7,6 +7,10 @@ node_modules/
 .vercel
 .env*.local
 
+# TypeScript / Next.js build artifacts
+next-env.d.ts
+tsconfig.tsbuildinfo
+
 # Claude Code worktrees and temp files
 .claude/worktrees/
 .claude/settings.local.json
