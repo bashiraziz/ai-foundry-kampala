@@ -18,8 +18,14 @@ type ScoreResult = {
 
 export async function POST(req: NextRequest) {
   const { applicantId } = await req.json();
+  if (!applicantId || typeof applicantId !== "string")
+    return NextResponse.json({ error: "Invalid applicantId" }, { status: 400 });
 
-  const applicant = await prisma.applicant.findUniqueOrThrow({ where: { id: applicantId } });
+  const applicant = await prisma.applicant.findUnique({ where: { id: applicantId } });
+  if (!applicant) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  if (applicant.status === "ASSESSED")
+    return NextResponse.json({ recommendation: applicant.recommendation, firstName: applicant.name.split(" ")[0] ?? "" });
   const messages = applicant.messages as { role: string; content: string }[];
   const transcript = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
 

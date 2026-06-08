@@ -4,8 +4,17 @@ import { retrieveContext } from "@/lib/rag";
 import { prisma } from "@/lib/prisma";
 import { TUTOR_SYSTEM_PROMPT } from "@/lib/prompts";
 
+const VALID_TRACKS = new Set(["DEVELOPER", "PROFESSIONAL"]);
+
 export async function POST(req: NextRequest) {
-  const { messages, track, week, studentId } = await req.json();
+  const body = await req.json();
+  const { track, week, studentId } = body;
+  const messages = Array.isArray(body.messages) ? body.messages : [];
+
+  if (!VALID_TRACKS.has(track)) return new Response("Invalid track", { status: 400 });
+  if (!Number.isInteger(week) || week < 1 || week > 12) return new Response("Invalid week", { status: 400 });
+  if (messages.length > 100) return new Response("Too many messages", { status: 400 });
+  if (studentId !== undefined && typeof studentId !== "string") return new Response("Invalid studentId", { status: 400 });
 
   const lastMessage = messages[messages.length - 1]?.content ?? "";
   const context = await retrieveContext(lastMessage, track, week);

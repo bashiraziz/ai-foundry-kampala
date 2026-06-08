@@ -7,8 +7,13 @@ import { QUIZ_SYSTEM_PROMPT, quizUserPrompt } from "@/lib/prompts";
 
 type QuizResponse = { questions: { q: string; options: string[]; answer: number; explain: string }[] };
 
+const VALID_TRACKS = new Set(["DEVELOPER", "PROFESSIONAL"]);
+
 export async function POST(req: NextRequest) {
   const { track, week, studentId } = await req.json();
+  if (!VALID_TRACKS.has(track)) return NextResponse.json({ error: "Invalid track" }, { status: 400 });
+  if (!Number.isInteger(week) || week < 1 || week > 12) return NextResponse.json({ error: "Invalid week" }, { status: 400 });
+  if (studentId !== undefined && typeof studentId !== "string") return NextResponse.json({ error: "Invalid studentId" }, { status: 400 });
   const topic = WEEK_TOPICS[track]?.[week] ?? "Agentic AI";
   const systemPrompt = QUIZ_SYSTEM_PROMPT;
   const prompt = quizUserPrompt(topic, track, week);

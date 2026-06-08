@@ -11,7 +11,12 @@ const MODULE_TITLES: Record<number, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  const { messages, module: moduleNum } = await req.json();
+  const body = await req.json();
+  const { module: moduleNum } = body;
+  const messages = Array.isArray(body.messages) ? body.messages : [];
+
+  if (!Number.isInteger(moduleNum) || moduleNum < 1 || moduleNum > 4) return new Response("Invalid module", { status: 400 });
+  if (messages.length > 100) return new Response("Too many messages", { status: 400 });
   const title = MODULE_TITLES[moduleNum] ?? "Foundations";
   const lastMessage = messages[messages.length - 1]?.content ?? "";
   const sourcePrefix = `knowledge-base/runway/module-0${moduleNum}`;

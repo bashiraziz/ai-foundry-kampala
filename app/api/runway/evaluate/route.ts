@@ -60,6 +60,11 @@ async function fetchWithBranchFallback(owner: string, repo: string, filename: st
 
 export async function POST(req: NextRequest) {
   const { applicantId, githubUrl } = await req.json();
+  if (!applicantId || typeof applicantId !== "string") return NextResponse.json({ error: "Invalid applicantId" }, { status: 400 });
+  if (!githubUrl || typeof githubUrl !== "string") return NextResponse.json({ error: "Invalid githubUrl" }, { status: 400 });
+
+  const enrollment = await prisma.prepEnrollment.findUnique({ where: { applicantId }, select: { applicantId: true } });
+  if (!enrollment) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const parsed = parseGitHubUrl(githubUrl);
   if (!parsed) return NextResponse.json({ error: "Invalid GitHub URL" }, { status: 400 });

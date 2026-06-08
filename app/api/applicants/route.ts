@@ -15,6 +15,9 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { applicantId, status } = await req.json();
 
   const applicant = await prisma.applicant.findUniqueOrThrow({ where: { id: applicantId } });

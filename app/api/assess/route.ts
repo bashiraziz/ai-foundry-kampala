@@ -5,7 +5,13 @@ import { ASSESSMENT_SYSTEM_PROMPT } from "@/lib/prompts";
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, applicantId, name } = await req.json();
+    const body = await req.json();
+    const { applicantId, name } = body;
+    const messages = Array.isArray(body.messages) ? body.messages : [];
+
+    if (messages.length > 40) return NextResponse.json({ error: "Too many messages" }, { status: 400 });
+    if (name !== undefined && (typeof name !== "string" || name.length > 200))
+      return NextResponse.json({ error: "Invalid name" }, { status: 400 });
 
     let id = applicantId;
     if (!id) {
