@@ -6,6 +6,83 @@ import { Suspense } from "react";
 
 type Message = { role: "user" | "assistant"; content: string };
 
+const PAGE_CSS = `
+  .mod-shell { min-height: 100vh; background: var(--ink); display: flex; flex-direction: column; }
+
+  .mod-header { flex-shrink: 0; border-bottom: 1px solid var(--line-dk); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .mod-header .left { display: flex; align-items: center; gap: 12px; }
+  .mod-header .mark { width: 28px; height: 28px; border-radius: 7px; background: var(--plum); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 13px; color: var(--cream); flex-shrink: 0; }
+  .mod-header .hinfo .num { font-family: "Space Mono"; font-size: 10px; color: var(--muted-dk); }
+  .mod-header .hinfo .nm { font-family: "Bricolage Grotesque"; font-weight: 700; font-size: 15px; color: var(--cream); margin-top: 1px; }
+  .mod-header .hinfo .checks { font-family: "Space Mono"; font-size: 10px; color: var(--muted-dk); margin-top: 1px; }
+  .mod-header .back { font-family: "Space Mono"; font-size: 11px; color: var(--muted-dk); text-decoration: none; transition: color .15s; }
+  .mod-header .back:hover { color: var(--cream); }
+
+  .mod-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; max-height: calc(100vh - 61px); }
+
+  /* Lesson panel */
+  .lesson-panel { background: var(--cream); display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--line-lt); }
+  .lesson-scroll { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  .lesson-scroll .lesson-text { font-family: "Archivo"; font-size: 14px; line-height: 1.7; color: var(--ink); white-space: pre-wrap; }
+  .lesson-scroll .lesson-text strong { font-weight: 700; }
+
+  .checklist-section { flex-shrink: 0; border-top: 1px solid var(--line-lt); padding: 22px 28px; display: flex; flex-direction: column; gap: 16px; background: #fff; }
+  .checklist-head { display: flex; align-items: center; justify-content: space-between; }
+  .checklist-head h3 { font-family: "Bricolage Grotesque"; font-weight: 700; font-size: 15px; }
+  .checklist-head .ck-count { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); }
+  .ck-items { display: flex; flex-direction: column; gap: 8px; }
+  .ck-label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+  .ck-box { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; border-radius: 6px; border: 2px solid var(--line-lt); display: flex; align-items: center; justify-content: center; transition: all .15s; }
+  .ck-box.on { background: var(--plum); border-color: var(--plum); }
+  .ck-box svg { display: none; }
+  .ck-box.on svg { display: block; }
+  .ck-text { font-size: 13px; line-height: 1.45; color: var(--ink); transition: color .15s; }
+  .ck-text.done { color: var(--muted-lt); text-decoration: line-through; }
+  .ck-action { font-family: "Archivo"; font-weight: 700; font-size: 14px; padding: 13px 20px; border-radius: 12px; background: var(--plum); color: var(--cream); border: none; cursor: pointer; transition: all .15s; width: 100%; }
+  .ck-action:hover:not(:disabled) { background: color-mix(in srgb, var(--plum) 85%, var(--ink)); }
+  .ck-action:disabled { opacity: 0.4; cursor: default; }
+
+  /* Chat panel */
+  .chat-panel { background: var(--ink-2); display: flex; flex-direction: column; overflow: hidden; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .chat-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 40px 20px; text-align: center; }
+  .chat-empty .em-mark { width: 36px; height: 36px; border-radius: 10px; background: var(--plum); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 17px; color: var(--cream); opacity: 0.5; }
+  .chat-empty p { font-family: "Space Mono"; font-size: 12px; color: var(--muted-dk); }
+  .chat-empty .hint { font-size: 10px; color: var(--line-dk); }
+
+  .chat-row { display: flex; align-items: flex-end; gap: 8px; }
+  .chat-row.user { flex-direction: row-reverse; }
+  .chat-av { width: 24px; height: 24px; border-radius: 7px; background: var(--plum); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 11px; color: var(--cream); flex-shrink: 0; }
+  .chat-bubble { max-width: 78%; font-size: 13.5px; line-height: 1.58; padding: 11px 15px; border-radius: 14px; white-space: pre-wrap; word-break: break-word; }
+  .chat-row.user .chat-bubble { background: var(--plum); color: var(--cream); border-bottom-right-radius: 4px; }
+  .chat-row.bot .chat-bubble { background: color-mix(in srgb, var(--ink) 60%, var(--line-dk)); color: var(--cream); border: 1px solid var(--line-dk); border-bottom-left-radius: 4px; }
+
+  .typing-dots { display: flex; gap: 4px; align-items: center; padding: 12px 16px; background: color-mix(in srgb, var(--ink) 60%, var(--line-dk)); border: 1px solid var(--line-dk); border-radius: 14px; border-bottom-left-radius: 4px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted-dk); animation: dotbounce .9s ease-in-out infinite; }
+  .dot:nth-child(2) { animation-delay: .15s; }
+  .dot:nth-child(3) { animation-delay: .3s; }
+  @keyframes dotbounce { 0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+
+  .chat-error { font-family: "Space Mono"; font-size: 12px; color: var(--clay); background: color-mix(in srgb, var(--clay) 10%, transparent); border: 1px solid color-mix(in srgb, var(--clay) 20%, transparent); padding: 10px 14px; border-radius: 10px; }
+
+  .chat-input-bar { flex-shrink: 0; border-top: 1px solid var(--line-dk); padding: 14px 16px; }
+  .chat-input-row { display: flex; align-items: flex-end; gap: 8px; background: color-mix(in srgb, var(--ink) 50%, var(--line-dk)); border: 1px solid var(--line-dk); border-radius: 14px; padding: 10px 14px; transition: border-color .15s; }
+  .chat-input-row:focus-within { border-color: var(--muted-dk); }
+  .chat-input-row textarea { flex: 1; background: transparent; border: none; outline: none; font-family: "Archivo"; font-size: 13.5px; color: var(--cream); resize: none; line-height: 1.5; max-height: 100px; }
+  .chat-input-row textarea::placeholder { color: var(--muted-dk); }
+  .send-btn { width: 28px; height: 28px; border-radius: 8px; background: var(--marigold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1a0d06; flex-shrink: 0; transition: all .15s; margin-bottom: 1px; }
+  .send-btn:hover:not(:disabled) { background: #f5c060; }
+  .send-btn:disabled { opacity: 0.3; cursor: default; }
+
+  @media (max-width: 860px) {
+    .mod-body { grid-template-columns: 1fr; max-height: none; }
+    .lesson-panel { max-height: 60vh; }
+    .chat-panel { min-height: 460px; }
+  }
+
+  .loading { min-height: 100vh; background: var(--ink); display: flex; align-items: center; justify-content: center; }
+`;
+
 const MODULE_CONTENT: Record<number, { title: string; content: string; checklist: string[] }> = {
   1: {
     title: "The Terminal",
@@ -293,7 +370,14 @@ function ModuleContent() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  if (!moduleData) return <p className="text-center text-gray-400 mt-20">Module not found.</p>;
+  if (!moduleData) {
+    return (
+      <div className="loading">
+        <style>{PAGE_CSS}</style>
+        <p style={{ color: "var(--muted-dk)", fontFamily: "Space Mono", fontSize: 12 }}>Module not found.</p>
+      </div>
+    );
+  }
 
   const send = async () => {
     const text = input.trim();
@@ -364,59 +448,43 @@ function ModuleContent() {
   const checkedCount = checked.filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-forge-deep flex flex-col">
-      {/* Header */}
-      <header className="flex-shrink-0 border-b border-white/[0.06] px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-7 h-7" />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-gray-500">0{moduleNum}</span>
-                <p className="text-white font-semibold text-sm">{moduleData.title}</p>
-              </div>
-              <p className="text-gray-500 text-xs">Runway · {checkedCount}/{moduleData.checklist.length} checks complete</p>
-            </div>
+    <div className="mod-shell">
+      <style>{PAGE_CSS}</style>
+
+      <header className="mod-header">
+        <div className="left">
+          <div className="mark">F</div>
+          <div className="hinfo">
+            <div className="num">Module 0{moduleNum} · Runway</div>
+            <div className="nm">{moduleData.title}</div>
+            <div className="checks">{checkedCount}/{moduleData.checklist.length} items checked</div>
           </div>
-          <Link href={`/runway?applicantId=${applicantId}`} className="text-xs text-gray-500 hover:text-gray-300 transition">
-            ← Runway
-          </Link>
         </div>
+        <Link href={`/runway?applicantId=${applicantId}`} className="back">← Runway</Link>
       </header>
 
-      {/* Content */}
-      <div className="flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
-
+      <div className="mod-body">
         {/* Lesson panel */}
-        <div className="bg-white rounded-2xl overflow-hidden flex flex-col">
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed whitespace-pre-wrap font-mono">
-              {moduleData.content}
-            </div>
+        <div className="lesson-panel">
+          <div className="lesson-scroll">
+            <div className="lesson-text">{moduleData.content}</div>
           </div>
 
-          {/* Checklist */}
-          <div className="border-t border-gray-100 p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-forge-night">Module checklist</p>
-              <span className="text-xs text-stone-grey">{checkedCount}/{moduleData.checklist.length}</span>
+          <div className="checklist-section">
+            <div className="checklist-head">
+              <h3>Module checklist</h3>
+              <span className="ck-count">{checkedCount}/{moduleData.checklist.length}</span>
             </div>
-            <div className="space-y-2.5">
+            <div className="ck-items">
               {moduleData.checklist.map((item, i) => (
-                <label key={i} className="flex items-start gap-3 cursor-pointer group">
-                  <div className={`w-5 h-5 flex-shrink-0 mt-0.5 rounded-md border-2 flex items-center justify-center transition-all ${
-                    checked[i]
-                      ? "bg-foundry-green border-foundry-green"
-                      : "border-gray-300 group-hover:border-foundry-green/50"
-                  }`}>
-                    {checked[i] && (
-                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
+                <label key={i} className="ck-label">
+                  <div className={`ck-box${checked[i] ? " on" : ""}`}>
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
                     <input
                       type="checkbox"
-                      className="sr-only"
+                      style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
                       checked={checked[i]}
                       onChange={() => {
                         const next = [...checked];
@@ -425,16 +493,14 @@ function ModuleContent() {
                       }}
                     />
                   </div>
-                  <span className={`text-sm leading-snug transition-colors ${checked[i] ? "text-gray-400 line-through" : "text-gray-700"}`}>
-                    {item}
-                  </span>
+                  <span className={`ck-text${checked[i] ? " done" : ""}`}>{item}</span>
                 </label>
               ))}
             </div>
             <button
+              className="ck-action"
               onClick={markComplete}
               disabled={!allChecked || marking}
-              className="w-full bg-foundry-green text-white py-3 rounded-xl text-sm font-semibold hover:bg-foundry-green-light disabled:opacity-40 transition mt-2"
             >
               {marking ? "Saving…" : "Mark module complete →"}
             </button>
@@ -442,72 +508,55 @@ function ModuleContent() {
         </div>
 
         {/* Chat panel */}
-        <div className="flex flex-col h-[520px] lg:h-auto rounded-2xl border border-white/[0.06] bg-white/[0.03] overflow-hidden">
-          {/* Chat messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="chat-panel">
+          <div className="chat-messages">
             {messages.length === 0 && (
-              <div className="text-center py-10 space-y-2 animate-fade-in">
-                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-8 h-8 mx-auto opacity-40" />
-                <p className="text-gray-500 text-sm">Ask Mshauri anything about this module</p>
-                <p className="text-gray-600 text-xs">Enter to send · Shift+Enter for new line</p>
+              <div className="chat-empty">
+                <div className="em-mark">M</div>
+                <p>Ask Mshauri anything about this module</p>
+                <p className="hint">Enter to send · Shift+Enter for new line</p>
               </div>
             )}
 
             {messages.map((m, i) => (
-              <div key={i} className={`flex items-end gap-2 animate-fade-up ${m.role === "user" ? "flex-row-reverse" : ""}`}>
-                {m.role === "assistant" && (
-                  <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5" />
-                )}
-                <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
-                  m.role === "user"
-                    ? "bg-foundry-green text-white rounded-br-sm"
-                    : "bg-white/[0.08] border border-white/[0.08] text-gray-100 rounded-bl-sm"
-                }`}>
-                  {m.content}
-                </div>
+              <div key={i} className={`chat-row ${m.role === "user" ? "user" : "bot"}`}>
+                {m.role === "assistant" && <div className="chat-av">M</div>}
+                <div className="chat-bubble">{m.content}</div>
               </div>
             ))}
 
             {loading && (
-              <div className="flex items-end gap-2 animate-fade-up">
-                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5" />
-                <div className="bg-white/[0.08] border border-white/[0.08] rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5 text-gray-400">
-                  <span className="typing-dot" />
-                  <span className="typing-dot" />
-                  <span className="typing-dot" />
+              <div className="chat-row bot">
+                <div className="chat-av">M</div>
+                <div className="typing-dots">
+                  <span className="dot" />
+                  <span className="dot" />
+                  <span className="dot" />
                 </div>
               </div>
             )}
 
             {chatError && (
-              <div className="flex items-end gap-2 animate-fade-up">
-                <img src="/brand/hero-mark.svg" alt="Mshauri" className="w-6 h-6 flex-shrink-0 mb-0.5 opacity-30" />
-                <div className="max-w-[78%] rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm bg-red-900/30 border border-red-500/20 text-red-300">
-                  {chatError}
-                </div>
-              </div>
+              <div className="chat-error">{chatError}</div>
             )}
             <div ref={bottomRef} />
           </div>
 
-          {/* Chat input */}
-          <div className="flex-shrink-0 border-t border-white/[0.06] p-3">
-            <div className="flex items-end gap-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl px-4 py-2.5 focus-within:border-white/20 transition">
+          <div className="chat-input-bar">
+            <div className="chat-input-row">
               <textarea
                 ref={textareaRef}
                 rows={1}
-                className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 resize-none focus:outline-none leading-relaxed"
                 placeholder="Ask a question…"
                 value={input}
                 onChange={handleInput}
                 onKeyDown={handleKeyDown}
                 disabled={loading}
-                style={{ maxHeight: "100px" }}
               />
               <button
+                className="send-btn"
                 onClick={send}
                 disabled={loading || !input.trim()}
-                className="w-7 h-7 bg-amber-400 text-forge-night rounded-lg flex items-center justify-center flex-shrink-0 hover:bg-amber-300 disabled:opacity-30 transition mb-0.5"
                 aria-label="Send"
               >
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -524,7 +573,11 @@ function ModuleContent() {
 
 export default function ModulePage() {
   return (
-    <Suspense fallback={<p className="text-center text-gray-400 mt-20">Loading…</p>}>
+    <Suspense fallback={
+      <div className="loading">
+        <style>{PAGE_CSS}</style>
+      </div>
+    }>
       <ModuleContent />
     </Suspense>
   );
