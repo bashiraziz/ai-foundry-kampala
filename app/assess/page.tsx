@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { MAX_ASSESSMENT_MESSAGES } from "@/lib/constants";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -60,7 +62,25 @@ const PAGE_CSS = `
   .row.you .who { text-align: right; }
   .msg { font-size: 15.5px; line-height: 1.58; padding: 15px 19px; border-radius: 16px; }
   .row.bot .msg { background: var(--ink-2); border: 1px solid var(--line-dk); border-top-left-radius: 5px; color: var(--cream); }
-  .row.you .msg { background: var(--clay); color: #1a0d06; font-weight: 600; border-top-right-radius: 5px; }
+  .row.you .msg { background: var(--clay); color: #1a0d06; font-weight: 600; border-top-right-radius: 5px; white-space: pre-wrap; }
+
+  .assess-md { color: var(--cream); }
+  .assess-md p { margin: 0 0 12px; }
+  .assess-md p:last-child { margin-bottom: 0; }
+  .assess-md strong { font-weight: 700; }
+  .assess-md em { font-style: italic; }
+  .assess-md h1, .assess-md h2, .assess-md h3 { font-family: "Bricolage Grotesque"; font-weight: 700; margin: 14px 0 6px; color: var(--cream); }
+  .assess-md h1 { font-size: 20px; }
+  .assess-md h2 { font-size: 17px; }
+  .assess-md h3 { font-size: 15.5px; }
+  .assess-md ul, .assess-md ol { padding-left: 20px; margin: 6px 0 12px; display: flex; flex-direction: column; gap: 4px; }
+  .assess-md ul { list-style: disc; }
+  .assess-md ol { list-style: decimal; }
+  .assess-md li { line-height: 1.58; color: var(--cream); }
+  .assess-md code { font-family: "Space Mono"; font-size: 13px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 1px 6px; color: var(--marigold); }
+  .assess-md pre { background: rgba(0,0,0,0.35); border-radius: 10px; padding: 14px 16px; margin: 10px 0; overflow-x: auto; border: 1px solid var(--line-dk); }
+  .assess-md pre code { background: none; border: none; padding: 0; color: var(--muted-dk); font-size: 13px; line-height: 1.6; }
+  .assess-md blockquote { border-left: 3px solid var(--line-dk); padding-left: 12px; margin: 8px 0; color: var(--muted-dk); font-style: italic; }
 
   .input-area { margin-top: 36px; max-width: 680px; }
   .input-bar { display: flex; align-items: center; gap: 12px; background: var(--ink-2); border: 1.5px solid var(--line-dk); border-radius: 16px; padding: 8px 8px 8px 20px; }
@@ -294,7 +314,13 @@ export default function AssessPage() {
                     <div className="av">{m.role === "assistant" ? "M" : "You"}</div>
                     <div>
                       <div className="who">{m.role === "assistant" ? "Mshauri" : name}</div>
-                      <div className="msg">{m.content}</div>
+                      <div className="msg">
+                        {m.role === "assistant" ? (
+                          <div className="assess-md">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                          </div>
+                        ) : m.content}
+                      </div>
                     </div>
                   </div>
                 ))}
