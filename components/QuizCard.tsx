@@ -270,7 +270,8 @@ export default function QuizCard({ track, week }: QuizCardProps) {
             let cls = "qc-opt";
             let labelCls = "qc-opt-label neutral";
             if (selected !== null) {
-              if (i === q.answer) { cls += " correct-answer"; labelCls = "qc-opt-label correct"; }
+              if (i === selected && i === q.answer) { cls += " selected-correct"; labelCls = "qc-opt-label correct"; }
+              else if (i === q.answer) { cls += " correct-answer"; labelCls = "qc-opt-label correct"; }
               else if (i === selected) { cls += " selected-wrong"; labelCls = "qc-opt-label wrong"; }
               else { cls += " dimmed"; labelCls = "qc-opt-label faded"; }
             }
