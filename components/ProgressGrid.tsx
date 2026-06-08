@@ -11,75 +11,88 @@ interface Student {
   sessionCount: number;
 }
 
+const CSS = `
+  .pg-empty { padding: 56px 24px; text-align: center; font-family: "Space Mono"; font-size: 13px; color: var(--muted-lt); }
+
+  .pg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 1200px) { .pg-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 760px)  { .pg-grid { grid-template-columns: 1fr; } }
+
+  .pg-card { background: #fff; border: 1px solid var(--line-lt); border-radius: 16px; padding: 18px 20px; text-decoration: none; color: var(--ink); transition: border-color .15s, box-shadow .15s; display: block; }
+  .pg-card:hover { border-color: var(--ink); box-shadow: 0 4px 18px rgba(0,0,0,0.06); }
+
+  .pg-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+  .pg-card-top .nm { font-size: 14.5px; font-weight: 600; }
+  .pg-card-top .meta { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); margin-top: 3px; }
+  .pg-track-pill { font-family: "Space Mono"; font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 999px; flex-shrink: 0; }
+  .pg-track-pill.dev { background: var(--clay); color: #1a0d06; }
+  .pg-track-pill.pro { background: var(--forest); color: var(--cream); }
+
+  .pg-dots { display: flex; gap: 3px; margin-bottom: 12px; }
+  .pg-dot { flex: 1; height: 5px; border-radius: 999px; }
+  .pg-dot.complete { background: var(--forest); }
+  .pg-dot.in-progress { background: var(--marigold); }
+  .pg-dot.pending { background: var(--line-lt); }
+
+  .pg-score-row { display: flex; align-items: center; justify-content: space-between; }
+  .pg-score-row .lbl { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); }
+  .pg-score-row .val { font-family: "Space Mono"; font-size: 12px; font-weight: 700; }
+  .pg-score-row .val.pass { color: var(--forest); }
+  .pg-score-row .val.fail { color: var(--clay-deep); }
+`;
+
 export default function ProgressGrid({ students }: { students: Student[] }) {
   if (students.length === 0) {
     return (
-      <div className="py-16 text-center text-sm text-gray-400">
-        No students yet.
-      </div>
+      <>
+        <style>{CSS}</style>
+        <div className="pg-empty">No students yet.</div>
+      </>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-      {students.map((s) => {
-        const dots = Array.from({ length: 12 }, (_, i) => {
-          const w = s.progress.find((p) => p.week === i + 1);
-          return w?.status ?? "PENDING";
-        });
+    <>
+      <style>{CSS}</style>
+      <div className="pg-grid">
+        {students.map((s) => {
+          const dots = Array.from({ length: 12 }, (_, i) => {
+            const w = s.progress.find((p) => p.week === i + 1);
+            return w?.status ?? "PENDING";
+          });
+          const completed = dots.filter((d) => d === "COMPLETE").length;
+          const isDev = s.track === "DEVELOPER";
 
-        const completed = dots.filter((d) => d === "COMPLETE").length;
-        const isDev = s.track === "DEVELOPER";
-
-        return (
-          <a
-            key={s.id}
-            href={`/dashboard/students/${s.id}`}
-            className="block bg-white border border-gray-100 rounded-2xl p-4 hover:shadow-md hover:border-gray-200 transition-all"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <p className="font-semibold text-gray-800 text-sm">{s.name}</p>
-                <p className="text-xs text-stone-grey mt-0.5">
-                  {completed}/12 weeks · {s.sessionCount} session{s.sessionCount !== 1 ? "s" : ""}
-                </p>
+          return (
+            <a key={s.id} href={`/dashboard/students/${s.id}`} className="pg-card">
+              <div className="pg-card-top">
+                <div>
+                  <div className="nm">{s.name}</div>
+                  <div className="meta">{completed}/12 weeks · {s.sessionCount} session{s.sessionCount !== 1 ? "s" : ""}</div>
+                </div>
+                <span className={`pg-track-pill ${isDev ? "dev" : "pro"}`}>{isDev ? "Dev" : "Pro"}</span>
               </div>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-                isDev ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-              }`}>
-                {isDev ? "Dev" : "Pro"}
-              </span>
-            </div>
 
-            {/* Week progress dots */}
-            <div className="flex gap-1 mb-3">
-              {dots.map((status, i) => (
-                <div
-                  key={i}
-                  title={`Week ${i + 1}: ${status}`}
-                  className={`flex-1 h-1.5 rounded-full transition-colors ${
-                    status === "COMPLETE"
-                      ? "bg-foundry-green"
-                      : status === "IN_PROGRESS"
-                      ? "bg-amber-400"
-                      : "bg-gray-100"
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* Score */}
-            {s.latestScore !== null && (
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-400">Latest quiz score</p>
-                <p className={`text-xs font-semibold ${s.latestScore >= 70 ? "text-foundry-green" : "text-amber-600"}`}>
-                  {s.latestScore}%
-                </p>
+              <div className="pg-dots">
+                {dots.map((status, i) => (
+                  <div
+                    key={i}
+                    title={`Week ${i + 1}: ${status}`}
+                    className={`pg-dot ${status === "COMPLETE" ? "complete" : status === "IN_PROGRESS" ? "in-progress" : "pending"}`}
+                  />
+                ))}
               </div>
-            )}
-          </a>
-        );
-      })}
-    </div>
+
+              {s.latestScore !== null && (
+                <div className="pg-score-row">
+                  <span className="lbl">Latest quiz</span>
+                  <span className={`val ${s.latestScore >= 70 ? "pass" : "fail"}`}>{s.latestScore}%</span>
+                </div>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </>
   );
 }
