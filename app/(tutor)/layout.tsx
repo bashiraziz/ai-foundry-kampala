@@ -1,3 +1,3 @@
 export default function TutorLayout({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-bone-white">{children}</div>;
+  return <div style={{ minHeight: "100vh", background: "var(--cream)" }}>{children}</div>;
 }

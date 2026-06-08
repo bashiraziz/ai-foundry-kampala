@@ -2,15 +2,76 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import DashShell from "@/components/DashShell";
 import Link from "next/link";
 
 const PAGE_SIZE = 50;
 
-const BADGE: Record<string, string> = {
-  DEVELOPER: "bg-green-100 text-green-700",
-  PROFESSIONAL: "bg-amber-100 text-amber-700",
-  PREP: "bg-amber-100 text-amber-700",
-  NOT_READY: "bg-gray-100 text-gray-500",
+const PAGE_CSS = `
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 22px 36px; background: #fff; border-bottom: 1px solid var(--line-lt); position: sticky; top: 0; z-index: 10; }
+  .topbar h1 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 24px; letter-spacing: -0.015em; }
+  .topbar .sub { font-family: "Space Mono"; font-size: 12px; color: var(--muted-lt); margin-top: 3px; }
+  .topbar .actions { display: flex; align-items: center; gap: 12px; }
+  .search-form { display: flex; align-items: center; gap: 9px; background: var(--cream); border: 1px solid var(--line-lt); border-radius: 10px; padding: 0; overflow: hidden; }
+  .search-form input { background: transparent; border: none; outline: none; font-family: "Archivo"; font-size: 13.5px; color: var(--ink); padding: 9px 14px; width: 220px; }
+  .search-form input::placeholder { color: var(--muted-lt); }
+  .search-form button { background: var(--ink); color: var(--cream); border: none; padding: 9px 16px; font-family: "Archivo"; font-weight: 600; font-size: 13px; cursor: pointer; }
+  .search-form .clear { background: transparent; color: var(--muted-lt); border: none; padding: 9px 14px; font-family: "Space Mono"; font-size: 12px; cursor: pointer; }
+  .search-form .clear:hover { color: var(--ink); }
+
+  .content { padding: 28px 36px 48px; }
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 24px; }
+  .scard { background: #fff; border: 1px solid var(--line-lt); border-radius: 14px; padding: 18px 20px; }
+  .scard .lbl { font-family: "Space Mono"; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-lt); }
+  .scard .n { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 32px; letter-spacing: -0.02em; margin-top: 10px; line-height: 1; }
+
+  .panel { background: #fff; border: 1px solid var(--line-lt); border-radius: 18px; overflow: hidden; }
+  .panel .p-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--line-lt); }
+  .panel .p-head h2 { font-family: "Bricolage Grotesque"; font-weight: 700; font-size: 17px; }
+
+  .app-row { display: grid; grid-template-columns: 1.8fr 1.2fr 1fr 1fr auto; gap: 16px; align-items: center; padding: 15px 24px; border-bottom: 1px solid var(--line-lt); }
+  .app-row:last-child { border-bottom: none; }
+  .app-who { display: flex; align-items: center; gap: 12px; }
+  .app-who .av { width: 36px; height: 36px; border-radius: 9px; flex: none; display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 13px; color: #1a0d06; background: linear-gradient(150deg, var(--marigold), var(--clay)); }
+  .app-who .nm { font-weight: 600; font-size: 14.5px; }
+  .app-who .meta { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); margin-top: 2px; }
+  .pill { font-family: "Space Mono"; font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 999px; color: var(--cream); }
+  .pill.dev { background: var(--clay); color: #1a0d06; }
+  .pill.pro { background: var(--forest); }
+  .pill.run { background: var(--plum); }
+  .pill.pend { background: var(--ink-2); color: var(--muted-dk); }
+  .status-tag { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); }
+  .act { display: flex; gap: 8px; }
+  .mini { font-family: "Archivo"; font-weight: 600; font-size: 12.5px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line-lt); background: #fff; cursor: pointer; color: var(--ink); text-decoration: none; transition: all .15s; }
+  .mini:hover { border-color: var(--ink); }
+  .mini.go { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .mini.go:hover { background: var(--ink-2); }
+
+  .empty { padding: 56px 24px; text-align: center; font-family: "Space Mono"; font-size: 13px; color: var(--muted-lt); }
+
+  .pagination { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid var(--line-lt); font-family: "Space Mono"; font-size: 12px; color: var(--muted-lt); }
+  .page-btns { display: flex; gap: 8px; }
+  .page-btn { font-family: "Archivo"; font-weight: 600; font-size: 13px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line-lt); background: #fff; color: var(--ink); text-decoration: none; }
+  .page-btn:hover { border-color: var(--ink); }
+
+  .tbl-header { display: grid; grid-template-columns: 1.8fr 1.2fr 1fr 1fr auto; gap: 16px; padding: 12px 24px; border-bottom: 1px solid var(--line-lt); }
+  .tbl-header span { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-lt); }
+
+  @media (max-width: 1040px) { .stats { grid-template-columns: repeat(3, 1fr); } }
+`;
+
+const REC_PILL: Record<string, string> = {
+  DEVELOPER: "dev",
+  PROFESSIONAL: "pro",
+  PREP: "run",
+  NOT_READY: "run",
+};
+
+const REC_LABEL: Record<string, string> = {
+  DEVELOPER: "Developer",
+  PROFESSIONAL: "Professional",
+  PREP: "Runway",
+  NOT_READY: "Runway",
 };
 
 export default async function ApplicantsPage({
@@ -56,18 +117,28 @@ export default async function ApplicantsPage({
     return `/dashboard/applicants${qs ? `?${qs}` : ""}`;
   };
 
-  return (
-    <div className="min-h-screen bg-bone-white p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600">← Dashboard</Link>
-            <h1 className="text-xl font-bold text-gray-800">Applicants</h1>
-          </div>
-        </div>
+  const initials = (name: string) =>
+    name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
 
-        {/* Summary counts — always reflect the full dataset, not the filtered view */}
-        <div className="grid grid-cols-6 gap-3 text-center">
+  return (
+    <DashShell activePage="applicants">
+      <style>{PAGE_CSS}</style>
+      <div className="topbar">
+        <div>
+          <h1>Applications</h1>
+          <div className="sub">{total} total · {pending} pending review</div>
+        </div>
+        <div className="actions">
+          <form method="get" action="/dashboard/applicants" className="search-form">
+            <input name="q" type="search" defaultValue={search} placeholder="⌕  Search by name…" />
+            <button type="submit">Search</button>
+            {search && <Link href="/dashboard/applicants" className="clear">Clear</Link>}
+          </form>
+        </div>
+      </div>
+
+      <div className="content">
+        <div className="stats">
           {[
             { label: "Total", value: total },
             { label: "Pending", value: pending },
@@ -76,106 +147,74 @@ export default async function ApplicantsPage({
             { label: "Runway", value: prep },
             { label: "Not ready", value: notReady },
           ].map(({ label, value }) => (
-            <div key={label} className="bg-white rounded-xl p-3 shadow-sm">
-              <p className="text-2xl font-bold text-gray-800">{value}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{label}</p>
+            <div key={label} className="scard">
+              <div className="lbl">{label}</div>
+              <div className="n">{value}</div>
             </div>
           ))}
         </div>
 
-        {/* Search */}
-        <form method="get" action="/dashboard/applicants" className="flex gap-2">
-          <input
-            name="q"
-            type="search"
-            defaultValue={search}
-            placeholder="Search by name…"
-            className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foundry-green bg-white"
-          />
-          <button
-            type="submit"
-            className="bg-foundry-green text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light transition"
-          >
-            Search
-          </button>
-          {search && (
-            <Link
-              href="/dashboard/applicants"
-              className="px-4 py-2 rounded-xl text-sm text-gray-500 hover:text-gray-700 border border-gray-200 bg-white"
-            >
-              Clear
-            </Link>
+        <div className="panel">
+          <div className="p-head">
+            <h2>{search ? `Results for "${search}"` : "All applicants"}</h2>
+            <span style={{ fontFamily: '"Space Mono"', fontSize: 12, color: "var(--muted-lt)" }}>
+              {filteredTotal} applicant{filteredTotal !== 1 ? "s" : ""}
+            </span>
+          </div>
+
+          <div className="tbl-header">
+            <span>Applicant</span>
+            <span>Recommendation</span>
+            <span>Status</span>
+            <span>Date</span>
+            <span />
+          </div>
+
+          {applicants.length === 0 ? (
+            <div className="empty">
+              {search ? `No applicants matching "${search}"` : "No applicants yet."}
+            </div>
+          ) : (
+            applicants.map((a) => (
+              <div key={a.id} className="app-row">
+                <div className="app-who">
+                  <span className="av">{initials(a.name)}</span>
+                  <div>
+                    <div className="nm">{a.name}</div>
+                    <div className="meta">{new Date(a.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}{a.email ? ` · ${a.email}` : ""}</div>
+                  </div>
+                </div>
+                <div>
+                  {a.recommendation ? (
+                    <span className={`pill ${REC_PILL[a.recommendation] ?? "pend"}`}>
+                      {REC_LABEL[a.recommendation] ?? a.recommendation}
+                    </span>
+                  ) : (
+                    <span className="pill pend">Pending</span>
+                  )}
+                </div>
+                <div className="status-tag">{a.status}</div>
+                <div className="status-tag">{new Date(a.createdAt).toLocaleDateString()}</div>
+                <div className="act">
+                  <Link href={`/dashboard/applicants/${a.id}`} className="mini go">Review →</Link>
+                </div>
+              </div>
+            ))
           )}
-        </form>
 
-        {/* Table */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Recommendation</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Dev / Pro / Prep</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Status</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Date</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {applicants.map((a) => (
-                <tr key={a.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-800">{a.name}</td>
-                  <td className="px-4 py-3">
-                    {a.recommendation ? (
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${BADGE[a.recommendation]}`}>
-                        {a.recommendation}
-                      </span>
-                    ) : <span className="text-gray-300">—</span>}
-                  </td>
-                  <td className="px-4 py-3 text-gray-400 text-xs">
-                    {a.developerScore ?? "—"} / {a.professionalScore ?? "—"} / {a.prepScore ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">{a.status}</td>
-                  <td className="px-4 py-3 text-gray-400 text-xs">{new Date(a.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-3">
-                    <Link href={`/dashboard/applicants/${a.id}`} className="text-xs text-foundry-green hover:underline">
-                      View →
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-              {applicants.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-sm">
-                    {search ? `No applicants matching "${search}"` : "No applicants yet."}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between text-sm">
-              <p className="text-gray-400">
+            <div className="pagination">
+              <span>
                 Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filteredTotal)} of {filteredTotal}
-              </p>
-              <div className="flex gap-2">
-                {page > 0 && (
-                  <Link href={pageUrl(page - 1)} className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
-                    ← Prev
-                  </Link>
-                )}
-                {page < totalPages - 1 && (
-                  <Link href={pageUrl(page + 1)} className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
-                    Next →
-                  </Link>
-                )}
+              </span>
+              <div className="page-btns">
+                {page > 0 && <Link href={pageUrl(page - 1)} className="page-btn">← Prev</Link>}
+                {page < totalPages - 1 && <Link href={pageUrl(page + 1)} className="page-btn">Next →</Link>}
               </div>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </DashShell>
   );
 }

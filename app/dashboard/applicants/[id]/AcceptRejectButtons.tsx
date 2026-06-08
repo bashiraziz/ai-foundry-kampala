@@ -2,7 +2,26 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function AcceptRejectButtons({ applicantId, currentStatus }: { applicantId: string; currentStatus: string }) {
+const BTN_CSS = `
+  .decision-row { display: flex; gap: 12px; }
+  .decision-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: "Archivo"; font-weight: 700; font-size: 15px; padding: 14px 24px; border-radius: 12px; border: none; cursor: pointer; transition: opacity .15s, transform .15s; }
+  .decision-btn:hover { transform: translateY(-1px); }
+  .decision-btn:disabled { opacity: 0.45; cursor: default; transform: none; }
+  .decision-btn.accept { background: var(--forest); color: var(--cream); }
+  .decision-btn.reject { background: transparent; color: var(--clay-deep); border: 2px solid var(--line-lt); }
+  .decision-btn.reject:hover { border-color: var(--clay-deep); }
+  .decision-status { font-family: "Space Mono"; font-size: 13px; color: var(--muted-lt); text-align: center; padding: 14px; }
+  .spin { width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+`;
+
+export default function AcceptRejectButtons({
+  applicantId,
+  currentStatus,
+}: {
+  applicantId: string;
+  currentStatus: string;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState<"ACCEPTED" | "REJECTED" | null>(null);
 
@@ -19,19 +38,37 @@ export default function AcceptRejectButtons({ applicantId, currentStatus }: { ap
   };
 
   if (currentStatus === "ACCEPTED" || currentStatus === "REJECTED") {
-    return <p className="text-sm text-gray-400 text-center">Status: {currentStatus}</p>;
+    return (
+      <>
+        <style>{BTN_CSS}</style>
+        <div className="decision-status">
+          Status locked: <strong>{currentStatus}</strong>
+        </div>
+      </>
+    );
   }
 
   return (
-    <div className="flex gap-3">
-      <button onClick={() => update("ACCEPTED")} disabled={!!loading} className="flex-1 bg-foundry-green text-white py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50 flex items-center justify-center gap-1.5">
-        {loading === "ACCEPTED" && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-        Accept
-      </button>
-      <button onClick={() => update("REJECTED")} disabled={!!loading} className="flex-1 border border-red-300 text-red-500 py-2 rounded-xl text-sm font-medium hover:bg-red-50 disabled:opacity-50 flex items-center justify-center gap-1.5">
-        {loading === "REJECTED" && <span className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />}
-        Reject
-      </button>
-    </div>
+    <>
+      <style>{BTN_CSS}</style>
+      <div className="decision-row">
+        <button
+          className="decision-btn accept"
+          onClick={() => update("ACCEPTED")}
+          disabled={!!loading}
+        >
+          {loading === "ACCEPTED" && <span className="spin" />}
+          Accept applicant
+        </button>
+        <button
+          className="decision-btn reject"
+          onClick={() => update("REJECTED")}
+          disabled={!!loading}
+        >
+          {loading === "REJECTED" && <span className="spin" />}
+          Reject
+        </button>
+      </div>
+    </>
   );
 }

@@ -3,34 +3,12 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ProgressGrid from "@/components/ProgressGrid";
+import DashShell from "@/components/DashShell";
 import Link from "next/link";
 
 export const revalidate = 300;
 
 const PAGE_CSS = `
-  body { background: var(--cream); }
-  .dash-shell { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
-
-  .dash-side { background: var(--ink); color: var(--cream); display: flex; flex-direction: column; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .dash-side .brand { display: flex; align-items: center; gap: 11px; padding: 6px 10px 22px; border-bottom: 1px solid var(--line-dk); }
-  .dash-side .brand .mark { width: 32px; height: 32px; background: var(--marigold); border-radius: 9px; display: grid; place-items: center; transform: rotate(-6deg); flex-shrink: 0; }
-  .dash-side .brand .mark span { font-family: "Bricolage Grotesque"; font-weight: 900; font-size: 17px; color: var(--ink); transform: rotate(6deg); display: block; line-height: 1; }
-  .dash-side .brand .nm { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 14px; line-height: 1.1; }
-  .dash-side .brand .nm em { font-style: normal; color: var(--marigold); display: block; font-size: 11px; }
-  .navsec { font-family: "Space Mono"; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #6f6452; padding: 18px 12px 8px; }
-  .navlink { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px; font-size: 14.5px; font-weight: 500; color: var(--muted-dk); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
-  .navlink:hover { background: rgba(255,255,255,0.04); color: var(--cream); }
-  .navlink.on { background: rgba(242,178,62,0.13); color: var(--cream); }
-  .navlink .ic { width: 20px; text-align: center; opacity: 0.9; flex-shrink: 0; }
-  .navlink .badge { margin-left: auto; font-family: "Space Mono"; font-size: 11px; background: var(--clay); color: #1a0d06; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
-  .dash-side .me { margin-top: auto; display: flex; align-items: center; gap: 11px; padding: 14px 10px 6px; border-top: 1px solid var(--line-dk); }
-  .dash-side .me .pic { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(150deg, var(--forest-2), var(--forest)); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 13px; flex-shrink: 0; color: var(--cream); }
-  .dash-side .me .nm { font-size: 13.5px; font-weight: 600; }
-  .dash-side .me .rl { font-family: "Space Mono"; font-size: 10.5px; color: var(--muted-dk); }
-  .dash-side .me .out { margin-left: auto; }
-  .dash-side .me .out a { font-size: 16px; color: var(--muted-dk); text-decoration: none; }
-
-  .dash-main { overflow: hidden; background: var(--cream); }
   .topbar { display: flex; align-items: center; justify-content: space-between; padding: 22px 36px; background: #fff; border-bottom: 1px solid var(--line-lt); position: sticky; top: 0; z-index: 10; }
   .topbar h1 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 24px; letter-spacing: -0.015em; }
   .topbar .sub { font-family: "Space Mono"; font-size: 12px; color: var(--muted-lt); margin-top: 3px; }
@@ -84,7 +62,6 @@ const PAGE_CSS = `
   .ev .d { font-size: 12.5px; color: var(--muted-lt); margin-top: 2px; }
 
   @media (max-width: 1040px) { .stats { grid-template-columns: repeat(2,1fr); } .dash-grid { grid-template-columns: 1fr; } }
-  @media (max-width: 820px) { .dash-shell { grid-template-columns: 1fr; } .dash-side { display: none; } }
 `;
 
 const TRACK_TABS = [
@@ -123,36 +100,9 @@ export default async function DashboardPage({
   const totalSessions = formatted.reduce((a: number, s) => a + s.sessionCount, 0);
 
   return (
-    <>
+    <DashShell activePage="overview">
       <style>{PAGE_CSS}</style>
-      <div className="dash-shell">
-        <aside className="dash-side">
-          <div className="brand">
-            <span className="mark"><span>F</span></span>
-            <span className="nm">THE AI FOUNDRY <em>KAMPALA</em></span>
-          </div>
-          <div className="navsec">Programme</div>
-          <Link href="/dashboard" className="navlink on"><span className="ic">▦</span> Overview</Link>
-          <Link href="/dashboard/applicants" className="navlink"><span className="ic">✦</span> Applications <span className="badge">14</span></Link>
-          <span className="navlink"><span className="ic">◷</span> Cohorts</span>
-          <span className="navlink"><span className="ic">◢</span> Students</span>
-          <span className="navlink"><span className="ic">▤</span> Capstones</span>
-          <div className="navsec">Floor</div>
-          <span className="navlink"><span className="ic">▣</span> Schedule</span>
-          <Link href="/dashboard/runway" className="navlink"><span className="ic">◑</span> Mshauri logs</Link>
-          <span className="navlink"><span className="ic">⚙</span> Settings</span>
-          <div className="me">
-            <span className="pic">RA</span>
-            <div>
-              <div className="nm">Ruth A.</div>
-              <div className="rl">Developer lead</div>
-            </div>
-            <span className="out"><Link href="/login" title="Sign out">⏻</Link></span>
-          </div>
-        </aside>
-
-        <main className="dash-main">
-          <div className="topbar">
+      <div className="topbar">
             <div>
               <h1>Overview</h1>
               <div className="sub">Facilitator dashboard · Cohort 6 intake open</div>
@@ -231,9 +181,7 @@ export default async function DashboardPage({
                 </div>
               </div>
             </div>
-          </div>
-        </main>
       </div>
-    </>
+    </DashShell>
   );
 }
