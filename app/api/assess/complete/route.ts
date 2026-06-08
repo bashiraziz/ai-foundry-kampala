@@ -85,5 +85,6 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return NextResponse.json({ recommendation, reasoning: scores.reasoning, developerScore, professionalScore, prepScore });
+  const firstName = applicant.name.split(" ")[0] || "";
+  return NextResponse.json({ recommendation, firstName });
 }
