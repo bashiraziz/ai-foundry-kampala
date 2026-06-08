@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import DashShell from "@/components/DashShell";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const SESSION_PREVIEW_COUNT = 10;
 
@@ -46,10 +48,27 @@ const PAGE_CSS = `
   .sess-summary .s-date { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); }
   .sess-body { padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; background: var(--cream-2); border-top: 1px solid var(--line-lt); }
   .sess-msg { font-size: 13px; line-height: 1.55; padding: 10px 14px; border-radius: 10px; }
-  .sess-msg.user { background: #fff; border: 1px solid var(--line-lt); }
+  .sess-msg.user { background: #fff; border: 1px solid var(--line-lt); white-space: pre-wrap; }
   .sess-msg.bot { background: var(--ink-2); color: var(--cream); }
   .sess-msg .who { font-family: "Space Mono"; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 4px; }
   .sess-msg.bot .who { color: var(--muted-dk); }
+
+  .sess-md { color: var(--cream); }
+  .sess-md p { margin: 0 0 8px; }
+  .sess-md p:last-child { margin-bottom: 0; }
+  .sess-md strong { font-weight: 700; }
+  .sess-md em { font-style: italic; }
+  .sess-md h1, .sess-md h2, .sess-md h3 { font-family: "Bricolage Grotesque"; font-weight: 700; margin: 10px 0 4px; color: var(--cream); }
+  .sess-md h1 { font-size: 15px; }
+  .sess-md h2 { font-size: 13.5px; }
+  .sess-md h3 { font-size: 13px; }
+  .sess-md ul, .sess-md ol { padding-left: 16px; margin: 4px 0 8px; display: flex; flex-direction: column; gap: 2px; }
+  .sess-md ul { list-style: disc; }
+  .sess-md ol { list-style: decimal; }
+  .sess-md li { line-height: 1.5; color: var(--cream); }
+  .sess-md code { font-family: "Space Mono"; font-size: 11px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; padding: 1px 4px; color: var(--marigold); }
+  .sess-md pre { background: rgba(0,0,0,0.35); border-radius: 8px; padding: 10px 12px; margin: 6px 0; overflow-x: auto; border: 1px solid var(--line-dk); }
+  .sess-md pre code { background: none; border: none; padding: 0; color: var(--muted-dk); font-size: 11.5px; line-height: 1.6; }
 
   .show-all-link { font-family: "Space Mono"; font-size: 12px; color: var(--clay-deep); text-decoration: none; display: block; text-align: center; margin-top: 14px; }
   .show-all-link:hover { text-decoration: underline; }
@@ -161,7 +180,11 @@ export default async function StudentPage({
                         {msgs.map((m, i) => (
                           <div key={i} className={`sess-msg ${m.role === "user" ? "user" : "bot"}`}>
                             <div className="who">{m.role === "user" ? student.name : "Mshauri"}</div>
-                            {m.content}
+                            {m.role === "assistant" ? (
+                              <div className="sess-md">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                              </div>
+                            ) : m.content}
                           </div>
                         ))}
                       </div>

@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import DashShell from "@/components/DashShell";
 import Link from "next/link";
 import AcceptRejectButtons from "./AcceptRejectButtons";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const PAGE_CSS = `
   .topbar { display: flex; align-items: center; justify-content: space-between; padding: 22px 36px; background: #fff; border-bottom: 1px solid var(--line-lt); position: sticky; top: 0; z-index: 10; }
@@ -54,10 +56,27 @@ const PAGE_CSS = `
 
   .transcript { display: flex; flex-direction: column; gap: 12px; max-height: 480px; overflow-y: auto; }
   .tx-msg { font-size: 14px; line-height: 1.58; padding: 12px 16px; border-radius: 12px; }
-  .tx-msg.user { background: var(--cream-2); border: 1px solid var(--line-lt); }
+  .tx-msg.user { background: var(--cream-2); border: 1px solid var(--line-lt); white-space: pre-wrap; }
   .tx-msg.bot { background: var(--ink-2); color: var(--cream); }
   .tx-msg .tx-who { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 5px; }
   .tx-msg.bot .tx-who { color: var(--muted-dk); }
+
+  .tx-md { color: var(--cream); }
+  .tx-md p { margin: 0 0 10px; }
+  .tx-md p:last-child { margin-bottom: 0; }
+  .tx-md strong { font-weight: 700; }
+  .tx-md em { font-style: italic; }
+  .tx-md h1, .tx-md h2, .tx-md h3 { font-family: "Bricolage Grotesque"; font-weight: 700; margin: 12px 0 5px; color: var(--cream); }
+  .tx-md h1 { font-size: 17px; }
+  .tx-md h2 { font-size: 15px; }
+  .tx-md h3 { font-size: 14px; }
+  .tx-md ul, .tx-md ol { padding-left: 18px; margin: 5px 0 10px; display: flex; flex-direction: column; gap: 3px; }
+  .tx-md ul { list-style: disc; }
+  .tx-md ol { list-style: decimal; }
+  .tx-md li { line-height: 1.55; color: var(--cream); }
+  .tx-md code { font-family: "Space Mono"; font-size: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 1px 5px; color: var(--marigold); }
+  .tx-md pre { background: rgba(0,0,0,0.35); border-radius: 8px; padding: 12px 14px; margin: 8px 0; overflow-x: auto; border: 1px solid var(--line-dk); }
+  .tx-md pre code { background: none; border: none; padding: 0; color: var(--muted-dk); font-size: 12px; line-height: 1.6; }
 `;
 
 const REC_PILL: Record<string, string> = {
@@ -205,7 +224,11 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
               {messages.map((m, i) => (
                 <div key={i} className={`tx-msg ${m.role === "user" ? "user" : "bot"}`}>
                   <div className="tx-who">{m.role === "user" ? applicant.name : "Mshauri"}</div>
-                  {m.content}
+                  {m.role === "assistant" ? (
+                    <div className="tx-md">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                    </div>
+                  ) : m.content}
                 </div>
               ))}
             </div>
