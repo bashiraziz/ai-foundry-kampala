@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const PAGE_CSS = `
   .proj-shell { min-height: 100vh; background: var(--ink); display: flex; flex-direction: column; }
@@ -42,6 +44,15 @@ const PAGE_CSS = `
   .result-score.fail { color: var(--clay); }
   .result-verdict { font-family: "Space Mono"; font-size: 12px; color: var(--muted-dk); margin-top: 4px; }
   .result-feedback { font-family: "Archivo"; font-size: 14px; line-height: 1.65; color: var(--cream); background: var(--ink); border: 1px solid var(--line-dk); border-radius: 12px; padding: 16px 18px; text-align: left; }
+  .result-feedback p { margin: 0 0 10px; }
+  .result-feedback p:last-child { margin-bottom: 0; }
+  .result-feedback strong { font-weight: 700; }
+  .result-feedback em { font-style: italic; }
+  .result-feedback ul, .result-feedback ol { padding-left: 18px; margin: 6px 0 10px; display: flex; flex-direction: column; gap: 3px; }
+  .result-feedback ul { list-style: disc; }
+  .result-feedback ol { list-style: decimal; }
+  .result-feedback li { line-height: 1.6; color: var(--cream); }
+  .result-feedback code { font-family: "Space Mono"; font-size: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 1px 5px; color: var(--marigold); }
   .result-cta { font-family: "Archivo"; font-weight: 700; font-size: 15px; padding: 14px 20px; border-radius: 12px; text-decoration: none; display: block; transition: all .15s; }
   .result-cta.exit { background: var(--plum); color: var(--cream); }
   .result-cta.exit:hover { background: color-mix(in srgb, var(--plum) 85%, var(--ink)); }
@@ -148,7 +159,9 @@ function ProjectContent() {
               <div className={`result-score ${result.score >= 70 ? "pass" : "fail"}`}>{result.score}%</div>
               <div className="result-verdict">{result.score >= 70 ? "Passed ✓" : "Not quite yet"}</div>
             </div>
-            <div className="result-feedback">{result.feedback}</div>
+            <div className="result-feedback">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.feedback}</ReactMarkdown>
+            </div>
             {result.readyForExit ? (
               <Link
                 href={`/assess?prep=true&applicantId=${applicantId}`}
