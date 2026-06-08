@@ -81,7 +81,7 @@ function mapRecommendation(rec: string): TrackKey {
 
 const PAGE_CSS = `
   body { background: var(--ink); }
-  .done { position: relative; overflow: hidden; min-height: calc(100vh - 76px); display: flex; align-items: center; }
+  .done { position: relative; overflow: hidden; min-height: calc(100vh - 76px); display: flex; align-items: center; background: var(--ink); }
   .done-bg { position: absolute; inset: 0; z-index: 0;
     background:
       radial-gradient(1100px 560px at 84% -12%, rgba(242,178,62,0.18), transparent 58%),
