@@ -1,5 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -23,9 +25,31 @@ const CSS = `
   .cw-row { display: flex; align-items: flex-end; gap: 8px; }
   .cw-row.user { flex-direction: row-reverse; }
   .cw-av { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(150deg, var(--marigold), var(--clay)); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 12px; color: var(--ink); flex-shrink: 0; }
-  .cw-bubble { max-width: 78%; font-size: 14px; line-height: 1.6; padding: 11px 16px; border-radius: 16px; white-space: pre-wrap; word-break: break-word; }
-  .cw-row.user .cw-bubble { background: var(--ink); color: var(--cream); border-bottom-right-radius: 4px; }
+  .cw-bubble { max-width: 78%; font-size: 14px; line-height: 1.6; padding: 11px 16px; border-radius: 16px; word-break: break-word; }
+  .cw-row.user .cw-bubble { background: var(--ink); color: var(--cream); border-bottom-right-radius: 4px; white-space: pre-wrap; }
   .cw-row.bot .cw-bubble { background: #fff; border: 1px solid var(--line-lt); color: var(--ink); border-bottom-left-radius: 4px; }
+
+  .cw-md p { margin: 0 0 10px; }
+  .cw-md p:last-child { margin-bottom: 0; }
+  .cw-md strong { font-weight: 700; }
+  .cw-md em { font-style: italic; }
+  .cw-md h1, .cw-md h2, .cw-md h3 { font-family: "Bricolage Grotesque"; font-weight: 700; margin: 14px 0 6px; line-height: 1.3; }
+  .cw-md h1 { font-size: 17px; }
+  .cw-md h2 { font-size: 15px; }
+  .cw-md h3 { font-size: 14px; }
+  .cw-md ul, .cw-md ol { padding-left: 20px; margin: 6px 0 10px; display: flex; flex-direction: column; gap: 3px; }
+  .cw-md ul { list-style: disc; }
+  .cw-md ol { list-style: decimal; }
+  .cw-md li { line-height: 1.55; }
+  .cw-md code { font-family: "Space Mono"; font-size: 12px; background: var(--cream-2); border: 1px solid var(--line-lt); border-radius: 4px; padding: 1px 5px; color: var(--clay-deep); }
+  .cw-md pre { background: var(--ink); border-radius: 10px; padding: 14px 16px; margin: 10px 0; overflow-x: auto; }
+  .cw-md pre code { background: none; border: none; padding: 0; color: var(--muted-dk); font-size: 12.5px; }
+  .cw-md blockquote { border-left: 3px solid var(--line-lt); padding-left: 12px; margin: 8px 0; color: var(--muted-lt); font-style: italic; }
+  .cw-md a { color: var(--clay-deep); text-decoration: underline; }
+  .cw-md hr { border: none; border-top: 1px solid var(--line-lt); margin: 12px 0; }
+  .cw-md table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 10px 0; }
+  .cw-md th, .cw-md td { border: 1px solid var(--line-lt); padding: 6px 10px; text-align: left; }
+  .cw-md th { background: var(--cream-2); font-weight: 700; }
 
   .cw-typing { display: flex; gap: 4px; align-items: center; padding: 12px 16px; background: #fff; border: 1px solid var(--line-lt); border-radius: 16px; border-bottom-left-radius: 4px; }
   .cw-tdot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted-lt); animation: cw-bounce .9s ease-in-out infinite; }
@@ -127,7 +151,13 @@ export default function ChatWindow({ track, week, weekLabel, studentId }: ChatWi
           {messages.map((m, i) => (
             <div key={i} className={`cw-row ${m.role === "user" ? "user" : "bot"}`}>
               {m.role === "assistant" && <div className="cw-av">M</div>}
-              <div className="cw-bubble">{m.content}</div>
+              <div className="cw-bubble">
+                {m.role === "assistant" ? (
+                  <div className="cw-md">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                  </div>
+                ) : m.content}
+              </div>
             </div>
           ))}
 
