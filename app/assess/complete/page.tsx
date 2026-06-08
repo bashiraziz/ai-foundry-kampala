@@ -4,6 +4,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type TrackKey = "runway" | "developer" | "professional";
 
@@ -26,48 +28,48 @@ const TRACKS: Record<TrackKey, TrackConfig> = {
     headlineLead: "Your starting point is ",
     track: "Runway",
     lede: "You've taken the first real step into the Foundry. Based on our chat, we've found the track where you'll build the strongest momentum — and grow the fastest.",
-    note: "Here's what I noticed: you're motivated, curious, and ready to build. <b>Runway</b> is exactly where I'd start you — it's our launchpad, designed to give you the hands-on foundations that every Foundry developer relies on. Move through it and you'll step into the Developer track with real confidence behind you.",
+    note: "Here's what I noticed: you're motivated, curious, and ready to build. **Runway** is exactly where I'd start you — it's our launchpad, designed to give you the hands-on foundations that every Foundry developer relies on. Move through it and you'll step into the Developer track with real confidence behind you.",
     blurb: "The Foundry's launchpad. A focused, supportive start where you'll get comfortable with the tools real builders use every day — and finish ready for what's next.",
     gains: [
-      "Real fluency in the <b>terminal, Git, and Python</b> — the everyday toolkit of every developer.",
-      "A <b>mini-project you build end to end</b>, so you leave with something real, not just notes.",
-      "A <b>clear, confident path into the Developer track</b> — Runway is where that journey begins.",
+      "Real fluency in the **terminal, Git, and Python** — the everyday toolkit of every developer.",
+      "A **mini-project you build end to end**, so you leave with something real, not just notes.",
+      "A **clear, confident path into the Developer track** — Runway is where that journey begins.",
     ],
     ctaLabel: "See what Runway covers",
     ctaHref: "/tracks/runway",
-    micro: "<b>Most builders start on Runway.</b> It's the fastest way to get the foundations solid — you'll move up sooner than you think.",
+    micro: "**Most builders start on Runway.** It's the fastest way to get the foundations solid — you'll move up sooner than you think.",
   },
   developer: {
     accent: "var(--clay)",
     headlineLead: "You're matched to ",
     track: "Developer",
     lede: "You've taken the first real step into the Foundry. From our chat, it's clear you're ready to build — so we've matched you to the track where you'll go furthest, fastest.",
-    note: "Here's what I noticed: you already think like a builder, and you're hungry to put AI to work for real. The <b>Developer</b> track is exactly that — twelve intensive weeks designing, building, and shipping production AI systems alongside a cohort moving at your pace. You'll leave with a capstone you're proud to show.",
+    note: "Here's what I noticed: you already think like a builder, and you're hungry to put AI to work for real. The **Developer** track is exactly that — twelve intensive weeks designing, building, and shipping production AI systems alongside a cohort moving at your pace. You'll leave with a capstone you're proud to show.",
     blurb: "The Foundry's core track. Twelve focused weeks building real AI systems — and a capstone you can put in front of a real client.",
     gains: [
-      "Ship a <b>working AI agent</b> that uses real tools and handles real inputs — not a notebook demo.",
-      "Build <b>retrieval that works</b> — a RAG pipeline you can actually measure and trust.",
-      "<b>Deploy to production</b>: live, monitored, and cost-controlled — and keep it running.",
+      "Ship a **working AI agent** that uses real tools and handles real inputs — not a notebook demo.",
+      "Build **retrieval that works** — a RAG pipeline you can actually measure and trust.",
+      "**Deploy to production**: live, monitored, and cost-controlled — and keep it running.",
     ],
     ctaLabel: "See what Developer covers",
     ctaHref: "/tracks/developer",
-    micro: "<b>This is where builders go to ship.</b> Bring your momentum — your cohort starts soon.",
+    micro: "**This is where builders go to ship.** Bring your momentum — your cohort starts soon.",
   },
   professional: {
     accent: "var(--forest)",
     headlineLead: "You're matched to ",
     track: "Professional",
     lede: "You've taken the first real step into the Foundry. From our chat, your strength is clear — so we've matched you to the track built to put it to work with AI.",
-    note: "Here's what I noticed: you bring real domain expertise and a sharp sense of where AI creates value — something many builders don't have. The <b>Professional</b> track is made for you: you'll learn to automate real workflows, judge AI systems, and lead AI projects in your field — no code required, ever.",
+    note: "Here's what I noticed: you bring real domain expertise and a sharp sense of where AI creates value — something many builders don't have. The **Professional** track is made for you: you'll learn to automate real workflows, judge AI systems, and lead AI projects in your field — no code required, ever.",
     blurb: "For experts and leaders. Twelve weeks to bring AI into your work — automating workflows, auditing systems, and leading change in your organisation, without writing a line of code.",
     gains: [
-      "<b>Automate a real workflow</b> from your job using AI and no-code automation tools.",
-      "<b>Write an AI project spec</b> a developer or vendor can build from — and judge their work.",
-      "<b>Lead an AI initiative</b> end to end: scope it, pilot it, and pitch it to decision-makers.",
+      "**Automate a real workflow** from your job using AI and no-code automation tools.",
+      "**Write an AI project spec** a developer or vendor can build from — and judge their work.",
+      "**Lead an AI initiative** end to end: scope it, pilot it, and pitch it to decision-makers.",
     ],
     ctaLabel: "See what Professional covers",
     ctaHref: "/tracks/professional",
-    micro: "<b>Your expertise is the hard part — you already have it.</b> The Professional track adds the AI.",
+    micro: "**Your expertise is the hard part — you already have it.** The Professional track adds the AI.",
   },
 };
 
@@ -99,7 +101,8 @@ const PAGE_CSS = `
   .msh-note .av { width: 44px; height: 44px; border-radius: 13px; flex: none; display: grid; place-items: center; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 18px; background: linear-gradient(150deg, var(--marigold), var(--clay)); color: #1a0d06; }
   .msh-note .who { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-dk); margin-bottom: 8px; }
   .msh-note .msg { background: var(--ink-2); border: 1px solid var(--line-dk); border-top-left-radius: 5px; border-radius: 16px; padding: 17px 21px; font-size: 15.5px; line-height: 1.62; }
-  .msh-note .msg b { color: var(--marigold); font-weight: 600; }
+  .msh-note .msg strong { color: var(--marigold); font-weight: 600; }
+  .msh-note .msg p { margin: 0; }
 
   .match-card { margin-top: 40px; background: var(--ink-2); border: 1px solid var(--line-dk); border-radius: 22px; overflow: hidden; }
   .match-card .top { padding: 30px 32px 26px; border-bottom: 1px solid var(--line-dk); background: radial-gradient(620px 200px at 100% 0%, color-mix(in srgb, var(--track-accent) 42%, transparent), transparent 70%); }
@@ -113,11 +116,13 @@ const PAGE_CSS = `
   .gain { display: flex; gap: 14px; align-items: flex-start; }
   .gain .gi { width: 26px; height: 26px; border-radius: 8px; flex: none; display: grid; place-items: center; background: rgba(242,178,62,0.14); color: var(--marigold); font-size: 14px; margin-top: 1px; }
   .gain .gt { font-size: 15.5px; line-height: 1.5; }
-  .gain .gt b { font-weight: 700; }
+  .gain .gt strong { font-weight: 700; }
+  .gain .gt p { margin: 0; }
 
   .done-cta { margin-top: 38px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .done-micro { font-family: "Space Mono"; font-size: 12.5px; color: var(--muted-dk); margin-top: 22px; line-height: 1.5; max-width: 600px; }
-  .done-micro b { color: #E7DCC8; font-weight: 400; }
+  .done-micro strong { color: #E7DCC8; font-weight: 400; }
+  .done-micro p { margin: 0; }
 
   .done-loading { min-height: 100vh; background: var(--ink); display: flex; align-items: center; justify-content: center; }
   .done-loading .spin { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(150deg, var(--marigold), var(--clay)); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 20px; color: #1a0d06; animation: pulse 1.8s ease-in-out infinite; }
@@ -209,7 +214,9 @@ function CompleteContent() {
               <div className="av">M</div>
               <div>
                 <div className="who">Mshauri</div>
-                <div className="msg" dangerouslySetInnerHTML={{ __html: t.note }} />
+                <div className="msg">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.note}</ReactMarkdown>
+                </div>
               </div>
             </div>
 
@@ -227,7 +234,9 @@ function CompleteContent() {
                 {t.gains.map((g, i) => (
                   <div key={i} className="gain">
                     <span className="gi">›</span>
-                    <span className="gt" dangerouslySetInnerHTML={{ __html: g }} />
+                    <span className="gt">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{g}</ReactMarkdown>
+                    </span>
                   </div>
                 ))}
               </div>
@@ -241,7 +250,9 @@ function CompleteContent() {
                 {t.ctaLabel}
               </Link>
             </div>
-            <div className="done-micro" dangerouslySetInnerHTML={{ __html: t.micro }} />
+            <div className="done-micro">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.micro}</ReactMarkdown>
+            </div>
           </div>
         </div>
       </section>
