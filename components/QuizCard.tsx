@@ -17,6 +17,89 @@ interface QuizCardProps {
 
 const LABELS = ["A", "B", "C", "D"];
 
+const CSS = `
+  .qc-loading { padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .qc-dots { display: flex; gap: 5px; }
+  .qc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted-lt); animation: qc-bounce .9s ease-in-out infinite; }
+  .qc-dot:nth-child(2) { animation-delay: .15s; }
+  .qc-dot:nth-child(3) { animation-delay: .3s; }
+  @keyframes qc-bounce { 0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+  .qc-loading p { font-family: "Space Mono"; font-size: 12px; color: var(--muted-lt); }
+
+  .qc-error { padding: 40px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .qc-error p { font-family: "Space Mono"; font-size: 12px; color: var(--clay-deep); }
+  .qc-retry { font-family: "Archivo"; font-weight: 700; font-size: 13px; padding: 10px 20px; border-radius: 10px; background: var(--ink); color: var(--cream); border: none; cursor: pointer; transition: all .15s; }
+  .qc-retry:hover { background: var(--ink-2); }
+
+  .qc-score { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+  .qc-score-header { border-radius: 16px; padding: 24px; text-align: center; }
+  .qc-score-header.pass { background: color-mix(in srgb, var(--forest) 8%, transparent); border: 1px solid color-mix(in srgb, var(--forest) 20%, transparent); }
+  .qc-score-header.fail { background: color-mix(in srgb, var(--marigold) 8%, transparent); border: 1px solid color-mix(in srgb, var(--marigold) 20%, transparent); }
+  .qc-score-num { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 52px; letter-spacing: -0.02em; line-height: 1; }
+  .qc-score-num.pass { color: var(--forest); }
+  .qc-score-num.fail { color: var(--clay-deep); }
+  .qc-score-verdict { font-family: "Space Mono"; font-size: 12px; margin-top: 6px; }
+  .qc-score-verdict.pass { color: var(--forest); }
+  .qc-score-verdict.fail { color: var(--clay-deep); }
+
+  .qc-review { display: flex; flex-direction: column; gap: 10px; }
+  .qc-rq { border-radius: 12px; border: 1px solid; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .qc-rq.correct { border-color: color-mix(in srgb, var(--forest) 25%, transparent); background: color-mix(in srgb, var(--forest) 5%, transparent); }
+  .qc-rq.wrong { border-color: color-mix(in srgb, var(--clay) 25%, transparent); background: color-mix(in srgb, var(--clay) 5%, transparent); }
+  .qc-rq-q { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .qc-rq-ans { display: flex; align-items: center; gap: 8px; }
+  .qc-rq-badge { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+  .qc-rq-badge.correct { background: var(--forest); color: var(--cream); }
+  .qc-rq-badge.wrong { background: var(--clay); color: var(--cream); }
+  .qc-rq-ans-text { font-size: 13px; }
+  .qc-rq-ans-text.correct { color: var(--forest); }
+  .qc-rq-ans-text.wrong { color: var(--clay-deep); }
+  .qc-rq-correct { font-size: 12px; color: var(--muted-lt); padding-left: 26px; }
+  .qc-rq-explain { font-size: 12px; color: var(--muted-lt); line-height: 1.5; font-family: "Archivo"; }
+
+  .qc-retry-btn { font-family: "Archivo"; font-weight: 700; font-size: 14px; padding: 13px 20px; border-radius: 12px; background: var(--ink); color: var(--cream); border: none; cursor: pointer; transition: all .15s; width: 100%; }
+  .qc-retry-btn:hover { background: var(--ink-2); }
+
+  .qc-quiz { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+  .qc-progress { display: flex; flex-direction: column; gap: 8px; }
+  .qc-prog-meta { display: flex; align-items: center; justify-content: space-between; }
+  .qc-prog-meta span { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); }
+  .qc-pips { display: flex; gap: 4px; }
+  .qc-pip { height: 4px; width: 24px; border-radius: 999px; background: var(--line-lt); transition: background .2s; }
+  .qc-pip.done { background: var(--ink); }
+  .qc-prog-bar { height: 3px; background: var(--line-lt); border-radius: 999px; overflow: hidden; }
+  .qc-prog-bar span { display: block; height: 100%; background: var(--ink); border-radius: 999px; transition: width .3s ease; }
+
+  .qc-question { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.5; }
+
+  .qc-options { display: flex; flex-direction: column; gap: 8px; }
+  .qc-opt { width: 100%; text-align: left; display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid var(--line-lt); background: #fff; cursor: pointer; transition: all .15s; font-size: 13.5px; }
+  .qc-opt:hover { border-color: var(--ink); }
+  .qc-opt.selected-correct { border-color: var(--forest); background: color-mix(in srgb, var(--forest) 6%, transparent); cursor: default; }
+  .qc-opt.selected-wrong { border-color: var(--clay); background: color-mix(in srgb, var(--clay) 6%, transparent); cursor: default; }
+  .qc-opt.correct-answer { border-color: var(--forest); background: color-mix(in srgb, var(--forest) 6%, transparent); cursor: default; }
+  .qc-opt.dimmed { opacity: 0.35; cursor: default; }
+  .qc-opt-label { width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-family: "Space Mono"; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; transition: all .15s; }
+  .qc-opt-label.neutral { background: var(--cream-2); color: var(--muted-lt); }
+  .qc-opt-label.correct { background: var(--forest); color: var(--cream); }
+  .qc-opt-label.wrong { background: var(--clay); color: var(--cream); }
+  .qc-opt-label.faded { background: var(--cream-2); color: var(--line-lt); }
+  .qc-opt-text { flex: 1; line-height: 1.45; color: var(--ink); }
+  .qc-opt.selected-wrong .qc-opt-text { color: var(--clay-deep); }
+  .qc-opt.selected-correct .qc-opt-text, .qc-opt.correct-answer .qc-opt-text { color: var(--forest); }
+  .qc-opt.dimmed .qc-opt-text { color: var(--muted-lt); }
+
+  .qc-explain-box { background: var(--cream-2); border: 1px solid var(--line-lt); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .qc-explain-box .ex-label { font-family: "Space Mono"; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-lt); }
+  .qc-explain-box p { font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+
+  .qc-next-btn { font-family: "Archivo"; font-weight: 700; font-size: 14.5px; padding: 14px 20px; border-radius: 12px; background: var(--ink); color: var(--cream); border: none; cursor: pointer; transition: all .15s; width: 100%; }
+  .qc-next-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 85%, var(--muted-lt)); }
+  .qc-next-btn:disabled { opacity: 0.4; cursor: default; }
+  .qc-submit-error { font-family: "Space Mono"; font-size: 12px; color: var(--clay-deep); text-align: center; }
+`;
+
 export default function QuizCard({ track, week }: QuizCardProps) {
   const [quizId, setQuizId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -94,65 +177,68 @@ export default function QuizCard({ track, week }: QuizCardProps) {
 
   if (loading) {
     return (
-      <div className="p-10 text-center space-y-3">
-        <div className="flex items-center justify-center gap-1.5 text-stone-grey">
-          <span className="typing-dot" />
-          <span className="typing-dot" />
-          <span className="typing-dot" />
+      <>
+        <style>{CSS}</style>
+        <div className="qc-loading">
+          <div className="qc-dots">
+            <span className="qc-dot" /><span className="qc-dot" /><span className="qc-dot" />
+          </div>
+          <p>Generating quiz…</p>
         </div>
-        <p className="text-sm text-gray-400">Generating quiz…</p>
-      </div>
+      </>
     );
   }
 
-  if (error) {
+  if (error && !submitting) {
     return (
-      <div className="p-10 text-center space-y-4">
-        <p className="text-sm text-red-500">{error}</p>
-        <button onClick={loadQuiz} className="bg-foundry-green text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-foundry-green-light transition">
-          Try again
-        </button>
-      </div>
+      <>
+        <style>{CSS}</style>
+        <div className="qc-error">
+          <p>{error}</p>
+          <button className="qc-retry" onClick={loadQuiz}>Try again</button>
+        </div>
+      </>
     );
   }
 
   if (score !== null) {
     const pass = score >= 70;
     return (
-      <div className="p-6 space-y-6 animate-scale-in">
-        {/* Score header */}
-        <div className={`rounded-2xl p-6 text-center ${pass ? "bg-green-50 border border-green-100" : "bg-amber-50 border border-amber-100"}`}>
-          <p className={`text-5xl font-bold mb-1 ${pass ? "text-foundry-green" : "text-amber-600"}`}>{score}%</p>
-          <p className={`text-sm font-medium ${pass ? "text-green-700" : "text-amber-700"}`}>
-            {pass ? "Great work — you passed!" : "Keep practicing — you'll get there."}
-          </p>
-        </div>
-
-        {/* Review */}
-        <div className="space-y-3">
-          {finalQuestions.map((q, i) => (
-            <div key={i} className={`rounded-xl border p-4 text-sm space-y-2 ${q.correct ? "border-green-100 bg-green-50/40" : "border-red-100 bg-red-50/40"}`}>
-              <p className="font-medium text-gray-800">{q.q}</p>
-              <div className="flex items-center gap-1.5">
-                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${q.correct ? "bg-green-500 text-white" : "bg-red-400 text-white"}`}>
-                  {q.correct ? "✓" : "✗"}
-                </span>
-                <span className={`${q.correct ? "text-green-700" : "text-red-600"}`}>
-                  {LABELS[q.chosen!]}: {q.options[q.chosen!]}
-                </span>
-              </div>
-              {!q.correct && (
-                <p className="text-gray-500 text-xs pl-5.5">Correct: {LABELS[q.answer]}: {q.options[q.answer]}</p>
-              )}
-              <p className="text-gray-400 text-xs leading-relaxed">{q.explain}</p>
+      <>
+        <style>{CSS}</style>
+        <div className="qc-score">
+          <div className={`qc-score-header ${pass ? "pass" : "fail"}`}>
+            <div className={`qc-score-num ${pass ? "pass" : "fail"}`}>{score}%</div>
+            <div className={`qc-score-verdict ${pass ? "pass" : "fail"}`}>
+              {pass ? "Great work — you passed!" : "Keep practicing — you'll get there."}
             </div>
-          ))}
-        </div>
+          </div>
 
-        <button onClick={loadQuiz} className="w-full bg-foundry-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-foundry-green-light transition">
-          Try another quiz
-        </button>
-      </div>
+          <div className="qc-review">
+            {finalQuestions.map((q, i) => (
+              <div key={i} className={`qc-rq ${q.correct ? "correct" : "wrong"}`}>
+                <div className="qc-rq-q">{q.q}</div>
+                <div className="qc-rq-ans">
+                  <span className={`qc-rq-badge ${q.correct ? "correct" : "wrong"}`}>
+                    {q.correct ? "✓" : "✗"}
+                  </span>
+                  <span className={`qc-rq-ans-text ${q.correct ? "correct" : "wrong"}`}>
+                    {LABELS[q.chosen!]}: {q.options[q.chosen!]}
+                  </span>
+                </div>
+                {!q.correct && (
+                  <div className="qc-rq-correct">
+                    Correct: {LABELS[q.answer]}: {q.options[q.answer]}
+                  </div>
+                )}
+                <div className="qc-rq-explain">{q.explain}</div>
+              </div>
+            ))}
+          </div>
+
+          <button className="qc-retry-btn" onClick={loadQuiz}>Try another quiz</button>
+        </div>
+      </>
     );
   }
 
@@ -160,76 +246,57 @@ export default function QuizCard({ track, week }: QuizCardProps) {
   const progress = (current / questions.length) * 100;
 
   return (
-    <div className="p-6 space-y-5 animate-fade-in">
-      {/* Progress */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-stone-grey">Question {current + 1} of {questions.length}</p>
-          <div className="flex gap-1">
-            {questions.map((_, i) => (
-              <div key={i} className={`w-6 h-1 rounded-full transition-colors ${i <= current ? "bg-foundry-green" : "bg-gray-200"}`} />
-            ))}
+    <>
+      <style>{CSS}</style>
+      <div className="qc-quiz">
+        <div className="qc-progress">
+          <div className="qc-prog-meta">
+            <span>Question {current + 1} of {questions.length}</span>
+            <div className="qc-pips">
+              {questions.map((_, i) => (
+                <div key={i} className={`qc-pip${i <= current ? " done" : ""}`} />
+              ))}
+            </div>
+          </div>
+          <div className="qc-prog-bar">
+            <span style={{ width: `${progress}%` }} />
           </div>
         </div>
-        <div className="h-0.5 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-foundry-green rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+
+        <p className="qc-question">{q.q}</p>
+
+        <div className="qc-options">
+          {q.options.map((opt, i) => {
+            let cls = "qc-opt";
+            let labelCls = "qc-opt-label neutral";
+            if (selected !== null) {
+              if (i === q.answer) { cls += " correct-answer"; labelCls = "qc-opt-label correct"; }
+              else if (i === selected) { cls += " selected-wrong"; labelCls = "qc-opt-label wrong"; }
+              else { cls += " dimmed"; labelCls = "qc-opt-label faded"; }
+            }
+
+            return (
+              <button key={i} className={cls} onClick={() => pick(i)}>
+                <span className={labelCls}>{LABELS[i]}</span>
+                <span className="qc-opt-text">{opt}</span>
+              </button>
+            );
+          })}
         </div>
-      </div>
 
-      {/* Question */}
-      <p className="text-base font-semibold text-gray-800 leading-snug">{q.q}</p>
-
-      {/* Options */}
-      <div className="space-y-2.5">
-        {q.options.map((opt, i) => {
-          let base = "w-full text-left flex items-start gap-3 px-4 py-3 rounded-xl border text-sm transition-all ";
-
-          if (selected === null) {
-            base += "border-gray-200 hover:border-foundry-green hover:bg-green-50/30 cursor-pointer";
-          } else if (i === q.answer) {
-            base += "border-green-400 bg-green-50 text-green-800";
-          } else if (i === selected) {
-            base += "border-red-300 bg-red-50 text-red-700";
-          } else {
-            base += "border-gray-100 opacity-40";
-          }
-
-          const labelBg =
-            selected === null
-              ? "bg-gray-100 text-gray-500"
-              : i === q.answer
-              ? "bg-green-500 text-white"
-              : i === selected
-              ? "bg-red-400 text-white"
-              : "bg-gray-100 text-gray-400";
-
-          return (
-            <button key={i} className={base} onClick={() => pick(i)}>
-              <span className={`w-5 h-5 rounded-md flex-shrink-0 flex items-center justify-center text-[11px] font-bold mt-0.5 ${labelBg}`}>
-                {LABELS[i]}
-              </span>
-              <span className="flex-1 leading-relaxed">{opt}</span>
+        {selected !== null && (
+          <>
+            <div className="qc-explain-box">
+              <span className="ex-label">Explanation</span>
+              <p>{q.explain}</p>
+            </div>
+            <button className="qc-next-btn" onClick={next} disabled={submitting}>
+              {submitting ? "Saving…" : current + 1 < questions.length ? "Next question →" : "See results →"}
             </button>
-          );
-        })}
+            {error && <p className="qc-submit-error">{error}</p>}
+          </>
+        )}
       </div>
-
-      {selected !== null && (
-        <div className="space-y-3 animate-fade-up">
-          <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
-            <p className="text-xs font-medium text-stone-grey mb-1">Explanation</p>
-            <p className="text-sm text-gray-600 leading-relaxed">{q.explain}</p>
-          </div>
-          <button
-            onClick={next}
-            disabled={submitting}
-            className="w-full bg-foundry-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-foundry-green-light disabled:opacity-50 transition"
-          >
-            {submitting ? "Saving…" : current + 1 < questions.length ? "Next question →" : "See results →"}
-          </button>
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        </div>
-      )}
-    </div>
+    </>
   );
 }
