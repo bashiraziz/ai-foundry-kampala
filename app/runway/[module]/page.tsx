@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import { useSearchParams, useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -23,8 +25,22 @@ const PAGE_CSS = `
   /* Lesson panel */
   .lesson-panel { background: var(--cream); display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--line-lt); }
   .lesson-scroll { flex: 1; overflow-y: auto; padding: 28px 32px; }
-  .lesson-scroll .lesson-text { font-family: "Archivo"; font-size: 14px; line-height: 1.7; color: var(--ink); white-space: pre-wrap; }
-  .lesson-scroll .lesson-text strong { font-weight: 700; }
+
+  .lesson-md { font-family: "Archivo"; font-size: 14px; line-height: 1.7; color: var(--ink); }
+  .lesson-md p { margin: 0 0 12px; }
+  .lesson-md p:last-child { margin-bottom: 0; }
+  .lesson-md strong { font-weight: 700; }
+  .lesson-md em { font-style: italic; }
+  .lesson-md h1, .lesson-md h2 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 18px; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lesson-md h3 { font-family: "Bricolage Grotesque"; font-weight: 700; font-size: 15px; margin: 20px 0 8px; }
+  .lesson-md ul, .lesson-md ol { padding-left: 20px; margin: 6px 0 12px; display: flex; flex-direction: column; gap: 4px; }
+  .lesson-md ul { list-style: disc; }
+  .lesson-md ol { list-style: decimal; }
+  .lesson-md li { line-height: 1.6; }
+  .lesson-md code { font-family: "Space Mono"; font-size: 12px; background: var(--cream-2); border: 1px solid var(--line-lt); border-radius: 4px; padding: 1px 5px; color: var(--clay-deep); }
+  .lesson-md pre { background: var(--ink); border-radius: 10px; padding: 16px 18px; margin: 12px 0; overflow-x: auto; }
+  .lesson-md pre code { background: none; border: none; padding: 0; color: var(--muted-dk); font-size: 12.5px; line-height: 1.6; }
+  .lesson-md hr { border: none; border-top: 1px solid var(--line-lt); margin: 16px 0; }
 
   .checklist-section { flex-shrink: 0; border-top: 1px solid var(--line-lt); padding: 22px 28px; display: flex; flex-direction: column; gap: 16px; background: #fff; }
   .checklist-head { display: flex; align-items: center; justify-content: space-between; }
@@ -53,9 +69,27 @@ const PAGE_CSS = `
   .chat-row { display: flex; align-items: flex-end; gap: 8px; }
   .chat-row.user { flex-direction: row-reverse; }
   .chat-av { width: 24px; height: 24px; border-radius: 7px; background: var(--plum); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 11px; color: var(--cream); flex-shrink: 0; }
-  .chat-bubble { max-width: 78%; font-size: 13.5px; line-height: 1.58; padding: 11px 15px; border-radius: 14px; white-space: pre-wrap; word-break: break-word; }
-  .chat-row.user .chat-bubble { background: var(--plum); color: var(--cream); border-bottom-right-radius: 4px; }
+  .chat-bubble { max-width: 78%; font-size: 13.5px; line-height: 1.58; padding: 11px 15px; border-radius: 14px; word-break: break-word; }
+  .chat-row.user .chat-bubble { background: var(--plum); color: var(--cream); border-bottom-right-radius: 4px; white-space: pre-wrap; }
   .chat-row.bot .chat-bubble { background: color-mix(in srgb, var(--ink) 60%, var(--line-dk)); color: var(--cream); border: 1px solid var(--line-dk); border-bottom-left-radius: 4px; }
+
+  .chat-md { color: var(--cream); }
+  .chat-md p { margin: 0 0 10px; }
+  .chat-md p:last-child { margin-bottom: 0; }
+  .chat-md strong { font-weight: 700; color: var(--cream); }
+  .chat-md em { font-style: italic; }
+  .chat-md h1, .chat-md h2, .chat-md h3 { font-family: "Bricolage Grotesque"; font-weight: 700; margin: 12px 0 6px; color: var(--cream); }
+  .chat-md h1 { font-size: 16px; }
+  .chat-md h2 { font-size: 14px; }
+  .chat-md h3 { font-size: 13.5px; }
+  .chat-md ul, .chat-md ol { padding-left: 18px; margin: 6px 0 10px; display: flex; flex-direction: column; gap: 3px; }
+  .chat-md ul { list-style: disc; }
+  .chat-md ol { list-style: decimal; }
+  .chat-md li { line-height: 1.55; color: var(--cream); }
+  .chat-md code { font-family: "Space Mono"; font-size: 11.5px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 1px 5px; color: var(--marigold); }
+  .chat-md pre { background: rgba(0,0,0,0.35); border-radius: 8px; padding: 12px 14px; margin: 8px 0; overflow-x: auto; border: 1px solid var(--line-dk); }
+  .chat-md pre code { background: none; border: none; padding: 0; color: var(--muted-dk); font-size: 12px; line-height: 1.6; }
+  .chat-md blockquote { border-left: 3px solid var(--line-dk); padding-left: 10px; margin: 6px 0; color: var(--muted-dk); font-style: italic; }
 
   .typing-dots { display: flex; gap: 4px; align-items: center; padding: 12px 16px; background: color-mix(in srgb, var(--ink) 60%, var(--line-dk)); border: 1px solid var(--line-dk); border-radius: 14px; border-bottom-left-radius: 4px; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted-dk); animation: dotbounce .9s ease-in-out infinite; }
@@ -467,7 +501,9 @@ function ModuleContent() {
         {/* Lesson panel */}
         <div className="lesson-panel">
           <div className="lesson-scroll">
-            <div className="lesson-text">{moduleData.content}</div>
+            <div className="lesson-md">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{moduleData.content}</ReactMarkdown>
+            </div>
           </div>
 
           <div className="checklist-section">
@@ -521,7 +557,13 @@ function ModuleContent() {
             {messages.map((m, i) => (
               <div key={i} className={`chat-row ${m.role === "user" ? "user" : "bot"}`}>
                 {m.role === "assistant" && <div className="chat-av">M</div>}
-                <div className="chat-bubble">{m.content}</div>
+                <div className="chat-bubble">
+                  {m.role === "assistant" ? (
+                    <div className="chat-md">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                    </div>
+                  ) : m.content}
+                </div>
               </div>
             ))}
 
