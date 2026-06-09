@@ -133,7 +133,8 @@ model Applicant {
   id                String               @id @default(cuid())
   name              String
   email             String?
-  phone             String?
+  phone             String?              @unique
+  pinHash           String?
   messages          Json
   scores            Json?
   developerScore    Int?

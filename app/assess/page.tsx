@@ -29,11 +29,11 @@ const PAGE_CSS = `
   .start-card .field { margin-top: 28px; }
   .start-card .field label { font-family: "Space Mono"; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-dk); display: block; margin-bottom: 10px; }
   .start-card .field input { width: 100%; background: var(--ink); border: 1.5px solid var(--line-dk); border-radius: 12px; padding: 15px 18px; color: var(--cream); font-family: "Archivo"; font-size: 15.5px; outline: none; transition: border-color .15s; }
-  .start-card .field input::placeholder { color: #7a6e5b; }
+  .start-card .field input::placeholder { color: var(--muted-lt); }
   .start-card .field input:focus { border-color: var(--marigold); }
   .start-card .btn-start { margin-top: 24px; width: 100%; justify-content: center; }
   .start-card .note { font-family: "Space Mono"; font-size: 11.5px; color: var(--muted-dk); text-align: center; margin-top: 18px; }
-  .start-card .err { color: #ff6b5b; font-size: 14px; margin-top: 12px; text-align: center; }
+  .start-card .err { color: var(--clay); font-size: 14px; margin-top: 12px; text-align: center; }
 
   /* CHAT SCREEN */
   .assess-body { position: relative; overflow: hidden; flex: 1; }
@@ -55,14 +55,14 @@ const PAGE_CSS = `
   .conv { display: flex; flex-direction: column; gap: 26px; }
   .row { display: flex; gap: 14px; max-width: 680px; }
   .row .av { width: 38px; height: 38px; border-radius: 11px; flex: none; display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 16px; flex-shrink: 0; }
-  .row.bot .av { background: linear-gradient(150deg, var(--marigold), var(--clay)); color: #1a0d06; }
+  .row.bot .av { background: linear-gradient(150deg, var(--marigold), var(--clay)); color: var(--ink); }
   .row.you { margin-left: auto; flex-direction: row-reverse; }
   .row.you .av { background: var(--ink-2); border: 1px solid var(--line-dk); color: var(--muted-dk); font-family: "Space Mono"; font-size: 12px; font-weight: 700; }
   .who { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-dk); margin-bottom: 7px; }
   .row.you .who { text-align: right; }
   .msg { font-size: 15.5px; line-height: 1.58; padding: 15px 19px; border-radius: 16px; }
   .row.bot .msg { background: var(--ink-2); border: 1px solid var(--line-dk); border-top-left-radius: 5px; color: var(--cream); }
-  .row.you .msg { background: var(--clay); color: #1a0d06; font-weight: 600; border-top-right-radius: 5px; white-space: pre-wrap; }
+  .row.you .msg { background: var(--clay); color: var(--ink); font-weight: 600; border-top-right-radius: 5px; white-space: pre-wrap; }
 
   .assess-md { color: var(--cream); }
   .assess-md p { margin: 0 0 12px; }
@@ -86,8 +86,8 @@ const PAGE_CSS = `
   .input-bar { display: flex; align-items: center; gap: 12px; background: var(--ink-2); border: 1.5px solid var(--line-dk); border-radius: 16px; padding: 8px 8px 8px 20px; }
   .input-bar textarea { flex: 1; background: transparent; border: none; outline: none; color: var(--cream); font-family: "Archivo"; font-size: 15.5px; resize: none; }
   .input-bar textarea::placeholder { color: var(--muted-dk); }
-  .input-bar .send { width: 44px; height: 44px; border-radius: 11px; background: var(--clay); color: #1a0d06; border: none; display: grid; place-items: center; font-size: 19px; cursor: pointer; transition: background .15s; flex-shrink: 0; }
-  .input-bar .send:hover { background: #e85f33; }
+  .input-bar .send { width: 44px; height: 44px; border-radius: 11px; background: var(--clay); color: var(--ink); border: none; display: grid; place-items: center; font-size: 19px; cursor: pointer; transition: background .15s; flex-shrink: 0; }
+  .input-bar .send:hover { background: var(--clay-deep); }
   .input-bar .send:disabled { opacity: 0.4; cursor: default; }
   .escape { margin-top: 14px; text-align: center; }
   .escape button { font-family: "Space Mono"; font-size: 12px; color: rgba(242,178,62,0.7); background: none; border: none; cursor: pointer; }
@@ -101,7 +101,7 @@ const PAGE_CSS = `
   .sig:last-child { border-bottom: none; }
   .sig .tick { width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
   .sig.done .tick { background: var(--forest); color: var(--cream); }
-  .sig.active .tick { background: var(--marigold); color: #1a0d06; box-shadow: 0 0 0 4px rgba(242,178,62,0.15); }
+  .sig.active .tick { background: var(--marigold); color: var(--ink); box-shadow: 0 0 0 4px rgba(242,178,62,0.15); }
   .sig.todo .tick { background: transparent; border: 1.5px solid var(--line-dk); color: var(--muted-dk); }
   .sig .snm { font-size: 14px; font-weight: 500; }
   .sig.todo .snm { color: var(--muted-dk); }
@@ -134,6 +134,9 @@ export default function AssessPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<"start" | "chat" | "completing">("start");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [pin, setPin] = useState("");
+  const [pinConfirm, setPinConfirm] = useState("");
   const [applicantId, setApplicantId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -157,12 +160,15 @@ export default function AssessPage() {
 
   const startAssessment = async () => {
     if (!name.trim()) return;
+    if (pin && pin !== pinConfirm) { setError("PINs do not match"); return; }
+    if (pin && !/^\d{4}$/.test(pin)) { setError("PIN must be exactly 4 digits"); return; }
+    setError(null);
     setLoading(true);
     try {
       const res = await fetch("/api/assess", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [], name: name.trim() }),
+        body: JSON.stringify({ messages: [], name: name.trim(), phone: phone.trim() || undefined, pin: pin || undefined }),
       });
       const data = await res.json();
       setApplicantId(data.applicantId);
@@ -265,9 +271,45 @@ export default function AssessPage() {
                 placeholder="e.g. Tendo Nakabiri"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && startAssessment()}
                 autoFocus
               />
+            </div>
+            <div className="field">
+              <label htmlFor="phone">Phone number <span style={{color:"var(--muted-dk)",fontWeight:400}}>(to log back in)</span></label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder="e.g. 0771234567"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="field" style={{ marginTop: 0 }}>
+                <label htmlFor="pin">4-digit PIN</label>
+                <input
+                  id="pin"
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="••••"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                />
+              </div>
+              <div className="field" style={{ marginTop: 0 }}>
+                <label htmlFor="pinConfirm">Confirm PIN</label>
+                <input
+                  id="pinConfirm"
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="••••"
+                  value={pinConfirm}
+                  onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  onKeyDown={(e) => e.key === "Enter" && startAssessment()}
+                />
+              </div>
             </div>
             {error && <p className="err">{error}</p>}
             <button
@@ -343,7 +385,7 @@ export default function AssessPage() {
                   <div className="row bot">
                     <div className="av" style={{ opacity: 0.4 }}>M</div>
                     <div>
-                      <div className="msg" style={{ background: "rgba(255,100,80,0.1)", border: "1px solid rgba(255,100,80,0.2)", color: "#ff6b5b", borderRadius: 16 }}>{error}</div>
+                      <div className="msg" style={{ background: "color-mix(in srgb, var(--clay) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--clay) 20%, transparent)", color: "var(--clay)", borderRadius: 16 }}>{error}</div>
                     </div>
                   </div>
                 )}

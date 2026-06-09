@@ -42,8 +42,8 @@ const PAGE_CSS = `
   .mod-tag.prog { background: color-mix(in srgb, var(--marigold) 15%, transparent); color: var(--marigold); border: 1px solid color-mix(in srgb, var(--marigold) 25%, transparent); }
 
   .mod-btn { font-family: "Archivo"; font-weight: 700; font-size: 13px; padding: 9px 18px; border-radius: 999px; text-decoration: none; transition: all .15s; border: none; cursor: pointer; }
-  .mod-btn.primary { background: var(--marigold); color: #1a0d06; }
-  .mod-btn.primary:hover { background: #f5c060; }
+  .mod-btn.primary { background: var(--marigold); color: var(--ink); }
+  .mod-btn.primary:hover { background: color-mix(in srgb, var(--marigold) 82%, white); }
   .mod-btn.secondary { background: transparent; color: var(--muted-dk); border: 1px solid var(--line-dk); }
   .mod-btn.secondary:hover { border-color: var(--muted-dk); color: var(--cream); }
 
@@ -53,8 +53,8 @@ const PAGE_CSS = `
   .cta-btn { display: block; text-align: center; font-family: "Archivo"; font-weight: 700; font-size: 15px; padding: 16px 24px; border-radius: 14px; text-decoration: none; transition: all .15s; }
   .cta-btn.exit { background: var(--plum); color: var(--cream); }
   .cta-btn.exit:hover { background: color-mix(in srgb, var(--plum) 80%, var(--cream)); }
-  .cta-btn.project { background: var(--marigold); color: #1a0d06; }
-  .cta-btn.project:hover { background: #f5c060; }
+  .cta-btn.project { background: var(--marigold); color: var(--ink); }
+  .cta-btn.project:hover { background: color-mix(in srgb, var(--marigold) 82%, white); }
 
   .loading { min-height: 100vh; background: var(--ink); display: flex; align-items: center; justify-content: center; }
   .loading-mark { width: 36px; height: 36px; border-radius: 10px; background: var(--plum); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 18px; color: var(--cream); animation: pulse 1.4s ease-in-out infinite; }
@@ -91,7 +91,7 @@ function PrepContent() {
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
 
   useEffect(() => {
-    if (!applicantId) { router.push("/assess"); return; }
+    if (!applicantId) { router.push("/runway/login"); return; }
     fetch(`/api/runway?applicantId=${applicantId}`)
       .then((r) => r.json())
       .then((d) => setEnrollment(d.enrollment));

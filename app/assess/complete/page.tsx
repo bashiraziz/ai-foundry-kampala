@@ -98,7 +98,7 @@ const PAGE_CSS = `
   .done-lede { font-size: clamp(17px, 1.7vw, 19px); line-height: 1.6; color: #E7DCC8; margin-top: 22px; max-width: 600px; }
 
   .msh-note { display: flex; gap: 16px; margin-top: 40px; max-width: 640px; }
-  .msh-note .av { width: 44px; height: 44px; border-radius: 13px; flex: none; display: grid; place-items: center; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 18px; background: linear-gradient(150deg, var(--marigold), var(--clay)); color: #1a0d06; }
+  .msh-note .av { width: 44px; height: 44px; border-radius: 13px; flex: none; display: grid; place-items: center; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 18px; background: linear-gradient(150deg, var(--marigold), var(--clay)); color: var(--ink); }
   .msh-note .who { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-dk); margin-bottom: 8px; }
   .msh-note .msg { background: var(--ink-2); border: 1px solid var(--line-dk); border-top-left-radius: 5px; border-radius: 16px; padding: 17px 21px; font-size: 15.5px; line-height: 1.62; }
   .msh-note .msg strong { color: var(--marigold); font-weight: 600; }
@@ -125,7 +125,7 @@ const PAGE_CSS = `
   .done-micro p { margin: 0; }
 
   .done-loading { min-height: 100vh; background: var(--ink); display: flex; align-items: center; justify-content: center; }
-  .done-loading .spin { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(150deg, var(--marigold), var(--clay)); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 20px; color: #1a0d06; animation: pulse 1.8s ease-in-out infinite; }
+  .done-loading .spin { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(150deg, var(--marigold), var(--clay)); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 20px; color: var(--ink); animation: pulse 1.8s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
   .done-loading p { font-family: "Space Mono"; font-size: 13px; color: var(--muted-dk); margin-top: 18px; letter-spacing: 0.06em; text-align: center; }
 
@@ -252,6 +252,14 @@ function CompleteContent() {
             </div>
             <div className="done-micro">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.micro}</ReactMarkdown>
+            </div>
+
+            <div style={{ marginTop: 32, background: "var(--ink-2)", border: "1px solid var(--line-dk)", borderRadius: 16, padding: "20px 24px" }}>
+              <p style={{ fontFamily: '"Space Mono"', fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted-dk)", marginBottom: 8 }}>Coming back?</p>
+              <p style={{ fontSize: 15, lineHeight: 1.6, color: "#E7DCC8", margin: 0 }}>
+                Log in anytime with the <strong style={{ color: "var(--cream)" }}>phone number and PIN</strong> you just set.{" "}
+                <Link href="/runway/login" style={{ color: "var(--marigold)", textDecoration: "underline" }}>Go to login →</Link>
+              </p>
             </div>
           </div>
         </div>
