@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { normalisePhone } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Phone and PIN are required" }, { status: 400 });
   }
 
-  const normalised = phone.replace(/\s+/g, "");
+  const normalised = normalisePhone(phone);
   const applicant = await prisma.applicant.findUnique({ where: { phone: normalised } });
 
   if (!applicant || !applicant.pinHash) {

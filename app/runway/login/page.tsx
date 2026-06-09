@@ -58,7 +58,7 @@ export default function RunwayLoginPage() {
             </label>
             <input
               type="tel"
-              placeholder="e.g. 0771234567"
+              placeholder="0771234567 or +256771234567"
               value={phone}
               autoFocus
               onChange={(e) => setPhone(e.target.value)}
@@ -66,6 +66,9 @@ export default function RunwayLoginPage() {
               onFocus={(e) => (e.target.style.borderColor = "var(--marigold)")}
               onBlur={(e) => (e.target.style.borderColor = "var(--line-dk)")}
             />
+            <p style={{ fontFamily: '"Space Mono"', fontSize: 11, color: "var(--muted-dk)", marginTop: 7 }}>
+              Enter it exactly as you registered — Uganda: 07xx or +2567xx
+            </p>
           </div>
 
           <div style={{ marginBottom: 24 }}>

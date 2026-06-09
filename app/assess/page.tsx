@@ -279,10 +279,11 @@ export default function AssessPage() {
               <input
                 id="phone"
                 type="tel"
-                placeholder="e.g. 0771234567"
+                placeholder="0771234567 or +256771234567"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
+              <p style={{fontFamily:'"Space Mono"',fontSize:11,color:"var(--muted-dk)",marginTop:7}}>Uganda: 07xx or +2567xx · Any country format accepted</p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="field" style={{ marginTop: 0 }}>

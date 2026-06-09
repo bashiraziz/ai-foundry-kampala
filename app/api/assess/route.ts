@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { normalisePhone } from "@/lib/phone";
 import { chat } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { ASSESSMENT_SYSTEM_PROMPT } from "@/lib/prompts";
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
         messages: [],
       };
       if (phone && pin) {
-        const normalised = String(phone).replace(/\s+/g, "");
+        const normalised = normalisePhone(String(phone));
         data.phone = normalised;
         data.pinHash = await bcrypt.hash(String(pin), 10);
       }
