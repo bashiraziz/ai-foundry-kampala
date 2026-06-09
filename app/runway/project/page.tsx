@@ -33,8 +33,8 @@ const PAGE_CSS = `
   .url-input { width: 100%; background: var(--ink); border: 1px solid var(--line-dk); border-radius: 10px; padding: 12px 16px; font-family: "Archivo"; font-size: 14px; color: var(--cream); outline: none; transition: border-color .15s; box-sizing: border-box; }
   .url-input::placeholder { color: var(--muted-dk); }
   .url-input:focus { border-color: var(--muted-dk); }
-  .submit-btn { font-family: "Archivo"; font-weight: 700; font-size: 15px; padding: 14px 20px; border-radius: 12px; background: var(--marigold); color: #1a0d06; border: none; cursor: pointer; transition: all .15s; width: 100%; }
-  .submit-btn:hover:not(:disabled) { background: #f5c060; }
+  .submit-btn { font-family: "Archivo"; font-weight: 700; font-size: 15px; padding: 14px 20px; border-radius: 12px; background: var(--marigold); color: var(--ink); border: none; cursor: pointer; transition: all .15s; width: 100%; }
+  .submit-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--marigold) 82%, white); }
   .submit-btn:disabled { opacity: 0.4; cursor: default; }
   .form-error { font-family: "Space Mono"; font-size: 12px; color: var(--clay); }
 

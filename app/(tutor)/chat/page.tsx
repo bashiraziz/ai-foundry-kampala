@@ -79,7 +79,7 @@ export default function ChatPage() {
             <span className="nm">THE AI FOUNDRY <em>KAMPALA</em></span>
           </div>
           <div className="me">
-            <div className="pic" style={{ background: isDev ? "linear-gradient(150deg, var(--marigold), var(--clay))" : "linear-gradient(150deg, var(--forest-2), var(--forest))", color: isDev ? "#1a0d06" : "var(--cream)" }}>
+            <div className="pic" style={{ background: isDev ? "linear-gradient(150deg, var(--marigold), var(--clay))" : "linear-gradient(150deg, var(--forest-2), var(--forest))", color: isDev ? "var(--ink)" : "var(--cream)" }}>
               {name.slice(0,2).toUpperCase()}
             </div>
             <div>

@@ -89,7 +89,7 @@ export default function LandingPage() {
         .msh-copy .badge .live { width: 8px; height: 8px; border-radius: 50%; background: var(--marigold); animation: msh-pulse 2.2s infinite; flex-shrink: 0; }
         @keyframes msh-pulse { 0% { box-shadow: 0 0 0 0 rgba(242,178,62,0.5); } 70% { box-shadow: 0 0 0 12px rgba(242,178,62,0); } 100% { box-shadow: 0 0 0 0 rgba(242,178,62,0); } }
         .msh-copy h2 { font-family: "Bricolage Grotesque"; font-weight: 900; font-size: clamp(38px,5vw,58px); text-transform: uppercase; letter-spacing: -0.015em; margin-top: 24px; line-height: 0.96; }
-        .msh-copy p { font-size: 17px; line-height: 1.6; color: #d8e6df; margin-top: 22px; max-width: 460px; }
+        .msh-copy p { font-size: 17px; line-height: 1.6; color: color-mix(in srgb, var(--forest) 15%, var(--cream)); margin-top: 22px; max-width: 460px; }
         .msh-copy .cta-row { margin-top: 34px; }
         .msh-chat { background: var(--ink); border-radius: 20px; padding: 26px; border: 1px solid rgba(244,236,221,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.35); }
         .msh-chat .chat-top { display: flex; align-items: center; gap: 10px; font-family: "Space Mono"; font-size: 11.5px; color: var(--muted-dk); padding-bottom: 18px; border-bottom: 1px solid var(--line-dk); }

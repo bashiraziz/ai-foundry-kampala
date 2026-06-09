@@ -46,7 +46,7 @@ export default function AboutPage() {
 
         .people { background: var(--ink); color: var(--cream); }
         .ppl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .person .pic { aspect-ratio: 1; border-radius: 18px; display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 52px; color: #1a0d06; }
+        .person .pic { aspect-ratio: 1; border-radius: 18px; display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 52px; color: var(--ink); }
         .person:nth-child(1) .pic { background: linear-gradient(150deg, var(--marigold), var(--clay)); }
         .person:nth-child(2) .pic { background: linear-gradient(150deg, var(--forest-2), var(--forest)); color: var(--cream); }
         .person:nth-child(3) .pic { background: linear-gradient(150deg, #8a4f6b, var(--plum)); color: var(--cream); }
@@ -55,10 +55,10 @@ export default function AboutPage() {
         .person .role { font-family: "Space Mono"; font-size: 12px; color: var(--muted-dk); margin-top: 4px; }
         .person .bio { font-size: 14px; line-height: 1.55; color: var(--muted-dk); margin-top: 12px; }
 
-        .a-final { background: var(--clay); color: #1a0d06; text-align: center; }
+        .a-final { background: var(--clay); color: var(--ink); text-align: center; }
         .a-final .wrap { padding-top: 96px; padding-bottom: 96px; }
         .a-final h2 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: clamp(40px, 6vw, 72px); letter-spacing: -0.025em; line-height: 0.96; }
-        .a-final p { font-size: 18px; margin-top: 20px; color: #4a2412; max-width: 520px; margin-inline: auto; }
+        .a-final p { font-size: 18px; margin-top: 20px; color: var(--ink); max-width: 520px; margin-inline: auto; }
         .a-final .cta-row { display: flex; gap: 14px; justify-content: center; margin-top: 34px; }
 
         @media (max-width: 900px) {

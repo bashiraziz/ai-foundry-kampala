@@ -26,7 +26,7 @@ const PAGE_CSS = `
   .field { margin-top: 24px; }
   .field label { font-family: "Space Mono"; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-dk); display: block; margin-bottom: 9px; }
   .field input { width: 100%; background: var(--ink-2); border: 1.5px solid var(--line-dk); border-radius: 12px; padding: 15px 18px; color: var(--cream); font-family: "Archivo"; font-size: 15.5px; outline: none; transition: border-color .15s; }
-  .field input::placeholder { color: #7a6e5b; }
+  .field input::placeholder { color: var(--muted-lt); }
   .field input:focus { border-color: var(--marigold); }
   .row-between { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
   .remember { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted-dk); }
@@ -42,7 +42,7 @@ const PAGE_CSS = `
   .back { margin-top: 22px; text-align: center; }
   .back a { font-family: "Space Mono"; font-size: 12.5px; color: var(--muted-dk); }
   .back a:hover { color: var(--marigold); }
-  .err-msg { color: #ff6b5b; font-size: 13.5px; margin-top: 14px; text-align: center; font-family: "Space Mono"; }
+  .err-msg { color: var(--clay); font-size: 13.5px; margin-top: 14px; text-align: center; font-family: "Space Mono"; }
 
   @media (max-width: 860px) { .auth { grid-template-columns: 1fr; } .auth-brand { display: none; } }
 `;

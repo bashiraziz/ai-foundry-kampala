@@ -16,7 +16,7 @@ export default function NavBar({ activePage }: NavBarProps) {
         .nav-bar .lockup .name { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 16px; letter-spacing: 0.01em; white-space: nowrap; }
         .nav-bar .lockup .name em { font-style: normal; color: var(--marigold); }
         .nav-bar .nav-links { display: flex; align-items: center; gap: 32px; }
-        .nav-bar .nav-links a.lk { color: rgba(244,236,221,0.72); font-size: 15px; font-weight: 600; white-space: nowrap; transition: color .15s; }
+        .nav-bar .nav-links a.lk { color: color-mix(in srgb, var(--cream) 72%, transparent); font-size: 15px; font-weight: 600; white-space: nowrap; transition: color .15s; }
         .nav-bar .nav-links a.lk:hover { color: var(--cream); }
         .nav-bar .nav-links a.lk.active { color: var(--marigold); }
         @media (max-width: 980px) { .nav-bar .nav-links a.lk { display: none; } }

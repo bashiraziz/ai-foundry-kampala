@@ -45,7 +45,7 @@ const PAGE_CSS = `
   .card.k-clay .c-top { background: var(--clay); }
   .card.k-forest .c-top { background: var(--forest); }
   .card.k-plum .c-top { background: var(--plum); }
-  .card.k-marigold .c-top { background: var(--marigold); color: #1a0d06; }
+  .card.k-marigold .c-top { background: var(--marigold); color: var(--ink); }
   .card .c-top .tag { font-family: "Space Mono"; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.82; }
   .card .c-top h3 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 26px; margin-top: 10px; letter-spacing: -0.01em; }
   .card .c-top .sub { font-size: 14px; margin-top: 6px; opacity: 0.92; font-weight: 500; }
@@ -59,7 +59,7 @@ const PAGE_CSS = `
   .c-final { background: var(--forest); color: var(--cream); text-align: center; }
   .c-final .wrap { padding-top: 92px; padding-bottom: 92px; }
   .c-final h2 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: clamp(38px, 5.5vw, 64px); letter-spacing: -0.02em; line-height: 0.98; }
-  .c-final p { font-size: 18px; margin-top: 20px; color: #d8e6df; max-width: 520px; margin-inline: auto; }
+  .c-final p { font-size: 18px; margin-top: 20px; color: color-mix(in srgb, var(--forest) 15%, var(--cream)); max-width: 520px; margin-inline: auto; }
   .c-final .cta-row { display: flex; gap: 14px; justify-content: center; margin-top: 34px; }
 
   @media (max-width: 900px) {

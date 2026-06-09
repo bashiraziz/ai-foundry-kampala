@@ -37,8 +37,8 @@ const PAGE_CSS = `
   .select-input { background: var(--ink); border: 1px solid var(--line-dk); border-radius: 10px; padding: 12px 16px; font-family: "Archivo"; font-size: 14.5px; color: var(--cream); outline: none; transition: border-color .15s; width: 100%; box-sizing: border-box; appearance: none; cursor: pointer; }
   .select-input:focus { border-color: var(--muted-dk); }
 
-  .start-btn { font-family: "Archivo"; font-weight: 700; font-size: 15px; padding: 15px 20px; border-radius: 12px; background: var(--marigold); color: #1a0d06; border: none; cursor: pointer; transition: all .15s; width: 100%; }
-  .start-btn:hover:not(:disabled) { background: #f5c060; }
+  .start-btn { font-family: "Archivo"; font-weight: 700; font-size: 15px; padding: 15px 20px; border-radius: 12px; background: var(--marigold); color: var(--ink); border: none; cursor: pointer; transition: all .15s; width: 100%; }
+  .start-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--marigold) 82%, white); }
   .start-btn:disabled { opacity: 0.4; cursor: default; }
 
   .start-footer { margin-top: 20px; font-family: "Space Mono"; font-size: 12px; color: var(--muted-dk); text-align: center; }

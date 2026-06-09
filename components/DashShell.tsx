@@ -12,12 +12,12 @@ const SHELL_CSS = `
   .dash-side .brand .mark span { font-family: "Bricolage Grotesque"; font-weight: 900; font-size: 17px; color: var(--ink); transform: rotate(6deg); display: block; line-height: 1; }
   .dash-side .brand .nm { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 14px; line-height: 1.1; }
   .dash-side .brand .nm em { font-style: normal; color: var(--marigold); display: block; font-size: 11px; }
-  .navsec { font-family: "Space Mono"; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #6f6452; padding: 18px 12px 8px; }
+  .navsec { font-family: "Space Mono"; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-lt); padding: 18px 12px 8px; }
   .navlink { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px; font-size: 14.5px; font-weight: 500; color: var(--muted-dk); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
   .navlink:hover { background: rgba(255,255,255,0.04); color: var(--cream); }
   .navlink.on { background: rgba(242,178,62,0.13); color: var(--cream); }
   .navlink .ic { width: 20px; text-align: center; opacity: 0.9; flex-shrink: 0; }
-  .navlink .badge { margin-left: auto; font-family: "Space Mono"; font-size: 11px; background: var(--clay); color: #1a0d06; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
+  .navlink .badge { margin-left: auto; font-family: "Space Mono"; font-size: 11px; background: var(--clay); color: var(--ink); padding: 2px 8px; border-radius: 999px; font-weight: 700; }
   .dash-side .me { margin-top: auto; display: flex; align-items: center; gap: 11px; padding: 14px 10px 6px; border-top: 1px solid var(--line-dk); }
   .dash-side .me .pic { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(150deg, var(--forest-2), var(--forest)); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 13px; flex-shrink: 0; color: var(--cream); }
   .dash-side .me .nm { font-size: 13.5px; font-weight: 600; }

@@ -25,7 +25,7 @@ const CSS = `
   .pg-card-top .nm { font-size: 14.5px; font-weight: 600; }
   .pg-card-top .meta { font-family: "Space Mono"; font-size: 11px; color: var(--muted-lt); margin-top: 3px; }
   .pg-track-pill { font-family: "Space Mono"; font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 999px; flex-shrink: 0; }
-  .pg-track-pill.dev { background: var(--clay); color: #1a0d06; }
+  .pg-track-pill.dev { background: var(--clay); color: var(--ink); }
   .pg-track-pill.pro { background: var(--forest); color: var(--cream); }
 
   .pg-dots { display: flex; gap: 3px; margin-bottom: 12px; }

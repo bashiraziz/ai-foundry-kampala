@@ -104,8 +104,8 @@ const PAGE_CSS = `
   .chat-input-row:focus-within { border-color: var(--muted-dk); }
   .chat-input-row textarea { flex: 1; background: transparent; border: none; outline: none; font-family: "Archivo"; font-size: 13.5px; color: var(--cream); resize: none; line-height: 1.5; max-height: 100px; }
   .chat-input-row textarea::placeholder { color: var(--muted-dk); }
-  .send-btn { width: 28px; height: 28px; border-radius: 8px; background: var(--marigold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1a0d06; flex-shrink: 0; transition: all .15s; margin-bottom: 1px; }
-  .send-btn:hover:not(:disabled) { background: #f5c060; }
+  .send-btn { width: 28px; height: 28px; border-radius: 8px; background: var(--marigold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink); flex-shrink: 0; transition: all .15s; margin-bottom: 1px; }
+  .send-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--marigold) 82%, white); }
   .send-btn:disabled { opacity: 0.3; cursor: default; }
 
   @media (max-width: 860px) {
