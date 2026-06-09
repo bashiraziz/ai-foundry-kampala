@@ -321,6 +321,10 @@ export default function AssessPage() {
               {loading ? "Starting…" : "Begin assessment →"}
             </button>
             <p className="note">Takes about 10 minutes</p>
+            <p className="note" style={{marginTop:10}}>
+              Already registered?{" "}
+              <Link href="/runway/login" style={{color:"var(--marigold)",textDecoration:"underline"}}>Log in here</Link>
+            </p>
           </div>
         </div>
       </div>

@@ -32,6 +32,7 @@ export default function NavBar({ activePage }: NavBarProps) {
             <Link href="/capstones" className={`lk${activePage === "capstones" ? " active" : ""}`}>Capstones</Link>
             <Link href="/mshauri" className={`lk${activePage === "mshauri" ? " active" : ""}`}>Mshauri</Link>
             <Link href="/about" className={`lk${activePage === "about" ? " active" : ""}`}>About</Link>
+            <Link href="/runway/login" className="lk" style={{opacity:0.7}}>Log in</Link>
             <Link href="/assess" className="btn btn-clay">Apply now <span aria-hidden="true">→</span></Link>
           </nav>
         </div>
